@@ -30,8 +30,6 @@ Plugin id: `zorcore` · distribution: `zorcore-plugin` · console script: `zorco
 
 [Project site](https://gillesbolland.github.io/zorkcore/) — ASCII landing with a sample MeshCore DM thread.
 
-> This GitHub repository is **private** while presentation and docs are finished.
-
 ## Quick start
 
 > [!TIP]
