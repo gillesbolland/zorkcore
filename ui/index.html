@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZorCore</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div>
+        <h1>ZorCore</h1>
+        <p class="lede">Quiet mesh adventure. Traffic-gated play, single-player queue.</p>
+      </div>
+      <div class="status-chip" id="quiet-chip">—</div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="ZorCore panels">
+      <button type="button" role="tab" id="tab-btn-main" aria-controls="tab-main" aria-selected="true" data-tab="main">Main</button>
+      <button type="button" role="tab" id="tab-btn-safety" aria-controls="tab-safety" aria-selected="false" data-tab="safety">Safety</button>
+      <button type="button" role="tab" id="tab-btn-dungeon" aria-controls="tab-dungeon" aria-selected="false" data-tab="dungeon">Dungeon</button>
+      <button type="button" role="tab" id="tab-btn-radio" aria-controls="tab-radio" aria-selected="false" data-tab="radio">Radio</button>
+      <button type="button" role="tab" id="tab-btn-bans" aria-controls="tab-bans" aria-selected="false" data-tab="bans">Bans</button>
+    </nav>
+
+    <div class="tab-panel" id="tab-main" role="tabpanel" aria-labelledby="tab-btn-main">
+      <section class="panel" id="status">
+        <h2>Status</h2>
+        <dl id="status-dl"></dl>
+      </section>
+
+      <section class="panel">
+        <h2>Players / leaderboard</h2>
+        <p class="hint">Score rank with approximate airtime (UTF-8 outbound bytes ÷ 50). 🥇 🥈 🥉 mark the top three.</p>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Moves</th>
+              <th>Room</th>
+              <th>Alive</th>
+              <th>Bytes</th>
+              <th>Parts</th>
+              <th>Units</th>
+              <th>Send</th>
+              <th>Last</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>Now playing / queue</h2>
+        <div id="active-box" class="mono small">No active player</div>
+        <table>
+          <thead>
+            <tr><th>Pos</th><th>Name</th><th>Pubkey</th><th>Hops</th><th>Waiting</th><th></th></tr>
+          </thead>
+          <tbody id="queue-body"></tbody>
+        </table>
+        <div class="actions">
+          <button type="button" id="btn-clear-queue">Clear queue</button>
+        </div>
+        <p class="mono small" id="queue-msg"></p>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-safety" role="tabpanel" aria-labelledby="tab-btn-safety" hidden>
+      <section class="panel">
+        <h2>Safety / mesh gate</h2>
+        <p class="hint">Play follows OpenHop <strong>Adaptive Rate Limiting</strong> tiers (quiet → congested), not clock time and not a utilization percentage. Enable Adaptive Rate Limiting on this Repeater (<code>repeater.advert_adaptive</code>). When the mesh is above the selected max, ≤3-hop players can still play (busy-local exception).</p>
+        <p class="mono small warn-line" id="arl-warn" hidden></p>
+        <div class="form-grid">
+          <label class="check"><input type="checkbox" id="safety_enabled" /> Safety enabled (tier gate + queue)</label>
+          <label class="check"><input type="checkbox" id="single_player_enabled" /> Single-player queue</label>
+          <label class="check"><input type="checkbox" id="bans_enabled" /> Honor bans</label>
+          <label class="check"><input type="checkbox" id="daemons_enabled" /> Living dungeon (NPC daemons)</label>
+          <label class="check"><input type="checkbox" id="world_events_enabled" /> World event broadcasts</label>
+        </div>
+        <p class="field-label">Max play tier</p>
+        <div class="tier-segment" id="play-max-tier" role="group" aria-label="Max play tier">
+          <button type="button" data-tier="quiet">Quiet</button>
+          <button type="button" data-tier="normal">Normal</button>
+          <button type="button" data-tier="busy">Busy</button>
+        </div>
+        <div class="form-grid">
+          <label class="field">
+            <span>Quiet hold (seconds)</span>
+            <input type="number" id="quiet_hold_seconds" min="0" max="3600" />
+          </label>
+          <label class="field">
+            <span>Poll interval (seconds)</span>
+            <input type="number" id="quiet_poll_seconds" min="5" max="600" />
+          </label>
+          <label class="field">
+            <span>Offer timeout (seconds)</span>
+            <input type="number" id="offer_timeout_seconds" min="30" max="86400" />
+          </label>
+          <label class="field">
+            <span>Queue max</span>
+            <input type="number" id="queue_max" min="1" max="200" />
+          </label>
+          <label class="field">
+            <span>Concurrent local players</span>
+            <input type="number" id="max_local_players" min="1" max="4" />
+          </label>
+          <label class="field">
+            <span>Daemon idle pause (seconds)</span>
+            <input type="number" id="daemon_idle_pause_seconds" min="30" max="86400" />
+          </label>
+          <label class="field">
+            <span>TX settle (ms)</span>
+            <input type="number" id="reply_settle_ms" min="0" max="10000" />
+          </label>
+          <label class="field">
+            <span>Chunk gap (ms)</span>
+            <input type="number" id="inter_chunk_delay_ms" min="0" max="10000" />
+          </label>
+        </div>
+        <p class="mono small" id="quiet-detail">—</p>
+        <div class="actions">
+          <button type="button" class="primary" id="btn-safety">Save safety settings</button>
+        </div>
+        <p class="mono small" id="safety-msg"></p>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-dungeon" role="tabpanel" aria-labelledby="tab-btn-dungeon" hidden>
+      <section class="panel">
+        <h2>Dungeon</h2>
+        <p class="hint">NPCs are shared by everyone playing: one troll, one thief, one cyclops for the whole mesh.</p>
+        <div id="dungeon-box" class="mono small">—</div>
+        <table>
+          <thead>
+            <tr><th>NPC</th><th>Room</th><th>State</th><th>Stash</th><th>Respawn</th></tr>
+          </thead>
+          <tbody id="dungeon-body"></tbody>
+        </table>
+        <div class="actions">
+          <button type="button" id="btn-reset-npcs">Reset dungeon</button>
+        </div>
+        <p class="mono small" id="dungeon-msg"></p>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-radio" role="tabpanel" aria-labelledby="tab-btn-radio" hidden>
+      <section class="panel">
+        <h2>Game interfaces</h2>
+        <p class="hint">Installs a <strong>silent</strong> companion on TCP <code>127.0.0.1:1977</code> (3-byte path hash). Once the chips below are green, you normally leave these alone — use them again only if you deleted the companion in OpenHop or need to re-link the plugin.</p>
+        <div class="chips" id="iface-chips"></div>
+        <p class="field-label">Region scope</p>
+        <div class="tier-segment" id="region-scope-toggle" role="group" aria-label="Region scope">
+          <button type="button" data-scope="off">Unscoped</button>
+          <button type="button" data-scope="on">Scoped</button>
+        </div>
+        <label class="field" id="region-scope-field">
+          <span>Scope code</span>
+          <input type="text" id="region-scope" maxlength="29" placeholder="e.g. be" autocomplete="off" />
+        </label>
+        <div class="actions">
+          <button type="button" id="btn-region">Save region</button>
+        </div>
+        <p class="mono small" id="region-msg"></p>
+        <div class="actions">
+          <button type="button" id="btn-create" title="Creates the companion identity if it is missing">Create companion</button>
+          <button type="button" id="btn-link" title="Writes the companion public key into plugin settings and restarts">Link companion</button>
+          <button type="button" class="primary" id="btn-setup">Setup / repair</button>
+        </div>
+        <p class="mono small" id="setup-msg"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Join path</h2>
+        <p class="hint">Phone must have advertised as a Chat Node recently. Scan the QR or open the <code>meshcore://</code> link → DM <code>new game</code>.</p>
+        <div class="join-grid">
+          <div>
+            <h3 id="join-title">Companion (game)</h3>
+            <p class="mono small" id="adv-key">—</p>
+            <p class="mono small"><a id="adv-url" href="#" class="mesh-link">—</a></p>
+          </div>
+          <canvas id="adv-qr" width="180" height="180" aria-label="Zork companion QR"></canvas>
+        </div>
+        <p class="mono small" id="qr-msg"></p>
+      </section>
+
+      <section class="panel warn">
+        <h2>Discovery</h2>
+        <p class="hint">Silent / stealth keeps the companion invisible on the mesh. Local or flood advert asks it to announce itself (visible on the production mesh).</p>
+        <label class="check">
+          <input type="checkbox" id="stealth_mode" />
+          Silent / stealth mode
+        </label>
+        <p id="advert-mode" class="mono small">advert_mode: silent</p>
+        <div class="actions">
+          <button type="button" id="btn-advert-local">Local advert</button>
+          <button type="button" id="btn-advert-flood">Flood advert</button>
+        </div>
+        <p class="mono small" id="advert-msg"></p>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="tab-bans" role="tabpanel" aria-labelledby="tab-btn-bans" hidden>
+      <section class="panel">
+        <h2>Bans</h2>
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Pubkey</th><th>Reason</th><th></th></tr>
+          </thead>
+          <tbody id="bans-body"></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+  <script src="qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

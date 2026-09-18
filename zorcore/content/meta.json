@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "id": "zork-full",
+  "name": "Zork",
+  "version": "1.1.0-mesh",
+  "companion_name": "Zork",
+  "description": "Full MIT 1977 dungeon from dung.56; original prose delivered via radio multipart.",
+  "start_room": "whous",
+  "welcome": "You are in an open field west of a big white house, with a boarded front door.",
+  "help": "DM `new game` to start. Try: look, n/s/e/w, open, take, inventory, examine, light, move, attack, put, help, ?. `1/3…` = more coming, wait · `.3/3` = done. ⏱️ means act soon.",
+  "flags": {
+    "kitchen_window": false,
+    "magic_flag": false,
+    "trap_door": false,
+    "troll_flag": false,
+    "key_flag": false,
+    "egypt_flag": false,
+    "low_tide": false,
+    "glacier_flag": false,
+    "empty_handed": false,
+    "dome_flag": false,
+    "carousel_flip": false,
+    "riddle_flag": false,
+    "lld_flag": false,
+    "cyclops_flag": false,
+    "light_load": false,
+    "deflate": false,
+    "rainbow": false,
+    "gnome_door": false,
+    "frobozz": false,
+    "rug_moved": false,
+    "grunlock": false,
+    "carousel_zoom": false,
+    "cage_solve": false,
+    "bucket_top": false,
+    "safe_flag": false,
+    "mirror_mung": false,
+    "gate_flag": false,
+    "buoy_flag": false,
+    "echo_flag": false
+  },
+  "dark": {
+    "message": "It is pitch black. You are likely to be eaten by a grue.",
+    "timer_id": "dark",
+    "timer_seconds": 45,
+    "timer_message": "Oh no! A lurking grue gobbles you up.",
+    "timer_death": true,
+    "timer_hint": "Something stirs in the dark…"
+  },
+  "npcs": {
+    "troll": {
+      "name": "troll",
+      "home": "mtrol",
+      "here": "A nasty-looking troll blocks the way, axe in hand.",
+      "respawn_seconds": 1800
+    },
+    "cyclo": {
+      "name": "cyclops",
+      "home": "cyclo",
+      "here": "A cyclops, who looks prepared to eat horses, blocks the staircase.",
+      "respawn_seconds": 1800
+    },
+    "thief": {
+      "name": "thief",
+      "home": "treas",
+      "here": "A seedy-looking gentleman with a large bag watches you closely.",
+      "respawn_seconds": 1800,
+      "respawn_requires_empty_stash": true
+    }
+  },
+  "system_messages": {
+    "busy": "The way down is barred: a storm of voices fills the air above. I will call you when it quiets.",
+    "paused": "A storm of voices rises above the dungeon. Your lamp gutters while you wait. I will call when it quiets.",
+    "resume": "The air is still again. The dungeon awaits your next move.",
+    "wait_turn": "Another adventurer already walks these halls. You wait at the gate; I will call when the way is clear.",
+    "offer": "The way is open to you. Answer within {mins} minute{s} with any command (or `new game`), or it closes again.",
+    "banned": "The dungeon is closed to you.",
+    "queue_full": "Too many lanterns crowd the entrance. Return later."
+  }
+}

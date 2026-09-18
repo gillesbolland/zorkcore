@@ -1,0 +1,662 @@
+{
+  "scripts": [
+    {
+      "verb": "open",
+      "object": "wind1",
+      "effects": [
+        {
+          "op": "set_flag",
+          "flag": "kitchen_window"
+        },
+        {
+          "op": "open",
+          "object": "wind1"
+        },
+        {
+          "op": "message",
+          "text": "The window opens far enough to climb through."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "close",
+      "object": "wind1",
+      "effects": [
+        {
+          "op": "clear_flag",
+          "flag": "kitchen_window"
+        },
+        {
+          "op": "close",
+          "object": "wind1"
+        },
+        {
+          "op": "message",
+          "text": "You close the window."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "move",
+      "object": "rug",
+      "when": {
+        "flags": {
+          "rug_moved": false
+        }
+      },
+      "effects": [
+        {
+          "op": "set_flag",
+          "flag": "rug_moved"
+        },
+        {
+          "op": "message",
+          "text": "With a great effort, the rug slides aside. A closed trap door lies beneath."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "move",
+      "object": "rug",
+      "when": {
+        "flags": {
+          "rug_moved": true
+        }
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The rug has already been moved."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "open",
+      "object": "door",
+      "when": {
+        "room": "lroom",
+        "flags": {
+          "rug_moved": true
+        }
+      },
+      "effects": [
+        {
+          "op": "set_flag",
+          "flag": "trap_door"
+        },
+        {
+          "op": "open",
+          "object": "door"
+        },
+        {
+          "op": "message",
+          "text": "The trap door creaks open on a dusty staircase down."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "open",
+      "object": "tdoor",
+      "when": {
+        "room": "cella"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The door is locked from above."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "troll",
+      "indirect": "sword",
+      "when": {
+        "npc_here": "troll"
+      },
+      "effects": [
+        {
+          "op": "set_flag",
+          "flag": "troll_flag"
+        },
+        {
+          "op": "kill_npc",
+          "npc": "troll"
+        },
+        {
+          "op": "message",
+          "text": "Your sword bites deep. The troll crumples and is still."
+        },
+        {
+          "op": "score",
+          "amount": 20
+        },
+        {
+          "op": "broadcast",
+          "text": "Far below, a troll shrieks once, and the caverns swallow the sound."
+        },
+        {
+          "op": "milestone",
+          "id": "troll"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "troll",
+      "indirect": "knife",
+      "when": {
+        "npc_here": "troll"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The knife glances off his hide. You need a better weapon."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "troll",
+      "when": {
+        "npc_here": "troll"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "Bare hands against a troll? He laughs, and swings his axe."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "give",
+      "object": "food",
+      "when": {
+        "npc_here": "cyclo",
+        "has": "food"
+      },
+      "effects": [
+        {
+          "op": "remove_object",
+          "object": "food"
+        },
+        {
+          "op": "message",
+          "text": "The cyclops devours the lunch in one bite and looks thirstier than ever."
+        },
+        {
+          "op": "set_flag",
+          "flag": "cyclops_flag"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "give",
+      "object": "garli",
+      "when": {
+        "npc_here": "cyclo",
+        "has": "garli"
+      },
+      "effects": [
+        {
+          "op": "remove_object",
+          "object": "garli"
+        },
+        {
+          "op": "message",
+          "text": "The cyclops sniffs the garlic, bellows in disgust, and smashes through the east wall as he flees."
+        },
+        {
+          "op": "kill_npc",
+          "npc": "cyclo"
+        },
+        {
+          "op": "set_flag",
+          "flag": "magic_flag"
+        },
+        {
+          "op": "score",
+          "amount": 25
+        },
+        {
+          "op": "broadcast",
+          "text": "Something enormous flees somewhere east, and a wall gives way."
+        },
+        {
+          "op": "milestone",
+          "id": "cyclops"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "cyclo",
+      "indirect": "sword",
+      "when": {
+        "npc_here": "cyclo"
+      },
+      "effects": [
+        {
+          "op": "kill_npc",
+          "npc": "cyclo"
+        },
+        {
+          "op": "message",
+          "text": "You strike, and the cyclops topples like a felled oak."
+        },
+        {
+          "op": "set_flag",
+          "flag": "magic_flag"
+        },
+        {
+          "op": "score",
+          "amount": 15
+        },
+        {
+          "op": "broadcast",
+          "text": "A bellow of rage rolls up through the stone, ending abruptly."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "cyclo",
+      "when": {
+        "npc_here": "cyclo"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The cyclops seems unimpressed. He is, however, extremely hungry."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "thief",
+      "indirect": "knife",
+      "when": {
+        "npc_here": "thief"
+      },
+      "effects": [
+        {
+          "op": "kill_npc",
+          "npc": "thief"
+        },
+        {
+          "op": "message",
+          "text": "The knife finds its mark. The thief slumps, and his loot spills across the floor."
+        },
+        {
+          "op": "score",
+          "amount": 25
+        },
+        {
+          "op": "broadcast",
+          "text": "A muffled cry, a clatter of dropped treasure. The thief robs no one tonight."
+        },
+        {
+          "op": "milestone",
+          "id": "thief"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "thief",
+      "indirect": "sword",
+      "when": {
+        "npc_here": "thief"
+      },
+      "effects": [
+        {
+          "op": "kill_npc",
+          "npc": "thief"
+        },
+        {
+          "op": "message",
+          "text": "Your sword runs the thief through. His loot spills across the floor."
+        },
+        {
+          "op": "score",
+          "amount": 25
+        },
+        {
+          "op": "broadcast",
+          "text": "A muffled cry, a clatter of dropped treasure. The thief robs no one tonight."
+        },
+        {
+          "op": "milestone",
+          "id": "thief"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "attack",
+      "object": "thief",
+      "when": {
+        "npc_here": "thief"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The thief dodges, grinning, and his stiletto glints."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "trigger": "enter",
+      "when": {
+        "room": "lld2",
+        "missing": "bell"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The spirits bar your way, jeering. You lack the means to quiet them."
+        }
+      ]
+    },
+    {
+      "trigger": "enter",
+      "when": {
+        "room": "treas",
+        "npc_alive": "thief"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "This is the thief's hoard. He will not be pleased to find you here."
+        }
+      ]
+    },
+    {
+      "verb": "put",
+      "object": "water",
+      "indirect": "bucke",
+      "when": {
+        "room": "bwell"
+      },
+      "effects": [
+        {
+          "op": "remove_object",
+          "object": "water"
+        },
+        {
+          "op": "message",
+          "text": "You pour the water in. The bucket rises smoothly up the shaft, and stops."
+        },
+        {
+          "op": "teleport",
+          "room": "twell"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "go",
+      "object": "bucke",
+      "when": {
+        "room": "bwell"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "You climb into the bucket. Nothing happens. It wants water."
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "go",
+      "object": "bucke",
+      "when": {
+        "room": "twell"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The bucket sinks back down the well and settles on the floor."
+        },
+        {
+          "op": "teleport",
+          "room": "bwell"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "eat",
+      "object": "ecake",
+      "when": {
+        "room": "alice",
+        "has": "ecake"
+      },
+      "effects": [
+        {
+          "op": "remove_object",
+          "object": "ecake"
+        },
+        {
+          "op": "set_flag",
+          "flag": "magic_flag"
+        },
+        {
+          "op": "message",
+          "text": "The room heaves and swells around you — no, you are shrinking. The hole is now a doorway."
+        },
+        {
+          "op": "teleport",
+          "room": "alism"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "eat",
+      "object": "orice",
+      "when": {
+        "room": "alism",
+        "has": "orice"
+      },
+      "effects": [
+        {
+          "op": "remove_object",
+          "object": "orice"
+        },
+        {
+          "op": "message",
+          "text": "You swell back to your proper size, and the posts shrink into a table."
+        },
+        {
+          "op": "teleport",
+          "room": "alice"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "eat",
+      "object": "orice",
+      "when": {
+        "room": "alitr",
+        "has": "orice"
+      },
+      "effects": [
+        {
+          "op": "remove_object",
+          "object": "orice"
+        },
+        {
+          "op": "message",
+          "text": "You swell back to your proper size, and the room shrinks to a tea table."
+        },
+        {
+          "op": "teleport",
+          "room": "alice"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "go",
+      "object": "cage",
+      "when": {
+        "room": "cmach"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "You squeeze into the cage. It lurches down its rails and jars to a halt."
+        },
+        {
+          "op": "teleport",
+          "room": "caged"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "light",
+      "object": "ballo",
+      "when": {
+        "room": "vlbot",
+        "has": "ballo"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The cloth bag swells with hot air, and the basket lifts away from the ash."
+        },
+        {
+          "op": "teleport",
+          "room": "vair1"
+        }
+      ],
+      "stop": true
+    },
+    {
+      "verb": "go",
+      "object": "ballo",
+      "when": {
+        "room": "vlbot"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "You climb into the basket. Light the balloon to rise."
+        }
+      ],
+      "stop": true
+    }
+  ],
+  "daemons": [
+    {
+      "id": "thief_wander",
+      "scope": "world",
+      "every_seconds": 180,
+      "chance": 0.6,
+      "when": {
+        "npc_alive": "thief"
+      },
+      "effects": [
+        {
+          "op": "move_npc",
+          "npc": "thief",
+          "rooms": [
+            "cella",
+            "mtrol",
+            "maze1",
+            "maze5",
+            "treas",
+            "galle",
+            "mtorc",
+            "studi",
+            "lroom",
+            "atlan",
+            "egypt",
+            "temp1",
+            "temp2",
+            "cave1"
+          ]
+        },
+        {
+          "op": "notify_room",
+          "npc": "thief",
+          "text": "A seedy character slips in from the shadows, eyeing your pack."
+        }
+      ]
+    },
+    {
+      "id": "npc_respawn_tick",
+      "scope": "world",
+      "every_seconds": 120,
+      "effects": []
+    },
+    {
+      "id": "thief_steal",
+      "scope": "player",
+      "every_seconds": 240,
+      "chance": 0.4,
+      "when": {
+        "npc_here": "thief"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The thief brushes past you. Your pack feels lighter."
+        },
+        {
+          "op": "steal",
+          "npc": "thief"
+        }
+      ]
+    },
+    {
+      "id": "troll_blow",
+      "scope": "player",
+      "every_seconds": 90,
+      "chance": 0.5,
+      "when": {
+        "npc_here": "troll"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The troll swings his axe. It whistles past your ear."
+        }
+      ]
+    },
+    {
+      "id": "cyclops_hunger",
+      "scope": "player",
+      "every_seconds": 120,
+      "chance": 0.5,
+      "when": {
+        "npc_here": "cyclo"
+      },
+      "effects": [
+        {
+          "op": "message",
+          "text": "The cyclops looks at you hungrily, and licks his lips."
+        }
+      ]
+    }
+  ]
+}

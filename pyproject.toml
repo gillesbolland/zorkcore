@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zorcore-plugin"
+version = "0.9.0"
+
+description = "OpenHop Repeater plugin: MeshCore text adventure (ZorCore)"
+readme = "PLUGIN_README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+  "meshcore>=2.3.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+zorcore = "zorcore.main:main"
+
+[tool.setuptools.packages.find]
+include = ["zorcore", "zorcore.*"]
+
+[tool.setuptools.package-data]
+zorcore = ["data/*.json", "content/*.json"]
+
+[tool.setuptools.data-files]
+"share/openhop/plugins/zorcore" = [
+  "openhop-plugin.json",
+  "config.default.json",
+]
+"share/openhop/plugins/zorcore/ui" = [
+  "ui/index.html",
+  "ui/app.js",
+  "ui/styles.css",
+  "ui/qrcode.min.js",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

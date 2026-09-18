@@ -1,0 +1,142 @@
+"""Companion client: pubkey resolve + ACK-gated multipart send."""
+
+import asyncio
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
+
+from zorcore.companion_client import CompanionClient
+from zorcore.config import Settings
+
+
+def _settings(**kwargs) -> Settings:
+    fields = dict(
+        meshcore_host="127.0.0.1",
+        meshcore_port=1977,
+        companion_advert_enabled=False,
+        companion_advert_local=False,
+        companion_advert_flood=False,
+        repeater_api_base="http://127.0.0.1:8000",
+        repeater_api_token="",
+        adventurer_public_key="",
+        advert_sync_hours=6,
+        advert_sync_limit=20,
+        path_hash_mode=2,
+        region_scope="",
+        max_chunk_bytes=145,
+        max_chunks=8,
+        inter_chunk_delay_ms=0,
+        max_commands_per_minute=30,
+        duplicate_ttl_seconds=5,
+        reply_settle_ms=0,
+        command_dedupe_seconds=20,
+        safety_enabled=True,
+        bans_enabled=True,
+        play_max_tier="normal",
+        quiet_hold_seconds=120,
+        quiet_poll_seconds=30,
+        single_player_enabled=True,
+        offer_timeout_seconds=900,
+        queue_max=20,
+        local_max_hops=3,
+        max_local_players=2,
+        daemons_enabled=True,
+        daemon_idle_pause_seconds=300,
+        daemon_min_interval_seconds=60,
+        world_events_enabled=True,
+        broadcast_min_interval_seconds=30,
+        log_level="INFO",
+    )
+    fields.update(kwargs)
+    return Settings(**fields)
+
+
+def test_resolve_sender_key_prefers_full():
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.list_contact_pubkeys = AsyncMock(return_value=set())
+        full = "ab" * 32
+        assert await client.resolve_sender_key(full) == full
+
+    asyncio.run(_run())
+
+
+def test_resolve_sender_key_from_prefix():
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        full = "cd" * 32
+        client.list_contact_pubkeys = AsyncMock(return_value={full, "ee" * 32})
+        assert await client.resolve_sender_key(full[:12]) == full
+        assert await client.resolve_sender_key("zz") == ""
+
+    asyncio.run(_run())
+
+
+def test_send_parts_aborts_on_ack_failure():
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        results = [
+            SimpleNamespace(is_error=lambda: False),
+            SimpleNamespace(is_error=lambda: True, payload="NO_ACK"),
+            SimpleNamespace(is_error=lambda: False),
+        ]
+
+        async def send_msg(dst, text):
+            return results.pop(0)
+
+        client.meshcore.commands = SimpleNamespace(send_msg=send_msg)
+        ok = await client.send_parts("aa" * 32, ["(1/3) a", "(2/3) b", "(3/3) c"])
+        assert ok is False
+        assert len(results) == 1  # third part never attempted
+
+    asyncio.run(_run())
+
+
+def test_send_parts_all_ok():
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        n = {"calls": 0}
+
+        async def send_msg(dst, text):
+            n["calls"] += 1
+            return SimpleNamespace(is_error=lambda: False)
+
+        client.meshcore.commands = SimpleNamespace(send_msg=send_msg)
+        ok = await client.send_parts("aa" * 32, ["one", "two"])
+        assert ok is True
+        assert n["calls"] == 2
+
+    asyncio.run(_run())
+
+
+def test_content_dedupe_collapses_retry_storm():
+    async def _run() -> None:
+        handler = AsyncMock()
+        client = CompanionClient(_settings(command_dedupe_seconds=20), handler)
+        sender = "ab" * 32
+        client.resolve_sender_key = AsyncMock(return_value=sender)
+
+        from meshcore import EventType
+
+        async def fire(ts: int, text: str = "New game") -> None:
+            event = SimpleNamespace(
+                type=EventType.CONTACT_MSG_RECV,
+                payload={
+                    "text": text,
+                    "timestamp": ts,
+                    "pubkey_prefix": sender,
+                    "sender_name": "Player",
+                },
+                attributes={},
+            )
+            await client._handle_event(event)
+
+        await fire(1)
+        await fire(2)  # retry, new timestamp, same text
+        await fire(3)
+        assert handler.await_count == 1
+        await fire(4, text="look")
+        assert handler.await_count == 2
+
+    asyncio.run(_run())

@@ -1,0 +1,31 @@
+.venv/
+dist/
+build/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+*.pyc
+.DS_Store
+.cursor/
+/tmp/
+
+# Operator / runtime data (never commit)
+config.json
+access.json
+runtime.json
+npcs.json
+sessions/
+checkpoints/
+.env
+.env.*
+*.log
+
+# Historical MDL archive — not part of this plugin repo (see README)
+zork/
+tree.txt
+codemeta.json
+LICENSE.md
+
+# Converter build artifacts
+tools/reports/

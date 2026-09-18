@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ZorCore — dungeon on the radio</title>
+    <meta
+      name="description"
+      content="ZorCore: classic Zork / Dungeon on MeshCore, played by DM to Zork🕹️."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="crt-flicker">
+    <div class="scanlines" aria-hidden="true"></div>
+    <main class="wrap">
+      <pre class="banner">╔══════════════════════════════════════════════════════════════╗
+║   ███████╗ ██████╗ ██████╗  ██████╗ ██████╗ ██████╗ ███████╗ ║
+║   ╚══███╔╝██╔═══██╗██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝ ║
+║     ███╔╝ ██║   ██║██████╔╝██║     ██║   ██║██████╔╝█████╗   ║
+║    ███╔╝  ██║   ██║██╔══██╗██║     ██║   ██║██╔══██╗██╔══╝   ║
+║   ███████╗╚██████╔╝██║  ██║╚██████╗╚██████╔╝██║  ██║███████╗ ║
+║   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ║
+║          MeshCore · OpenHop · Dungeon on the radio           ║
+╚══════════════════════════════════════════════════════════════╝</pre>
+
+      <p class="pitch">
+        Classic <strong>Zork / Dungeon</strong> over <strong>MeshCore</strong> —
+        typed as DMs to <strong>Zork🕹️</strong>. Original prose, split for radio.
+      </p>
+
+      <section class="dm" aria-label="Example MeshCore DM gameplay">
+        <div class="dm-header">
+          <div class="dm-avatar" aria-hidden="true">🕹️</div>
+          <div class="dm-meta">
+            <div class="name">Zork🕹️</div>
+            <div class="sub">Direct message · companion</div>
+          </div>
+        </div>
+        <div class="dm-thread" id="dm-thread">
+          <div class="bubble player" data-delay="400">
+            <span class="who">You</span>new game
+          </div>
+          <div class="bubble companion" data-delay="900">
+            <span class="who">Zork🕹️</span>🏡 You are in an open field west of a big white house, with a boarded front door. <span class="mark">1/2…</span>
+          </div>
+          <div class="bubble companion" data-delay="700">
+            <span class="who">Zork🕹️</span>There is a small mailbox here. <span class="mark">.2/2</span>
+          </div>
+          <div class="bubble tip" data-delay="550">
+            <span class="who">tip</span>Exits: north, south, west.
+          </div>
+          <div class="bubble player" data-delay="800">
+            <span class="who">You</span>open mailbox
+          </div>
+          <div class="bubble companion" data-delay="650">
+            <span class="who">Zork🕹️</span>Opened: mailbox.
+Inside: leaflet.
+          </div>
+          <div class="bubble player" data-delay="700">
+            <span class="who">You</span>take leaflet
+          </div>
+          <div class="bubble companion" data-delay="550">
+            <span class="who">Zork🕹️</span>leaflet: Taken.
+          </div>
+          <div class="bubble player" data-delay="900">
+            <span class="who">You</span>?
+          </div>
+          <div class="bubble companion" data-delay="600">
+            <span class="who">Zork🕹️ · resend</span>leaflet: Taken.
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>How to enter</h2>
+        <p>
+          On an OpenHop Repeater with ZorCore installed: open
+          <code>/plugins/zorcore/</code>, set up the companion, share the
+          <code>meshcore://</code> link, then DM <code>new game</code>.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Radio tips</h2>
+        <ul>
+          <li>
+            Long story replies arrive as multipart DMs:
+            <code>1/3…</code> means more is coming; <code>.3/3</code> means the
+            story is complete.
+          </li>
+          <li>
+            <strong>Exits</strong> (and other status tips) are a separate unlabeled
+            message — not part of the <code>n/m</code> count.
+          </li>
+          <li>
+            Lost a chunk? DM <code>?</code> / <code>hello?</code> to
+            <strong>resend</strong> the last reply. Use <code>again</code> /
+            <code>g</code> to <strong>redo</strong> your last command.
+          </li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Shared dungeon · local fast-pass</h2>
+        <p>
+          Everyone shares one living world — same thief, troll, and cyclops.
+          Remote players queue when the mesh is busy; companions within
+          <code>local_max_hops</code> still get a fast pass.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Reuse / fork</h2>
+        <p>
+          Feel free to reuse this project to adapt
+          <strong>other vintage Infocom-style text adventures</strong> for
+          MeshCore — same radio chunking, companion DMs, and shared-world
+          patterns. Forks and ports of other classic interactive-fiction titles
+          are welcome.
+        </p>
+        <p>
+          The MIT license covers the <strong>plugin code</strong>. Story rights
+          for third-party games stay with their owners; only ship text and assets
+          you have the right to use.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Links</h2>
+        <ul class="links">
+          <li>
+            <a href="https://github.com/gillesbolland/zorkcore">GitHub repo</a>
+          </li>
+          <li>
+            <a href="https://github.com/gillesbolland/zorkcore/releases"
+              >Releases (wheel)</a
+            >
+          </li>
+          <li>
+            <a href="https://github.com/gillesbolland/zorkcore#zorcore"
+              >README</a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Classic <em>Zork</em> / <em>Dungeon</em> by Tim Anderson, Marc Blank,
+          Bruce Daniels, and Dave Lebling (MIT). Historical MDL sources (not
+          vendored here):
+          <a href="https://github.com/MITDDC/zork">MITDDC/zork</a>.
+        </p>
+        <p>Plugin code: MIT · AI-assisted development — review before production use.</p>
+      </footer>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

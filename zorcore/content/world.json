@@ -1,0 +1,4134 @@
+{
+  "start_room": "whous",
+  "welcome": "You are in an open field west of a big white house, with a boarded front door.",
+  "help": "DM `new game` to start. Try: look, n/s/e/w, open, take, inventory, examine, light, move, attack, put, help, ?. `1/3…` = more coming, wait · `.3/3` = done.",
+  "rooms": {
+    "alice": {
+      "name": "Tea Room",
+      "description": "You are in a small square room, in the center of which is a large oblong table, no doubt set for afternoon tea. It is clear from the objects on the table that the users were indeed mad. In the eastern corner of the room is a small hole (no more that four inches high). There are passageways leading away to the west and the northwest.",
+      "brief": "Tea Room.",
+      "exits": {
+        "east": {
+          "nexit": "Only a mouse could get in there."
+        },
+        "west": "twell",
+        "northwest": "magne"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "atabl",
+        "ecake",
+        "orice",
+        "rdice",
+        "blice"
+      ]
+    },
+    "alism": {
+      "name": "Posts Room",
+      "description": "You are in an enormous room, in the center of which are four wooden posts delineating a rectanular area, above which is what appears to be a wooden roof. In fact, all objects in this room appear to be abnormally large. To the east is a passageway. There is a large chasm on the west and the northwest.",
+      "brief": "Posts Room.",
+      "exits": {
+        "northwest": {
+          "nexit": "There is a chasm too large to jump across."
+        },
+        "east": "alitr",
+        "west": {
+          "nexit": "There is a chasm too large to jump across."
+        },
+        "down": {
+          "nexit": "There is a chasm too large to jump across."
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "posts"
+      ]
+    },
+    "alitr": {
+      "name": "Pool Room",
+      "description": "You are in a large room, one half of which is depressed. There is a large leak in the ceiling through which brown colored goop is falling. The only exit to this room is to the west.",
+      "brief": "Pool Room.",
+      "exits": {
+        "out": "alism",
+        "west": "alism"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "flask",
+        "pool",
+        "saffr"
+      ]
+    },
+    "atlan": {
+      "name": "Atlantis Room",
+      "description": "You are in an ancient room, long buried by the Reservoir. There are exits here to the southeast and upward.",
+      "brief": "Atlantis Room.",
+      "exits": {
+        "southeast": "resen",
+        "up": "cave1"
+      },
+      "emoji": "🏛️",
+      "dark": true,
+      "objects": [
+        "tride"
+      ]
+    },
+    "attic": {
+      "name": "Attic",
+      "description": "You are in the attic. The only exit is stairs that lead down.",
+      "brief": "Attic.",
+      "exits": {
+        "down": "kitch"
+      },
+      "emoji": "🏡",
+      "dark": true,
+      "objects": [
+        "brick",
+        "rope",
+        "knife"
+      ]
+    },
+    "barre": {
+      "name": "Barrel",
+      "description": "You are in a barrel. Congratulations. Etched into the side of the barrel is the word 'Geronimo!'.",
+      "brief": "Barrel.",
+      "exits": {
+        "out": "falls"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "bats": {
+      "name": "Bat Room",
+      "description": "You are in a small room which has only one door, to the east.",
+      "brief": "Bat Room.",
+      "exits": {
+        "east": "squee"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "jade",
+        "bat"
+      ]
+    },
+    "beach": {
+      "name": "Sandy Beach",
+      "description": "You are on a large sandy beach at the shore of the river, which is flowing quickly by. A path runs beside the river to the south here.",
+      "brief": "Sandy Beach.",
+      "exits": {
+        "launch": "rivr4",
+        "south": "fante"
+      },
+      "emoji": "🌊",
+      "dark": true,
+      "objects": [
+        "statu"
+      ]
+    },
+    "bladd": {
+      "name": "Ladder Bottom",
+      "description": "You are in a rather wide room. On one side is the bottom of a narrow wooden ladder. To the northeast and the south are passages leaving the room.",
+      "brief": "Ladder Bottom.",
+      "exits": {
+        "northeast": "dead7",
+        "south": "timbe",
+        "up": "tladd"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "blroo": {
+      "name": "Strange Passage",
+      "description": "You are in a long passage. To the south is one entrance. On the east there is an old wooden door, with a large hole in it (about cyclops sized).",
+      "brief": "Strange Passage.",
+      "exits": {
+        "south": "cyclo",
+        "east": "lroom"
+      },
+      "emoji": "🏡",
+      "dark": true,
+      "score_on_enter": 10
+    },
+    "boom": {
+      "name": "Gas Room",
+      "description": "You are in a small room which smells strongly of coal gas.",
+      "brief": "Gas Room.",
+      "exits": {
+        "up": "smell"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "brace"
+      ]
+    },
+    "bshaf": {
+      "name": "Lower Shaft",
+      "description": "You are in a small square room which is at the bottom of a long shaft. To the east is a passageway and to the northeast a very narrow passage. In the shaft can be seen a heavy iron chain.",
+      "brief": "Lower Shaft.",
+      "exits": {
+        "east": "machi",
+        "out": {
+          "cexit": {
+            "room": "timbe",
+            "flag": "empty_handed",
+            "fail": "You cannot fit through this passage with that load."
+          }
+        },
+        "northeast": {
+          "cexit": {
+            "room": "timbe",
+            "flag": "empty_handed",
+            "fail": "You cannot fit through this passage with that load."
+          }
+        },
+        "up": {
+          "nexit": "Not a chance."
+        },
+        "climb": {
+          "nexit": "The chain is not climbable."
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "fbask"
+      ]
+    },
+    "bwell": {
+      "name": "Circular Room",
+      "description": "You are in a damp circular room, whose walls are made of brick and mortar. The roof of this room is not visible, but there appear to be some etchings on the walls. There is a passageway to the west.",
+      "brief": "Circular Room.",
+      "exits": {
+        "west": "mpear",
+        "up": {
+          "nexit": "The walls cannot be climbed."
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "bucke",
+        "etch1"
+      ]
+    },
+    "caged": {
+      "name": "Cage",
+      "description": "You are trapped inside an iron cage.",
+      "brief": "Cage.",
+      "exits": {
+        "north": {
+          "nexit": ""
+        }
+      },
+      "emoji": "🌋",
+      "dark": true,
+      "objects": [
+        "cage"
+      ]
+    },
+    "cager": {
+      "name": "Dingy Closet",
+      "description": "You are in a dingy closet adjacent to the machine room. On one wall is a small sticker which says Protected by FROBOZZ Magic Alarm Company (Hello, footpad!)",
+      "brief": "Dingy Closet.",
+      "exits": {
+        "north": "cmach"
+      },
+      "emoji": "🌋",
+      "dark": true,
+      "objects": [
+        "spher"
+      ]
+    },
+    "cany1": {
+      "name": "Deep Canyon",
+      "description": "You are on the south edge of a deep canyon. Passages lead off to the east, south, and northwest. You can hear the sound of flowing water below.",
+      "brief": "Deep Canyon.",
+      "exits": {
+        "northwest": "reses",
+        "east": "dam",
+        "south": "carou"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "carou": {
+      "name": "Round room",
+      "description": "You are in a circular room with passages off in eight directions. Your compass needle spins wildly, and you can't get your bearings.",
+      "brief": "Round room.",
+      "exits": {
+        "north": {
+          "cexit": {
+            "room": "cave4",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "south": {
+          "cexit": {
+            "room": "cave4",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "east": {
+          "cexit": {
+            "room": "mgrai",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "west": {
+          "cexit": {
+            "room": "pass1",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "northwest": {
+          "cexit": {
+            "room": "cany1",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "northeast": {
+          "cexit": {
+            "room": "pass5",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "southeast": {
+          "cexit": {
+            "room": "pass4",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "southwest": {
+          "cexit": {
+            "room": "maze1",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        },
+        "out": {
+          "cexit": {
+            "room": "pass3",
+            "flag": "carousel_flip",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "irbox"
+      ]
+    },
+    "cave1": {
+      "name": "Cave",
+      "description": "You are in a small cave with an entrance to the north and a stairway leading down.",
+      "brief": "Cave.",
+      "exits": {
+        "north": "mirr1",
+        "down": "atlan"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "cave2": {
+      "name": "Cave",
+      "description": "You are in a tiny cave with entrances west and north, and a dark, forbidding staircase leading down.",
+      "brief": "Cave.",
+      "exits": {
+        "north": "craw3",
+        "west": "mirr2",
+        "down": "lld1"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "cave3": {
+      "name": "Damp Cave",
+      "description": "You are in a cave. Passages exit to the south and to the east, but the cave narrows to a crack to the west. The earth is particularly damp here.",
+      "brief": "Damp Cave.",
+      "exits": {
+        "south": "echo",
+        "east": "dam",
+        "west": {
+          "nexit": "It is too narrow for most insects."
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "cave4": {
+      "name": "Engravings Cave",
+      "description": "You have entered a cave with passages leading north and southeast.",
+      "brief": "Engravings Cave.",
+      "exits": {
+        "north": "carou",
+        "southeast": "riddl"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "engra"
+      ]
+    },
+    "cella": {
+      "name": "Cellar",
+      "description": "You are in a dark and damp cellar with a narrow passageway leading east, and a crawlway to the south. On the west is the bottom of a steep metal ramp which is unclimbable.",
+      "brief": "Cellar.",
+      "exits": {
+        "east": "mtrol",
+        "south": "chas2",
+        "up": {
+          "cexit": {
+            "room": "lroom",
+            "flag": "trap_door",
+            "fail": "The trap door has been barred from the other side."
+          }
+        },
+        "west": {
+          "nexit": "You try to ascend the ramp, but it is impossible, and you slide back down."
+        }
+      },
+      "emoji": "🌑",
+      "dark": true,
+      "objects": [
+        "tdoor"
+      ],
+      "score_on_enter": 25
+    },
+    "chas1": {
+      "name": "Chasm",
+      "description": "A chasm runs southwest to northeast. You are on the south edge; the path exits to the south and to the east.",
+      "brief": "Chasm.",
+      "exits": {
+        "south": "ravi1",
+        "east": "pass5",
+        "down": {
+          "nexit": "Are you out of your mind?"
+        }
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "chas2": {
+      "name": "West of Chasm",
+      "description": "You are on the west edge of a chasm, the bottom of which cannot be seen. The east side is sheer rock, providing no exits. A narrow passage goes west, and the path you are on continues to the north and south.",
+      "brief": "West of Chasm.",
+      "exits": {
+        "west": "cella",
+        "north": "craw4",
+        "south": "galle",
+        "down": {
+          "nexit": "The chasm probably leads straight to the infernal regions."
+        }
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "chas3": {
+      "name": "Ancient Chasm",
+      "description": "A chasm, evidently produced by an ancient river, runs through the cave here. Passages lead off in all directions.",
+      "brief": "Ancient Chasm.",
+      "exits": {
+        "south": "echo",
+        "east": "tcave",
+        "north": "dead5",
+        "west": "dead6"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "clbot": {
+      "name": "Canyon Bottom",
+      "description": "You are beneath the walls of the river canyon which may be climbable here. There is a small stream here, which is the lesser part of the runoff of Aragain Falls. To the north is a narrow path.",
+      "brief": "Canyon Bottom.",
+      "exits": {
+        "up": "clmid",
+        "climb": "clmid",
+        "north": "pog"
+      },
+      "emoji": "🌳"
+    },
+    "clear": {
+      "name": "Clearing",
+      "description": "You are in a clearing, with a forest surrounding you on the west and south.",
+      "brief": "Clearing.",
+      "exits": {
+        "southwest": "ehous",
+        "southeast": "fore5",
+        "north": "clear",
+        "east": "clear",
+        "west": "fore3",
+        "south": "fore2",
+        "down": {
+          "cexit": {
+            "room": "mgrat",
+            "flag": "key_flag",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🌲",
+      "objects": [
+        "grat1",
+        "leave"
+      ]
+    },
+    "clmid": {
+      "name": "Rocky Ledge",
+      "description": "You are on a ledge about halfway up the wall of the river canyon. You can see from here that the main flow from Aragain Falls twists along a passage which it is impossible to enter. Below you is the canyon bottom. Above you is more cliff, which still appears climbable.",
+      "brief": "Rocky Ledge.",
+      "exits": {
+        "up": "cltop",
+        "climb": "cltop",
+        "down": "clbot"
+      },
+      "emoji": "🌳"
+    },
+    "cltop": {
+      "name": "Canyon View",
+      "description": "You are at the top of the Great Canyon on its south wall. From here there is a marvelous view of the Canyon and parts of the Frigid River upstream. Across the canyon, the walls of the White Cliffs still appear to loom far above. Following the Canyon upstream (north and northwest), Aragain Falls may be seen, complete with rainbow. Fortunately, my vision is better than average and I can discern the top of the Flood Control Dam #3 far to the distant north. To the west and south can be seen an immense forest, stretching for miles around. It is possible to climb down into the canyon from here.",
+      "brief": "Canyon View.",
+      "exits": {
+        "down": "clmid",
+        "climb": "clmid",
+        "south": "fore4",
+        "west": "fore5"
+      },
+      "emoji": "🌲"
+    },
+    "cmach": {
+      "name": "Machine Room",
+      "description": "You are in a large room full of assorted heavy machinery. The room smells of burned resistors. The room is noisy from the whirring sounds of the machines. Along one wall of the room are three buttons which are, respectively, round, triangular, and square. Naturally, above these buttons are instructions written in EBCDIC. A large sign in English above all the buttons says 'DANGER -- HIGH VOLTAGE '. There are exits to the west and the south.",
+      "brief": "Machine Room.",
+      "exits": {
+        "west": "magne",
+        "south": "cager"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "sqbut",
+        "rnbut",
+        "trbut"
+      ]
+    },
+    "craw1": {
+      "name": "Rocky Crawl",
+      "description": "You are in a crawlway with a three-foot high ceiling. Your footing is very unsure here due to the assortment of rocks underfoot. Passages can be seen in the east, west, and northwest corners of the passage.",
+      "brief": "Rocky Crawl.",
+      "exits": {
+        "west": "ravi1",
+        "east": "dome",
+        "northwest": "egypt"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "craw2": {
+      "name": "Steep Crawlway",
+      "description": "You are in a steep and narrow crawlway. There are two exits nearby to the south and southwest.",
+      "brief": "Steep Crawlway.",
+      "exits": {
+        "south": "mirr1",
+        "southwest": "pass3"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "craw3": {
+      "name": "Narrow Crawlway",
+      "description": "You are in a narrow crawlway. The crawlway leads from north to south. However the south passage divides to the south and southwest.",
+      "brief": "Narrow Crawlway.",
+      "exits": {
+        "south": "cave2",
+        "southwest": "mirr2",
+        "north": "mgrai"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "craw4": {
+      "name": "North-South Crawlway",
+      "description": "You are in a north-south crawlway; a passage goes to the east also. There is a hole above, but it provides no opportunities for climbing.",
+      "brief": "North-South Crawlway.",
+      "exits": {
+        "north": "chas2",
+        "south": "studi",
+        "east": "mtrol",
+        "up": {
+          "nexit": "Not even a human fly could get up it."
+        }
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "cyclo": {
+      "name": "Cyclops Room",
+      "description": "You are in a room with an exit on the west side, and a staircase leading up.",
+      "brief": "Cyclops Room.",
+      "exits": {
+        "west": "maz15",
+        "north": {
+          "cexit": {
+            "room": "blroo",
+            "flag": "magic_flag",
+            "fail": "The north wall is solid rock."
+          }
+        },
+        "up": {
+          "cexit": {
+            "room": "treas",
+            "flag": "cyclops_flag",
+            "fail": "The cyclops doesn't look like he'll let you past."
+          }
+        }
+      },
+      "emoji": "🌀",
+      "dark": true,
+      "objects": [
+        "cyclo"
+      ]
+    },
+    "dam": {
+      "name": "Dam",
+      "description": "You are standing on the top of the Flood Control Dam #3, which was quite a tourist attraction in times far distant. There are paths to the north, south, east, and down.",
+      "brief": "Dam.",
+      "exits": {
+        "south": "cany1",
+        "down": "dock",
+        "east": "cave3",
+        "north": "lobby"
+      },
+      "emoji": "🏗️",
+      "objects": [
+        "bolt",
+        "dam",
+        "bubbl"
+      ]
+    },
+    "dead1": {
+      "name": "Dead End",
+      "description": "Dead End",
+      "brief": "Dead End.",
+      "exits": {
+        "south": "maze4"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "dead2": {
+      "name": "Dead End",
+      "description": "Dead End",
+      "brief": "Dead End.",
+      "exits": {
+        "west": "maze5"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "dead3": {
+      "name": "Dead End",
+      "description": "Dead End",
+      "brief": "Dead End.",
+      "exits": {
+        "north": "maze8"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "dead4": {
+      "name": "Dead End",
+      "description": "Dead End",
+      "brief": "Dead End.",
+      "exits": {
+        "south": "maz12"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "dead5": {
+      "name": "Dead end",
+      "description": "Dead end",
+      "brief": "Dead end.",
+      "exits": {
+        "southwest": "chas3"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "dead6": {
+      "name": "Dead end",
+      "description": "Dead end",
+      "brief": "Dead end.",
+      "exits": {
+        "east": "chas3"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "dead7": {
+      "name": "Dead End",
+      "description": "Dead End",
+      "brief": "Dead End.",
+      "exits": {
+        "south": "bladd"
+      },
+      "emoji": "🌀",
+      "dark": true,
+      "objects": [
+        "coal"
+      ]
+    },
+    "dock": {
+      "name": "Dam Base",
+      "description": "You are at the base of Flood Control Dam #3, which looms above you and to the north. The river Frigid is flowing by here. Across the river are the White Cliffs which seem to form a giant wall stretching from north to south along the east shore of the river as it winds its way downstream.",
+      "brief": "Dam Base.",
+      "exits": {
+        "north": "dam",
+        "up": "dam",
+        "launch": "rivr1"
+      },
+      "emoji": "🌊",
+      "objects": [
+        "iboat",
+        "stick"
+      ]
+    },
+    "dome": {
+      "name": "Dome Room",
+      "description": "You are at the periphery of a large dome, which forms the ceiling of another room below. Protecting you from a precipitous drop is a wooden railing which circles the dome.",
+      "brief": "Dome Room.",
+      "exits": {
+        "east": "craw1",
+        "down": {
+          "cexit": {
+            "room": "mtorc",
+            "flag": "dome_flag",
+            "fail": "You cannot go down without fracturing many bones."
+          }
+        },
+        "climb": {
+          "cexit": {
+            "room": "mtorc",
+            "flag": "dome_flag",
+            "fail": "You cannot go down without fracturing many bones."
+          }
+        }
+      },
+      "emoji": "🏛️",
+      "dark": true,
+      "objects": [
+        "raili"
+      ]
+    },
+    "echo": {
+      "name": "Loud Room",
+      "description": "You are in a large room with a ceiling which cannot be detected from the ground. There is a narrow passage from east to west and a stone stairway leading upward. The room is extremely noisy. In fact, it is difficult to hear yourself think.",
+      "brief": "Loud Room.",
+      "exits": {
+        "east": "chas3",
+        "west": "pass5",
+        "up": "cave3"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "bar"
+      ]
+    },
+    "egypt": {
+      "name": "Egyptian Room",
+      "description": "You are in a room which looks like an Egyptian tomb. There is an ascending staircase in the room as well as doors, east and south.",
+      "brief": "Egyptian Room.",
+      "exits": {
+        "up": "icy",
+        "south": "ledg3",
+        "east": {
+          "cexit": {
+            "room": "craw1",
+            "flag": "egypt_flag",
+            "fail": "The passage is too narrow to accomodate coffins."
+          }
+        }
+      },
+      "emoji": "🏛️",
+      "dark": true,
+      "objects": [
+        "coffi"
+      ]
+    },
+    "ehous": {
+      "name": "Behind House",
+      "description": "You are behind the white house. In one corner of the house there is a small window which is slightly ajar.",
+      "brief": "Behind House.",
+      "exits": {
+        "north": "nhous",
+        "south": "shous",
+        "east": "clear",
+        "west": {
+          "cexit": {
+            "room": "kitch",
+            "flag": "kitchen_window",
+            "fail": "You can't go that way."
+          }
+        },
+        "in": {
+          "cexit": {
+            "room": "kitch",
+            "flag": "kitchen_window",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🏡",
+      "objects": [
+        "wind1"
+      ]
+    },
+    "entra": {
+      "name": "Mine Entrance",
+      "description": "You are standing at the entrance of what might have been a coal mine. To the northeast and the northwest are entrances to the mine, and there is another exit on the south end of the room.",
+      "brief": "Mine Entrance.",
+      "exits": {
+        "south": "slide",
+        "northwest": "squee",
+        "northeast": "tshaf"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "falls": {
+      "name": "Aragain Falls",
+      "description": "You are at the top of Aragain Falls, an enormous waterfall with a drop of about 450 feet. The only path here is on the north end. There is a man-sized barrel here which you could fit into.",
+      "brief": "Aragain Falls.",
+      "exits": {
+        "east": {
+          "cexit": {
+            "room": "rainb",
+            "flag": "rainbow",
+            "fail": "You can't go that way."
+          }
+        },
+        "down": "fchmp",
+        "north": "fante",
+        "in": "barre",
+        "up": {
+          "cexit": {
+            "room": "rainb",
+            "flag": "rainbow",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🌊",
+      "dark": true,
+      "objects": [
+        "rainb",
+        "barre"
+      ]
+    },
+    "fante": {
+      "name": "Shore",
+      "description": "You are on the shore of the River. The river here seems somewhat treacherous. A path travels from north to south here, the south end quickly turning around a sharp corner.",
+      "brief": "Shore.",
+      "exits": {
+        "launch": "rivr5",
+        "north": "beach",
+        "south": "falls"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "fchmp": {
+      "name": "Moby lossage",
+      "description": "Oh dear, you seem to have gone over Aragain Falls. Not a very smart thing to do, apparently.",
+      "brief": "Moby lossage.",
+      "exits": {
+        "north": {
+          "nexit": ""
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "fore1": {
+      "name": "Forest",
+      "description": "You are in a forest, with trees in all directions around you.",
+      "brief": "Forest.",
+      "exits": {
+        "north": "fore1",
+        "east": "fore3",
+        "south": "fore2",
+        "west": "fore1"
+      },
+      "emoji": "🌲"
+    },
+    "fore2": {
+      "name": "Forest",
+      "description": "You are in a dimly lit forest, with large trees all around. To the east, there appears to be sunlight.",
+      "brief": "Forest.",
+      "exits": {
+        "north": "shous",
+        "east": "clear",
+        "south": "fore4",
+        "west": "fore1"
+      },
+      "emoji": "🌲"
+    },
+    "fore3": {
+      "name": "Forest",
+      "description": "You are in a dimly lit forest, with large trees all around. To the east, there appears to be sunlight.",
+      "brief": "Forest.",
+      "exits": {
+        "north": "fore2",
+        "east": "clear",
+        "south": "clear",
+        "west": "nhous"
+      },
+      "emoji": "🌲"
+    },
+    "fore4": {
+      "name": "Forest",
+      "description": "You are in a large forest, with trees obstructing all views except to the east, where a small clearing may be seen through the trees.",
+      "brief": "Forest.",
+      "exits": {
+        "east": "cltop",
+        "north": "fore5",
+        "south": "fore4",
+        "west": "fore2"
+      },
+      "emoji": "🌲"
+    },
+    "fore5": {
+      "name": "Forest",
+      "description": "You are in a forest, with trees in all directions around you.",
+      "brief": "Forest.",
+      "exits": {
+        "north": "fore5",
+        "southeast": "cltop",
+        "south": "fore4",
+        "west": "fore2"
+      },
+      "emoji": "🌲"
+    },
+    "galle": {
+      "name": "Gallery",
+      "description": "You are in an art gallery. Most of the paintings which were here have been stolen by vandals with exceptional taste. The vandals left through either the north or south exits.",
+      "brief": "Gallery.",
+      "exits": {
+        "north": "chas2",
+        "south": "studi"
+      },
+      "emoji": "🕯️",
+      "objects": [
+        "paint"
+      ]
+    },
+    "icy": {
+      "name": "Glacier Room",
+      "description": "You are in a large room, with giant icicles hanging from the walls and ceiling. There are passages to the north and east.",
+      "brief": "Glacier Room.",
+      "exits": {
+        "north": "strea",
+        "east": "egypt",
+        "west": {
+          "cexit": {
+            "room": "rubyr",
+            "flag": "glacier_flag",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "ice"
+      ]
+    },
+    "kitch": {
+      "name": "Kitchen",
+      "description": "You are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. To the east is a small window which is slightly ajar.",
+      "brief": "Kitchen.",
+      "exits": {
+        "east": {
+          "cexit": {
+            "room": "ehous",
+            "flag": "kitchen_window",
+            "fail": "You can't go that way."
+          }
+        },
+        "west": "lroom",
+        "out": {
+          "cexit": {
+            "room": "ehous",
+            "flag": "kitchen_window",
+            "fail": "You can't go that way."
+          }
+        },
+        "up": "attic",
+        "down": {
+          "nexit": "Only Santa Claus climbs down chimneys."
+        }
+      },
+      "emoji": "🏡",
+      "objects": [
+        "wind2",
+        "sbag",
+        "bottl"
+      ],
+      "score_on_enter": 10
+    },
+    "lava": {
+      "name": "Lava Room",
+      "description": "You are in a small room, whose walls are formed by an old lava flow. There are exits here to the west and the south.",
+      "brief": "Lava Room.",
+      "exits": {
+        "south": "vlbot",
+        "west": "rubyr"
+      },
+      "emoji": "🌋",
+      "dark": true
+    },
+    "ledg2": {
+      "name": "Narrow Ledge",
+      "description": "You are on a narrow ledge overlooking the inside of an old dormant volcano. This ledge appears to be about in the middle between the floor below and the rim above. There is an exit here to the south.",
+      "brief": "Narrow Ledge.",
+      "exits": {
+        "down": {
+          "nexit": "I wouldn't jump from here."
+        },
+        "launch": "vair2",
+        "west": {
+          "cexit": {
+            "room": "vlbot",
+            "flag": "gnome_door",
+            "fail": "You can't go that way."
+          }
+        },
+        "south": "libra"
+      },
+      "emoji": "🌋",
+      "dark": true,
+      "objects": [
+        "hook1",
+        "zorkm"
+      ]
+    },
+    "ledg3": {
+      "name": "Volcano View",
+      "description": "You are on a ledge in the middle of a large volcano. Below you the volcano bottom can be seen and above is the rim of the volcano. A couple of ledges can be seen on the other side of the volcano; it appears that this ledge is intermediate in elevation between those on the other side. The exit from this room is to the east.",
+      "brief": "Volcano View.",
+      "exits": {
+        "down": {
+          "nexit": "I wouldn't try that."
+        },
+        "cross": {
+          "nexit": "It is impossible to cross this distance."
+        },
+        "east": "egypt"
+      },
+      "emoji": "🌋",
+      "dark": true
+    },
+    "ledg4": {
+      "name": "Wide Ledge",
+      "description": "You are on a wide ledge high into the volcano. The rim of the volcano is about 200 feet above and there is a precipitous drop below to the bottom.",
+      "brief": "Wide Ledge.",
+      "exits": {
+        "down": {
+          "nexit": "It's a long way down."
+        },
+        "launch": "vair4",
+        "west": {
+          "cexit": {
+            "room": "vlbot",
+            "flag": "gnome_door",
+            "fail": "You can't go that way."
+          }
+        },
+        "south": "safe"
+      },
+      "emoji": "🌋",
+      "dark": true,
+      "objects": [
+        "hook2"
+      ]
+    },
+    "libra": {
+      "name": "Library",
+      "description": "You are in a room which must have been a large library, probably for the royal family. All of the shelves appear to have been gnawed to pieces by unfriendly gnomes. To the north is an exit.",
+      "brief": "Library.",
+      "exits": {
+        "north": "ledg2",
+        "out": "ledg2"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "blbk",
+        "grbk",
+        "pubk",
+        "whbk"
+      ]
+    },
+    "lld1": {
+      "name": "Entrance to Hades",
+      "description": "You are outside a large gateway, on which is inscribed \"Abandon every hope, all ye who enter here.\" The gate is open; through it you can see a desolation, with a pile of mangled corpses in one corner. Thousands of voices, lamenting some hideous fate, can be heard.",
+      "brief": "Entrance to Hades.",
+      "exits": {
+        "east": {
+          "cexit": {
+            "room": "lld2",
+            "flag": "lld_flag",
+            "fail": "Some invisible force prevents you from passing through the gate."
+          }
+        },
+        "up": "cave2",
+        "in": {
+          "cexit": {
+            "room": "lld2",
+            "flag": "lld_flag",
+            "fail": "Some invisible force prevents you from passing through the gate."
+          }
+        }
+      },
+      "emoji": "⛪",
+      "objects": [
+        "corps",
+        "gates",
+        "ghost"
+      ]
+    },
+    "lld2": {
+      "name": "Land of the Living Dead",
+      "description": "You have entered the Land of the Living Dead, a large desolate room. Although it is apparently uninhabited, you can hear the sounds of thousands of lost souls weeping and moaning. In the east corner are stacked the remains of dozens of previous adventurers who were less fortunate than yourself. To the east is an ornate passage, apparently recently constructed.",
+      "brief": "Land of the Living Dead.",
+      "exits": {
+        "east": "tomb",
+        "out": "lld1",
+        "west": "lld1"
+      },
+      "emoji": "⛪",
+      "objects": [
+        "bodie"
+      ],
+      "score_on_enter": 30
+    },
+    "lobby": {
+      "name": "Dam Lobby",
+      "description": "This room appears to have been the waiting room for groups touring the dam. There are exits here to the north and east marked 'Private', though the doors are open, and an exit to the south.",
+      "brief": "Dam Lobby.",
+      "exits": {
+        "south": "dam",
+        "north": "maint",
+        "east": "maint"
+      },
+      "emoji": "🏗️",
+      "objects": [
+        "match",
+        "guide"
+      ]
+    },
+    "lroom": {
+      "name": "Living Room",
+      "description": "You are in the living room. There is a door to the east, a wooden door with strange gothic lettering to the west, which appears to be nailed shut, and a large oriental rug in the center of the room.",
+      "brief": "Living Room.",
+      "exits": {
+        "east": "kitch",
+        "west": {
+          "cexit": {
+            "room": "blroo",
+            "flag": "magic_flag",
+            "fail": "The door is nailed shut."
+          }
+        },
+        "down": {
+          "cexit": {
+            "room": "cella",
+            "flag": "trap_door",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🏡",
+      "objects": [
+        "wdoor",
+        "door",
+        "tcase",
+        "lamp",
+        "rug",
+        "paper",
+        "sword"
+      ]
+    },
+    "machi": {
+      "name": "Machine Room",
+      "description": "You are in a large room which seems to be air-conditioned. In one corner there is a machine (?) which is shaped somewhat like a clothes dryer. On the 'panel' there is a switch which is labelled in a dialect of Swahili. Fortunately, I know this dialect and the label translates to START. The switch does not appear to be manipulable by any human hand (unless the fingers are about 1/16 by 1/4 inch). On the front of the machine is a large lid.",
+      "brief": "Machine Room.",
+      "exits": {
+        "northwest": "bshaf"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "mswit",
+        "machi"
+      ]
+    },
+    "magne": {
+      "name": "Low Room",
+      "description": "You are in a room with a low ceiling which is circular in shape. There are exits to the east and the southeast.",
+      "brief": "Low Room.",
+      "exits": {
+        "north": {
+          "cexit": {
+            "room": "cmach",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "south": {
+          "cexit": {
+            "room": "cmach",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "west": {
+          "cexit": {
+            "room": "cmach",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "northeast": {
+          "cexit": {
+            "room": "cmach",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "northwest": {
+          "cexit": {
+            "room": "alice",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "southwest": {
+          "cexit": {
+            "room": "alice",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "southeast": {
+          "cexit": {
+            "room": "alice",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        },
+        "east": {
+          "cexit": {
+            "room": "cmach",
+            "flag": "frobozz",
+            "fail": "You can't go that way."
+          }
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "rbtlb",
+        "robot"
+      ]
+    },
+    "maint": {
+      "name": "Maintenance Room",
+      "description": "You are in what appears to have been the maintenance room for Flood Control Dam #3, judging by the assortment of tool chests around the room. Apparently, this room has been ransacked recently, for most of the valuable equipment is gone. On the wall in front of you is a panel of buttons, which are labelled in EBCDIC. However, they are of different colors: Blue, Yellow, Brown, and Red. The doors to this room are in the west and south ends.",
+      "brief": "Maintenance Room.",
+      "exits": {
+        "south": "lobby",
+        "west": "lobby"
+      },
+      "emoji": "🏗️",
+      "dark": true,
+      "objects": [
+        "leak",
+        "tube",
+        "wrenc",
+        "blbut",
+        "rbutt",
+        "brbut",
+        "ybutt",
+        "screw"
+      ]
+    },
+    "maz10": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "east": "maze9",
+        "west": "maz13",
+        "up": "maz11"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maz11": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "northeast": "mgrat",
+        "down": "maz10",
+        "northwest": "maz13",
+        "southwest": "maz12"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maz12": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "west": "maze5",
+        "southwest": "maz11",
+        "east": "maz13",
+        "up": "maze9",
+        "north": "dead4"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maz13": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "east": "maze9",
+        "down": "maz12",
+        "south": "maz10",
+        "west": "maz11"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maz14": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "west": "maz15",
+        "northwest": "maz14",
+        "northeast": "maze7",
+        "south": "maze7"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maz15": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "west": "maz14",
+        "south": "maze7",
+        "northeast": "cyclo"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze1": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "west": "mtrol",
+        "north": "maze1",
+        "south": "maze2",
+        "east": "maze4"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze2": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "south": "maze1",
+        "north": "maze4",
+        "east": "maze3"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze3": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "west": "maze2",
+        "north": "maze4",
+        "up": "maze5"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze4": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "west": "maze3",
+        "north": "maze1",
+        "east": "dead1"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze5": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "east": "dead2",
+        "north": "maze3",
+        "southwest": "maze6"
+      },
+      "emoji": "🌀",
+      "dark": true,
+      "objects": [
+        "bones",
+        "bagco",
+        "keys",
+        "blant",
+        "rknif"
+      ]
+    },
+    "maze6": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "down": "maze5",
+        "east": "maze7",
+        "west": "maze6",
+        "up": "maze9"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze7": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "up": "maz14",
+        "west": "maze6",
+        "northeast": "dead1",
+        "east": "maze8",
+        "south": "maz15"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze8": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "northeast": "maze7",
+        "west": "maze8",
+        "southeast": "dead3"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "maze9": {
+      "name": "You are in a maze of twisty little passages, all alike.",
+      "description": "You are in a maze of twisty little passages, all alike.",
+      "brief": "You are in a maze of twisty little passages, all alike.",
+      "exits": {
+        "north": "maze6",
+        "east": "maz11",
+        "down": "maz10",
+        "south": "maz13",
+        "west": "maz12",
+        "northwest": "maze9"
+      },
+      "emoji": "🌀",
+      "dark": true
+    },
+    "mgrai": {
+      "name": "Grail Room",
+      "description": "You are standing in a small circular room with a pedestal. A set of stairs leads up, and passages leave to the east and west.",
+      "brief": "Grail Room.",
+      "exits": {
+        "west": "carou",
+        "east": "craw3",
+        "up": "temp1"
+      },
+      "emoji": "⛪",
+      "dark": true,
+      "objects": [
+        "grail"
+      ]
+    },
+    "mgrat": {
+      "name": "Grating Room",
+      "description": "You are in a small room near the maze. There are twisty passages in the immediate vicinity.",
+      "brief": "Grating Room.",
+      "exits": {
+        "southwest": "maz11",
+        "up": {
+          "cexit": {
+            "room": "clear",
+            "flag": "key_flag",
+            "fail": "The grating is locked"
+          }
+        }
+      },
+      "emoji": "🌀",
+      "dark": true,
+      "objects": [
+        "grat2"
+      ]
+    },
+    "mine1": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "north": "mine4",
+        "southwest": "mine2",
+        "east": "tunne"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mine2": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "south": "mine1",
+        "west": "mine5",
+        "up": "mine3",
+        "northeast": "mine4"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mine3": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "west": "mine2",
+        "northeast": "mine5",
+        "east": "mine5"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mine4": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "up": "mine5",
+        "northeast": "mine6",
+        "south": "mine1",
+        "west": "mine2"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mine5": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "down": "mine6",
+        "north": "mine7",
+        "west": "mine2",
+        "south": "mine3",
+        "up": "mine3",
+        "east": "mine4"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mine6": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "southeast": "mine4",
+        "up": "mine5",
+        "northwest": "mine7"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mine7": {
+      "name": "You are in a non-descript part of a coal mine.",
+      "description": "You are in a non-descript part of a coal mine.",
+      "brief": "You are in a non-descript part of a coal mine.",
+      "exits": {
+        "east": "mine1",
+        "west": "mine5",
+        "down": "tladd",
+        "south": "mine6"
+      },
+      "emoji": "⛏️",
+      "dark": true
+    },
+    "mirr1": {
+      "name": "Mirror Room",
+      "description": "You are in a large square room with tall ceilings. On the south wall is an enormous mirror which fills the entire wall. There are exits on the other three sides of the room.",
+      "brief": "Mirror Room.",
+      "exits": {
+        "west": "pass3",
+        "north": "craw2",
+        "east": "cave1"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "refl1"
+      ]
+    },
+    "mirr2": {
+      "name": "Mirror Room",
+      "description": "You are in a large square room with tall ceilings. On the south wall is an enormous mirror which fills the entire wall. There are exits on the other three sides of the room.",
+      "brief": "Mirror Room.",
+      "exits": {
+        "west": "pass4",
+        "north": "craw3",
+        "east": "cave2"
+      },
+      "emoji": "🕯️",
+      "objects": [
+        "refl2"
+      ]
+    },
+    "mpear": {
+      "name": "Pearl Room",
+      "description": "This is a former broom closet. The exits are to the east and west.",
+      "brief": "Pearl Room.",
+      "exits": {
+        "east": "bwell",
+        "west": "riddl"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "pearl"
+      ]
+    },
+    "mtorc": {
+      "name": "Torch Room",
+      "description": "You are in a large room with a prominent doorway leading to a down staircase. To the west is a narrow twisting tunnel. Above you is a large dome painted with scenes depicting elfin hacking rites. Up around the edge of the dome (20 feet up) is a wooden railing. In the center of the room there is a white marble pedestal.",
+      "brief": "Torch Room.",
+      "exits": {
+        "up": {
+          "nexit": "You cannot reach the rope."
+        },
+        "west": "mtorc",
+        "down": "craw4"
+      },
+      "emoji": "🏛️",
+      "dark": true,
+      "objects": [
+        "torch"
+      ]
+    },
+    "mtrol": {
+      "name": "The Troll Room",
+      "description": "You are in a small room with passages off in all directions. Bloodstains and deep scratches (perhaps made by an axe) mar the walls.",
+      "brief": "The Troll Room.",
+      "exits": {
+        "west": "cella",
+        "east": {
+          "cexit": {
+            "room": "craw4",
+            "flag": "troll_flag",
+            "fail": "The troll fends you off with a menacing gesture."
+          }
+        },
+        "north": {
+          "cexit": {
+            "room": "pass1",
+            "flag": "troll_flag",
+            "fail": "The troll fends you off with a menacing gesture."
+          }
+        },
+        "south": {
+          "cexit": {
+            "room": "maze1",
+            "flag": "troll_flag",
+            "fail": "The troll fends you off with a menacing gesture."
+          }
+        }
+      },
+      "emoji": "🌑",
+      "dark": true,
+      "objects": [
+        "troll"
+      ]
+    },
+    "nhous": {
+      "name": "North of House",
+      "description": "You are facing the north side of a white house. There is no door here, and all the windows are barred.",
+      "brief": "North of House.",
+      "exits": {
+        "west": "whous",
+        "east": "ehous",
+        "north": "fore3",
+        "south": {
+          "nexit": "The windows are all barred."
+        }
+      },
+      "emoji": "🏡"
+    },
+    "pass1": {
+      "name": "East-West Passage",
+      "description": "You are in a narrow east-west passageway. There is a narrow stairway leading down at the north end of the room.",
+      "brief": "East-West Passage.",
+      "exits": {
+        "east": "carou",
+        "west": "mtrol",
+        "down": "ravi1",
+        "north": "ravi1"
+      },
+      "emoji": "🌑",
+      "dark": true,
+      "score_on_enter": 5
+    },
+    "pass3": {
+      "name": "Cold Passage",
+      "description": "You are in a cold and damp corridor where a long east-west passageway intersects with a northward path.",
+      "brief": "Cold Passage.",
+      "exits": {
+        "east": "mirr1",
+        "west": "slide",
+        "north": "craw2"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "pass4": {
+      "name": "Winding Passage",
+      "description": "You are in a winding passage. It seems that there is only an exit on the east end although the whirring from the round room can be heard faintly to the north.",
+      "brief": "Winding Passage.",
+      "exits": {
+        "east": "mirr2",
+        "north": {
+          "nexit": "You hear the whir of the carousel room but can find no entrance."
+        }
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "pass5": {
+      "name": "North-South Passage",
+      "description": "You are in a high north-south passage, which forks to the northeast.",
+      "brief": "North-South Passage.",
+      "exits": {
+        "north": "chas1",
+        "northeast": "echo",
+        "south": "carou"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "pog": {
+      "name": "End of Rainbow",
+      "description": "You are on a small beach on the continuation of the Frigid River past the Falls. The beach is narrow due to the presence of the White Cliffs. The river canyon opens here and sunlight shines in from above. A rainbow crosses over the falls to the west and a narrow path continues to the southeast.",
+      "brief": "End of Rainbow.",
+      "exits": {
+        "up": {
+          "cexit": {
+            "room": "rainb",
+            "flag": "rainbow",
+            "fail": "You can't go that way."
+          }
+        },
+        "northwest": {
+          "cexit": {
+            "room": "rainb",
+            "flag": "rainbow",
+            "fail": "You can't go that way."
+          }
+        },
+        "west": {
+          "cexit": {
+            "room": "rainb",
+            "flag": "rainbow",
+            "fail": "You can't go that way."
+          }
+        },
+        "southeast": "clbot"
+      },
+      "emoji": "🕯️",
+      "objects": [
+        "rainb",
+        "pot"
+      ]
+    },
+    "rainb": {
+      "name": "Rainbow Room",
+      "description": "You are on top of a rainbow (I bet you never thought you would walk on a rainbow), with a magnificent view of the Falls. The rainbow travels east-west here. There is an NBC Commissary here.",
+      "brief": "Rainbow Room.",
+      "exits": {
+        "east": "pog",
+        "west": "falls"
+      },
+      "emoji": "🕯️"
+    },
+    "ravi1": {
+      "name": "Deep Ravine",
+      "description": "You are in a deep ravine at a crossing with an east-west crawlway. Some stone steps are at the south of the ravine and a steep staircase descends.",
+      "brief": "Deep Ravine.",
+      "exits": {
+        "south": "pass1",
+        "down": "reses",
+        "east": "chas1",
+        "west": "craw1"
+      },
+      "emoji": "🌑",
+      "dark": true
+    },
+    "rcave": {
+      "name": "Rocky Shore",
+      "description": "You are on the west shore of the river. An entrance to a cave is to the northwest. The shore is very rocky here.",
+      "brief": "Rocky Shore.",
+      "exits": {
+        "launch": "rivr3",
+        "northwest": "tcave"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "resen": {
+      "name": "Reservoir North",
+      "description": "You are in the north end of a large cavernous room which was formerly a reservoir.",
+      "brief": "Reservoir North.",
+      "exits": {
+        "north": "atlan",
+        "cross": {
+          "cexit": {
+            "room": "reses",
+            "flag": "low_tide",
+            "fail": "You are not equipped for swimming."
+          }
+        },
+        "south": {
+          "cexit": {
+            "room": "reses",
+            "flag": "low_tide",
+            "fail": "You are not equipped for swimming."
+          }
+        }
+      },
+      "emoji": "🏗️",
+      "dark": true,
+      "objects": [
+        "pump"
+      ]
+    },
+    "reses": {
+      "name": "Reservoir South",
+      "description": "You are in the south end of a large cavernous room which was formerly a reservoir.",
+      "brief": "Reservoir South.",
+      "exits": {
+        "south": {
+          "cexit": {
+            "room": "ravi1",
+            "flag": "egypt_flag",
+            "fail": "The coffin will not fit through this passage."
+          }
+        },
+        "west": "strea",
+        "cross": {
+          "cexit": {
+            "room": "resen",
+            "flag": "low_tide",
+            "fail": "You are not equipped for swimming."
+          }
+        },
+        "north": {
+          "cexit": {
+            "room": "resen",
+            "flag": "low_tide",
+            "fail": "You are not equipped for swimming."
+          }
+        },
+        "up": {
+          "cexit": {
+            "room": "cany1",
+            "flag": "egypt_flag",
+            "fail": "The stairs are too steep for carrying the coffin."
+          }
+        }
+      },
+      "emoji": "🏗️",
+      "dark": true,
+      "objects": [
+        "trunk"
+      ]
+    },
+    "riddl": {
+      "name": "Riddle Room",
+      "description": "This is a room which is bare on all sides. There is an exit down. To the east is a great door made of stone. Above the stone, the following words are written: 'No man shall enter this room without solving this riddle: What is tall as a house, round as a cup, and all the king's horses can't draw it up?'",
+      "brief": "Riddle Room.",
+      "exits": {
+        "down": "cave4",
+        "east": {
+          "cexit": {
+            "room": "mpear",
+            "flag": "riddle_flag",
+            "fail": "Your way is blocked by an invisible force."
+          }
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "sdoor"
+      ]
+    },
+    "rivr1": {
+      "name": "Frigid River",
+      "description": "You are on the River Frigid in the vicinity of the Dam. The river flows quietly here. There is a landing on the west shore.",
+      "brief": "Frigid River.",
+      "exits": {
+        "up": {
+          "nexit": "You cannot go upstream due to strong currents."
+        },
+        "west": "dock",
+        "land": "dock",
+        "down": "rivr2",
+        "east": {
+          "nexit": "The White Cliffs prevent your landing here."
+        }
+      },
+      "emoji": "🌊",
+      "dark": true
+    },
+    "rivr2": {
+      "name": "Frigid River",
+      "description": "The River turns a corner here making it impossible to see the Dam. The White Cliffs loom on the east bank and large rocks prevent landing on the west.",
+      "brief": "Frigid River.",
+      "exits": {
+        "up": {
+          "nexit": "You cannot go upstream due to strong currents."
+        },
+        "down": "rivr3",
+        "east": {
+          "nexit": "The White Cliffs prevent your landing here."
+        }
+      },
+      "emoji": "🌊",
+      "dark": true
+    },
+    "rivr3": {
+      "name": "Frigid River",
+      "description": "The river descends here into a valley. There is a narrow beach on the east below the cliffs and there is some shore on the west which may be suitable. In the distance a faint rumbling can be heard.",
+      "brief": "Frigid River.",
+      "exits": {
+        "up": {
+          "nexit": "You cannot go upstream due to strong currents."
+        },
+        "down": "rivr4",
+        "east": "wclf1",
+        "west": "rcave",
+        "land": {
+          "nexit": "You must specify which direction here."
+        }
+      },
+      "emoji": "🌊",
+      "dark": true
+    },
+    "rivr4": {
+      "name": "Frigid River",
+      "description": "The river is running faster here and the sound ahead appears to be that of rushing water. On the west shore is a sandy beach. A small area of beach can also be seen below the Cliffs.",
+      "brief": "Frigid River.",
+      "exits": {
+        "up": {
+          "nexit": "You cannot go upstream due to strong currents."
+        },
+        "down": "rivr5",
+        "east": "wclf2",
+        "west": "beach",
+        "land": {
+          "nexit": "Specify the direction to land."
+        }
+      },
+      "emoji": "🌊",
+      "dark": true,
+      "objects": [
+        "buoy"
+      ]
+    },
+    "rivr5": {
+      "name": "Frigid River",
+      "description": "The sound of rushing water is nearly unbearable here. On the west shore is a large landing area.",
+      "brief": "Frigid River.",
+      "exits": {
+        "up": {
+          "nexit": "You cannot go upstream due to strong currents."
+        },
+        "down": "fchmp",
+        "land": "fante"
+      },
+      "emoji": "🌊",
+      "dark": true
+    },
+    "rubyr": {
+      "name": "Ruby Room",
+      "description": "You are in a small chamber behind the remains of the Great Glacier. To the south and west are small passageways.",
+      "brief": "Ruby Room.",
+      "exits": {
+        "west": "lava",
+        "south": "icy"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "ruby"
+      ]
+    },
+    "safe": {
+      "name": "Dusty Room",
+      "description": "You are in a dusty old room which is virtually featureless, except for an exit on the north side.",
+      "brief": "Dusty Room.",
+      "exits": {
+        "north": "ledg4"
+      },
+      "emoji": "🌋",
+      "objects": [
+        "sslot",
+        "safe"
+      ]
+    },
+    "shous": {
+      "name": "South of House",
+      "description": "You are facing the south side of a white house. There is no door here, and all the windows are barred.",
+      "brief": "South of House.",
+      "exits": {
+        "west": "whous",
+        "east": "ehous",
+        "south": "fore2",
+        "north": {
+          "nexit": "The windows are all barred."
+        }
+      },
+      "emoji": "🏡"
+    },
+    "slide": {
+      "name": "Slide Room",
+      "description": "You are in a small chamber, which appears to have been part of a coal mine. On the south wall of the chamber the letters \"Granite Wall\" are etched in the rock. To the east is a long passage and there is a steep metal slide twisting downward. From the appearance of the slide, an attempt to climb up it would be impossible. To the north is a small opening.",
+      "brief": "Slide Room.",
+      "exits": {
+        "east": "pass3",
+        "down": "cella",
+        "north": "entra"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "smell": {
+      "name": "Smelly Room",
+      "description": "You are in a small non-descript room. However, from the direction of a small descending staircase a foul odor can be detected. To the east is a narrow path.",
+      "brief": "Smelly Room.",
+      "exits": {
+        "down": "boom",
+        "east": "tunne"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "squee": {
+      "name": "Squeaky Room",
+      "description": "You are a small room. Strange squeaky sounds may be heard coming from the passage at the west end. You may also escape to the south.",
+      "brief": "Squeaky Room.",
+      "exits": {
+        "west": "bats",
+        "south": "entra"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "strea": {
+      "name": "Stream",
+      "description": "You are standing on a path beside a flowing stream. The path travels to the north and the east.",
+      "brief": "Stream.",
+      "exits": {
+        "east": "reses",
+        "north": "icy"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "fuse"
+      ]
+    },
+    "studi": {
+      "name": "Studio",
+      "description": "You are in what appears to have been an artist's studio. The walls and floors are splattered with paints of 69 different colors. Strangely enough, nothing of value is hanging here. At the north and northwest of the room are open doors (also covered with paint). An extremely dark and narrow chimney leads up from a fireplace; although you might be able to get up it, it seems unlikely you could get back down.",
+      "brief": "Studio.",
+      "exits": {
+        "north": "craw4",
+        "northwest": "galle",
+        "up": {
+          "cexit": {
+            "room": "kitch",
+            "flag": "light_load",
+            "fail": "The chimney is too narrow for you and all of your baggage."
+          }
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "tcave": {
+      "name": "Small Cave",
+      "description": "You are in a small cave whose exits are on the south and northwest.",
+      "brief": "Small Cave.",
+      "exits": {
+        "south": "rcave",
+        "northwest": "chas3"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "guano",
+        "shove"
+      ]
+    },
+    "temp1": {
+      "name": "Temple",
+      "description": "You are in the west end of a large temple. On the south wall is an ancient inscription, probably a prayer in a long-forgotten language. The north wall is solid granite. The entrance at the west end of the room is through huge marble pillars.",
+      "brief": "Temple.",
+      "exits": {
+        "west": "mgrai",
+        "east": "temp2"
+      },
+      "emoji": "⛪",
+      "objects": [
+        "praye",
+        "bell"
+      ]
+    },
+    "temp2": {
+      "name": "Altar",
+      "description": "You are in the east end of a large temple. In front of you is what appears to be an altar.",
+      "brief": "Altar.",
+      "exits": {
+        "west": "temp1"
+      },
+      "emoji": "⛪",
+      "objects": [
+        "book",
+        "candl"
+      ]
+    },
+    "timbe": {
+      "name": "Timber Room",
+      "description": "You are in a long and narrow passage, which is cluttered with broken timbers. A wide passage comes from the north and turns at the southwest corner of the room into a very narrow passageway.",
+      "brief": "Timber Room.",
+      "exits": {
+        "north": "bladd",
+        "southwest": {
+          "cexit": {
+            "room": "bshaf",
+            "flag": "empty_handed",
+            "fail": "You cannot fit through this passage with that load."
+          }
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "tladd": {
+      "name": "Ladder Top",
+      "description": "You are in a very small room. In the corner is a rickety wooden ladder, leading downward. It might be safe to descend. There is also a staircase leading upward.",
+      "brief": "Ladder Top.",
+      "exits": {
+        "down": "bladd",
+        "up": "mine7"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "tomb": {
+      "name": "Tomb of the Unknown Implementer",
+      "description": "You are in the Tomb of the Unknown Implementer. A hollow voice says: \"That's not a bug, it's a feature!\"",
+      "brief": "Tomb of the Unknown Implementer.",
+      "exits": {
+        "west": "lld2"
+      },
+      "emoji": "⛪",
+      "dark": true,
+      "objects": [
+        "tomb",
+        "heads",
+        "cokes",
+        "lists"
+      ]
+    },
+    "treas": {
+      "name": "Treasure Room",
+      "description": "This is a large room, whose north wall is solid granite. A number of discarded bags, which crumble at your touch, are scattered about on the floor.",
+      "brief": "Treasure Room.",
+      "exits": {
+        "down": "cyclo"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "chali"
+      ],
+      "score_on_enter": 25
+    },
+    "tshaf": {
+      "name": "Shaft Room",
+      "description": "You are in a large room, in the middle of which is a small shaft descending through the floor into darkness below. To the west and the north are exits from this room. Constructed over the top of the shaft is a metal framework to which a heavy iron chain is attached.",
+      "brief": "Shaft Room.",
+      "exits": {
+        "down": {
+          "nexit": "You wouldn't fit and would die if you could."
+        },
+        "west": "entra",
+        "north": "tunne"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "tbask"
+      ]
+    },
+    "tunne": {
+      "name": "Wooden Tunnel",
+      "description": "You are in a narrow tunnel with large wooden beams running across the ceiling and around the walls. A path from the south splits into paths running west and northeast.",
+      "brief": "Wooden Tunnel.",
+      "exits": {
+        "south": "tshaf",
+        "west": "smell",
+        "northeast": "mine1"
+      },
+      "emoji": "🕯️",
+      "dark": true
+    },
+    "twell": {
+      "name": "Top of Well",
+      "description": "You are at the top of the well. Well done. There are etchings on the side of the well. There is a small crack across the floor at the entrance to a room on the east, but it can be crossed easily.",
+      "brief": "Top of Well.",
+      "exits": {
+        "east": "alice",
+        "down": {
+          "nexit": "It's a long way down!"
+        }
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "etch2"
+      ],
+      "score_on_enter": 10
+    },
+    "vair1": {
+      "name": "Volcano Core",
+      "description": "You are about one hundred feet above the bottom of the volcano. The top of the volcano is clearly visible here.",
+      "brief": "Volcano Core.",
+      "exits": {},
+      "emoji": "🌋",
+      "dark": true
+    },
+    "vair2": {
+      "name": "Volcano Core",
+      "description": "You are about two hundred feet above the volcano floor. Looming above is the rim of the volcano. There is a small ledge on the west side.",
+      "brief": "Volcano Core.",
+      "exits": {
+        "west": "ledg2",
+        "land": "ledg2"
+      },
+      "emoji": "🌋",
+      "dark": true
+    },
+    "vair3": {
+      "name": "Volcano Core",
+      "description": "You are high above the floor of the volcano. From here the rim of the volcano looks very narrow and you are very near it. To the east is what appears to be a viewing ledge, too thin to land on.",
+      "brief": "Volcano Core.",
+      "exits": {},
+      "emoji": "🌋",
+      "dark": true
+    },
+    "vair4": {
+      "name": "Volcano Core",
+      "description": "You are near the rim of the volcano which is only about 15 feet across. To the west, there is a place to land on a wide ledge.",
+      "brief": "Volcano Core.",
+      "exits": {
+        "land": "ledg4",
+        "east": "ledg4"
+      },
+      "emoji": "🌋",
+      "dark": true
+    },
+    "vlbot": {
+      "name": "Volcano Bottom",
+      "description": "You are at the bottom of a large dormant volcano. High above you light may be seen entering from the cone of the volcano. The only exit here is to the north.",
+      "brief": "Volcano Bottom.",
+      "exits": {
+        "north": "lava"
+      },
+      "emoji": "🕯️",
+      "dark": true,
+      "objects": [
+        "ballo"
+      ]
+    },
+    "wclf1": {
+      "name": "White Cliffs Beach",
+      "description": "You are on a narrow strip of beach which runs along the base of the White Cliffs. The only path here is a narrow one, heading south along the Cliffs.",
+      "brief": "White Cliffs Beach.",
+      "exits": {
+        "south": {
+          "cexit": {
+            "room": "wclf2",
+            "flag": "deflate",
+            "fail": "The path is too narrow."
+          }
+        },
+        "launch": "rivr3"
+      },
+      "emoji": "🌊",
+      "dark": true
+    },
+    "wclf2": {
+      "name": "White Cliffs Beach",
+      "description": "You are on a rocky, narrow strip of beach beside the Cliffs. A narrow path leads north along the shore.",
+      "brief": "White Cliffs Beach.",
+      "exits": {
+        "north": {
+          "cexit": {
+            "room": "wclf1",
+            "flag": "deflate",
+            "fail": "The path is too narrow."
+          }
+        },
+        "launch": "rivr4"
+      },
+      "emoji": "🌊",
+      "dark": true
+    },
+    "whous": {
+      "name": "West of House",
+      "description": "You are in an open field west of a big white house, with a boarded front door.",
+      "brief": "West of House.",
+      "exits": {
+        "north": "nhous",
+        "south": "shous",
+        "west": "fore1",
+        "east": {
+          "nexit": "The door is locked, and there is evidently no key."
+        }
+      },
+      "emoji": "🏡",
+      "objects": [
+        "fdoor",
+        "mailb"
+      ]
+    }
+  },
+  "objects": {
+    "adver": {
+      "name": "leaflet",
+      "aliases": [
+        "leaflet",
+        "pamph",
+        "leafl",
+        "bookl"
+      ],
+      "description": "There is a small leaflet here.",
+      "takeable": true,
+      "readable": "WELCOME TO DUNGEON DUNGEON is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortal man. Hardened adventurers have run screaming from the terrors contained within! In DUNGEON the intrepid explorer delves into the forgotten secrets of a lost labyrinth deep in the bowels of the earth, searching for vast treasures long hidden from prying eyes, treasures guarded by fearsome monsters and diabolical traps! No PDP-10 should be without one! DUNGEON was created at the Programming Technology Division of the MIT Laboratory for Computer Science, by Tim Anderson, Marc Blank, Bruce Daniels, and Dave Lebling. It was inspired by the ADVENTURE game of Crowther and Woods, and Dungeons and Dragons, by Gygax and Arneson. DUNGEON is written in MDL (alias MUDDLE). Direct inquiries by Net mail to DUNGEON@MIT-DMS."
+    },
+    "atabl": {
+      "name": "large oblong table",
+      "aliases": [
+        "large oblong table",
+        "large",
+        "oblon"
+      ],
+      "description": "large oblong table",
+      "fixed": true
+    },
+    "aviat": {
+      "name": "flyer",
+      "aliases": [
+        "flyer"
+      ],
+      "description": "flyer",
+      "fixture": true,
+      "fixed": true
+    },
+    "axe": {
+      "name": "bloody axe",
+      "aliases": [
+        "bloody axe",
+        "blood"
+      ],
+      "description": "There is a bloody axe here.",
+      "weapon": true
+    },
+    "bagco": {
+      "name": "bag of coins",
+      "aliases": [
+        "bag of coins",
+        "bag",
+        "coins",
+        "leath"
+      ],
+      "description": "An old leather bag, bulging with coins, is here.",
+      "takeable": true,
+      "score_on_take": 10,
+      "score_on_deposit": 5,
+      "deposit_target": "tcase"
+    },
+    "ballo": {
+      "name": "basket",
+      "aliases": [
+        "basket",
+        "baske",
+        "wicke"
+      ],
+      "description": "There is a very large and extremely heavy wicker basket with a cloth bag here. Inside the basket is a metal receptacle of some kind. Attached to the basket on the outside is a piece of wire.",
+      "contains": [
+        "cbag",
+        "brope",
+        "recep"
+      ]
+    },
+    "bar": {
+      "name": "platinum bar",
+      "aliases": [
+        "platinum bar",
+        "plati"
+      ],
+      "description": "There is a large platinum bar here.",
+      "takeable": true,
+      "score_on_take": 12,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "barre": {
+      "name": "barrel",
+      "aliases": [
+        "barrel"
+      ],
+      "description": "barrel",
+      "fixed": true
+    },
+    "bat": {
+      "name": "bat",
+      "aliases": [
+        "bat",
+        "vampi"
+      ],
+      "description": "bat",
+      "fixture": true,
+      "fixed": true
+    },
+    "bell": {
+      "name": "bell",
+      "aliases": [
+        "bell",
+        "brass"
+      ],
+      "description": "Lying in a corner of the room is a small brass bell.",
+      "takeable": true
+    },
+    "blabe": {
+      "name": "blue label",
+      "aliases": [
+        "blue label",
+        "label",
+        "blue"
+      ],
+      "description": "There is a blue label here.",
+      "takeable": true,
+      "readable": "!!!! FROBOZZ MAGIC BALLOON COMPANY !!!! Hello, Aviator! Instructions for use: To get into balloon, say 'Board' To leave balloon, say 'Disembark' To land, say 'Land' Warranty: No warranty is expressed or implied. You're on your own, sport! Good Luck."
+    },
+    "blamp": {
+      "name": "broken lamp",
+      "aliases": [
+        "broken lamp",
+        "lamp",
+        "lante",
+        "broke"
+      ],
+      "description": "There is a broken brass lantern here.",
+      "takeable": true
+    },
+    "blant": {
+      "name": "burned-out lantern",
+      "aliases": [
+        "burned-out lantern",
+        "lante",
+        "lamp",
+        "used",
+        "burne",
+        "dead",
+        "usele"
+      ],
+      "description": "The deceased adventurer's useless lantern is here.",
+      "takeable": true
+    },
+    "blbk": {
+      "name": "blue book",
+      "aliases": [
+        "blue book",
+        "book",
+        "blue"
+      ],
+      "description": "There is a blue book here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 2,
+      "readable": "There is a blue book here."
+    },
+    "blbut": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "switc",
+        "blue"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "blice": {
+      "name": "piece of cake with blue icing",
+      "aliases": [
+        "piece of cake with blue icing",
+        "cake",
+        "icing",
+        "blue",
+        "ecch"
+      ],
+      "description": "There is a piece of cake with blue (ecch) icing here.",
+      "takeable": true,
+      "readable": "There is a piece of cake with blue (ecch) icing here."
+    },
+    "bodie": {
+      "name": "pile of bodies",
+      "aliases": [
+        "pile of bodies",
+        "body",
+        "corps"
+      ],
+      "description": "pile of bodies",
+      "fixture": true,
+      "fixed": true
+    },
+    "bolt": {
+      "name": "bolt",
+      "aliases": [
+        "bolt",
+        "nut"
+      ],
+      "description": "bolt",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "bones": {
+      "name": "bones",
+      "aliases": [
+        "bones",
+        "skele",
+        "body"
+      ],
+      "description": "A skeleton, probably the remains of a luckless adventurer, lies here.",
+      "fixed": true
+    },
+    "book": {
+      "name": "book",
+      "aliases": [
+        "book",
+        "praye",
+        "bible",
+        "goodb",
+        "black"
+      ],
+      "description": "On the altar is a large black book, open to page 569.",
+      "takeable": true,
+      "readable": "COMMANDMENT #12592 Oh ye who go about saying unto each: \"Hello sailor\": dost thou know the magnitude of thy sin before the gods? Yea, verily, thou shalt be ground between two stones. Shall the angry gods cast thy body into the whirlpool? Surely, thy eye shall be put out with a sharp stick! Even unto the ends of the earth shalt thou wander and unto the land of the dead shalt thou be sent at last. Surely thou shalt repent of thy cunning."
+    },
+    "bottl": {
+      "name": "glass bottle",
+      "aliases": [
+        "glass bottle",
+        "conta",
+        "pitch",
+        "glass"
+      ],
+      "description": "A bottle is sitting on the table.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 4,
+      "contains": [
+        "water"
+      ]
+    },
+    "brace": {
+      "name": "sapphire bracelet",
+      "aliases": [
+        "sapphire bracelet",
+        "jewel",
+        "sapph"
+      ],
+      "description": "There is a sapphire-encrusted bracelet here.",
+      "takeable": true,
+      "score_on_take": 5,
+      "score_on_deposit": 3,
+      "deposit_target": "tcase"
+    },
+    "brbut": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "switc",
+        "brown"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "brick": {
+      "name": "brick",
+      "aliases": [
+        "brick",
+        "squar",
+        "clay"
+      ],
+      "description": "There is a square brick here which feels like clay.",
+      "takeable": true
+    },
+    "brope": {
+      "name": "braided wire",
+      "aliases": [
+        "braided wire",
+        "wire",
+        "braid"
+      ],
+      "description": "braided wire",
+      "fixed": true
+    },
+    "bubbl": {
+      "name": "bubble",
+      "aliases": [
+        "bubble"
+      ],
+      "description": "bubble",
+      "fixture": true,
+      "fixed": true
+    },
+    "bucke": {
+      "name": "wooden bucket",
+      "aliases": [
+        "wooden bucket",
+        "woode"
+      ],
+      "description": "There is a wooden bucket here, 3 feet in diameter and 3 feet high."
+    },
+    "buoy": {
+      "name": "red buoy",
+      "aliases": [
+        "red buoy",
+        "red"
+      ],
+      "description": "There is a red buoy here (probably a warning).",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 20,
+      "contains": [
+        "emera"
+      ]
+    },
+    "butto": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "switc"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "cage": {
+      "name": "mangled cage",
+      "aliases": [
+        "mangled cage"
+      ],
+      "description": "There is a mangled cage here.",
+      "fixture": true,
+      "fixed": true
+    },
+    "candl": {
+      "name": "pair of candles",
+      "aliases": [
+        "pair of candles"
+      ],
+      "description": "On the two ends of the altar are burning candles.",
+      "takeable": true,
+      "provides_light": true
+    },
+    "card": {
+      "name": "card",
+      "aliases": [
+        "card",
+        "note"
+      ],
+      "description": "There is a card with writing on it here.",
+      "takeable": true,
+      "readable": "Warning: This room was constructed over very weak rock strata. Detonation of explosives in this room is strictly prohibited! Frobozz Magic Cave Company per M. Agrippa, foreman"
+    },
+    "cbag": {
+      "name": "cloth bag",
+      "aliases": [
+        "cloth bag",
+        "bag",
+        "cloth"
+      ],
+      "description": "cloth bag",
+      "fixed": true
+    },
+    "chali": {
+      "name": "chalice",
+      "aliases": [
+        "chalice",
+        "cup",
+        "goble"
+      ],
+      "description": "There is a silver chalice, intricately engraved, here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 5,
+      "score_on_take": 10,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "coal": {
+      "name": "small pile of coal",
+      "aliases": [
+        "small pile of coal",
+        "heap",
+        "charc"
+      ],
+      "description": "There is a small heap of coal here.",
+      "takeable": true
+    },
+    "coffi": {
+      "name": "gold coffin",
+      "aliases": [
+        "gold coffin",
+        "caske",
+        "gold"
+      ],
+      "description": "There is a solid-gold coffin, used for the burial of Ramses II, here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 35,
+      "score_on_take": 3,
+      "score_on_deposit": 7,
+      "deposit_target": "tcase"
+    },
+    "cokes": {
+      "name": "bunch of Coke bottles",
+      "aliases": [
+        "bunch of coke bottles",
+        "bottl",
+        "coke"
+      ],
+      "description": "There is a large pile of empty Coke bottles here, evidently produced by the implementers during their long struggle to win totally.",
+      "takeable": true
+    },
+    "corps": {
+      "name": "corpses",
+      "aliases": [
+        "corpses",
+        "mangl"
+      ],
+      "description": "corpses",
+      "fixed": true
+    },
+    "crown": {
+      "name": "crown",
+      "aliases": [
+        "crown",
+        "gaudy"
+      ],
+      "description": "The excessively gaudy crown of Lord Dimwit Flathead is here.",
+      "takeable": true,
+      "score_on_take": 15,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "cyclo": {
+      "name": "cyclops",
+      "aliases": [
+        "cyclops",
+        "one-e",
+        "monst"
+      ],
+      "description": "cyclops",
+      "fixed": true
+    },
+    "dam": {
+      "name": "dam",
+      "aliases": [
+        "dam",
+        "gate",
+        "gates",
+        "fcd"
+      ],
+      "description": "dam",
+      "fixture": true,
+      "fixed": true
+    },
+    "dball": {
+      "name": "broken balloon",
+      "aliases": [
+        "broken balloon",
+        "ballo",
+        "baske",
+        "broke"
+      ],
+      "description": "There is a balloon here, broken into pieces.",
+      "takeable": true
+    },
+    "dboat": {
+      "name": "plastic boat (with hole)",
+      "aliases": [
+        "plastic boat (with hole)",
+        "boat",
+        "plast",
+        "pile"
+      ],
+      "description": "There is a pile of plastic here with a large hole in it.",
+      "takeable": true
+    },
+    "diamo": {
+      "name": "huge diamond",
+      "aliases": [
+        "huge diamond",
+        "perfe"
+      ],
+      "description": "There is an enormous diamond (perfectly cut) here.",
+      "takeable": true,
+      "score_on_take": 10,
+      "score_on_deposit": 6,
+      "deposit_target": "tcase"
+    },
+    "door": {
+      "name": "trap door",
+      "aliases": [
+        "door",
+        "trapd",
+        "trap-",
+        "trap",
+        "trap door",
+        "trapdoor"
+      ],
+      "description": "A wooden trap door in the floor.",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "ecake": {
+      "name": "piece of 'Eat Me' cake",
+      "aliases": [
+        "piece of 'eat me' cake",
+        "cake",
+        "eatme",
+        "eat-m"
+      ],
+      "description": "There is a piece of cake here with the words 'Eat Me' on it.",
+      "takeable": true
+    },
+    "emera": {
+      "name": "large emerald",
+      "aliases": [
+        "large emerald"
+      ],
+      "description": "There is an emerald here.",
+      "takeable": true,
+      "score_on_take": 5,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "engra": {
+      "name": "wall with engravings",
+      "aliases": [
+        "wall with engravings",
+        "inscr",
+        "old",
+        "ancie"
+      ],
+      "description": "wall with engravings",
+      "readable": "The engravings were incised in the living rock of the cave wall by an unknown hand. They depict, in symbolic form, the beliefs of the ancient peoples of Zork. Skillfully interwoven with the bas reliefs are excerpts illustrating the major tenets expounded by the sacred texts of the religion of that time. Unfortunately a later age seems to have considered them blasphemous and just as skillfully excised them.",
+      "fixed": true
+    },
+    "etch1": {
+      "name": "wall with etchings",
+      "aliases": [
+        "wall with etchings"
+      ],
+      "description": "wall with etchings",
+      "fixture": true,
+      "fixed": true,
+      "readable": "o b o A G I E L m p a"
+    },
+    "etch2": {
+      "name": "wall with etchings",
+      "aliases": [
+        "wall with etchings"
+      ],
+      "description": "wall with etchings",
+      "fixture": true,
+      "fixed": true,
+      "readable": "o b o r \t\t z f M A G I C z c W E L L y o\t\t n m p a"
+    },
+    "every": {
+      "name": "everything",
+      "aliases": [
+        "everything",
+        "all"
+      ],
+      "description": "everything",
+      "takeable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "fbask": {
+      "name": "fbask",
+      "aliases": [
+        "fbask",
+        "cage",
+        "dumbw",
+        "baske"
+      ],
+      "description": "fbask",
+      "fixed": true
+    },
+    "fdoor": {
+      "name": "door",
+      "aliases": [
+        "door",
+        "front"
+      ],
+      "description": "The front door is boarded shut.",
+      "fixture": true,
+      "fixed": true
+    },
+    "flask": {
+      "name": "glass flask filled with liquid",
+      "aliases": [
+        "glass flask filled with liquid",
+        "glass"
+      ],
+      "description": "A stoppered glass flask with a skull-and-crossbones marking is here. The flask is filled with some clear liquid.",
+      "takeable": true
+    },
+    "food": {
+      "name": ".lunch",
+      "aliases": [
+        ".lunch",
+        "sandw",
+        "lunch",
+        "peppe",
+        "dinne",
+        "snack"
+      ],
+      "description": "A hot pepper sandwich is here.",
+      "takeable": true
+    },
+    "fuse": {
+      "name": "wire coil",
+      "aliases": [
+        "wire coil",
+        "coil",
+        "wire",
+        "shiny",
+        "thin"
+      ],
+      "description": "There is a coil of thin shiny wire here.",
+      "takeable": true
+    },
+    "garli": {
+      "name": "clove of garlic",
+      "aliases": [
+        "clove of garlic",
+        "clove"
+      ],
+      "description": "There is a clove of garlic here.",
+      "takeable": true
+    },
+    "gates": {
+      "name": "gate",
+      "aliases": [
+        "gate",
+        "gates"
+      ],
+      "description": "A massive gate bars the way into Hades.",
+      "fixture": true,
+      "fixed": true
+    },
+    "ghost": {
+      "name": "ghost",
+      "aliases": [
+        "ghost",
+        "spiri",
+        "fiend"
+      ],
+      "description": "ghost",
+      "fixed": true
+    },
+    "gnome": {
+      "name": "Volcano Gnome",
+      "aliases": [
+        "volcano gnome",
+        "troll"
+      ],
+      "description": "There is a nervous Volcano Gnome here.",
+      "fixed": true
+    },
+    "grail": {
+      "name": "grail",
+      "aliases": [
+        "grail"
+      ],
+      "description": "There is an extremely valuable (perhaps original) grail here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 5,
+      "score_on_take": 2,
+      "score_on_deposit": 5,
+      "deposit_target": "tcase"
+    },
+    "grat1": {
+      "name": "grating",
+      "aliases": [
+        "grating",
+        "grati",
+        "grate"
+      ],
+      "description": "grating",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "grat2": {
+      "name": "grating",
+      "aliases": [
+        "grating",
+        "grati",
+        "grate"
+      ],
+      "description": "grating",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "grbk": {
+      "name": "green book",
+      "aliases": [
+        "green book",
+        "book",
+        "green"
+      ],
+      "description": "There is a green book here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 2,
+      "readable": "There is a green book here."
+    },
+    "grue": {
+      "name": "lurking grue",
+      "aliases": [
+        "lurking grue",
+        "lurki"
+      ],
+      "description": "lurking grue"
+    },
+    "guano": {
+      "name": "hunk of bat guano",
+      "aliases": [
+        "hunk of bat guano",
+        "crap",
+        "shit",
+        "hunk"
+      ],
+      "description": "There is a hunk of bat guano here.",
+      "takeable": true
+    },
+    "guide": {
+      "name": "tour guidebook",
+      "aliases": [
+        "tour guidebook",
+        "book",
+        "tour"
+      ],
+      "description": "Some guidebooks entitled 'Flood Control Dam #3' are on the reception desk.",
+      "takeable": true,
+      "readable": "\"\t\t Guide Book to Flood Control Dam #3 Flood Control Dam #3 (FCD#3) was constructed in year 783 of the Great Underground Empire to harness the destructive power of the Frigid River. This work was supported by a grant of 37 million zorkmids from the Central Bureaucracy and your omnipotent local tyrant Lord Dimwit Flathead the Excessive. This impressive structure is composed of 3.7 cubic feet of concrete, is 256 feet tall at the center, and 193 feet wide at the top. The reservoir created behind the dam has a volume of 37 billion cubic feet, an area of 12 million square feet, and a shore line of 36 thousand feet. The construction of FCD#3 took 112 days from ground breaking to the dedication. It required a work force of 384 slaves, 34 slave drivers, 12 engineers, 2 turtle doves, and a partridge in a pear tree. The work was managed by a command team composed of 2345 bureaucrats, 2347 secretaries (at least two of which can type), 12,256 paper shufflers, 52,469 rubber stampers, 245,193 red tape processors, and nearly one million dead trees. We will now point out some of the more interesting features of FCD#3 as we conduct you on a guided tour of the facilities: 1) You start your tour here in the Dam Lobby. You will notice on your right that ........."
+    },
+    "gunk": {
+      "name": "piece of vitreous slag",
+      "aliases": [
+        "piece of vitreous slag",
+        "mess",
+        "slag",
+        "vitre"
+      ],
+      "description": "There is a small piece of vitreous slag here.",
+      "takeable": true
+    },
+    "hands": {
+      "name": "pair of hands",
+      "aliases": [
+        "pair of hands",
+        "hand",
+        "bare"
+      ],
+      "description": "pair of hands",
+      "fixture": true,
+      "fixed": true
+    },
+    "heads": {
+      "name": "set of poled heads",
+      "aliases": [
+        "set of poled heads",
+        "head",
+        "pole",
+        "poles",
+        "pdl",
+        "bkd",
+        "taa",
+        "marc",
+        "imple",
+        "loser"
+      ],
+      "description": "There are four heads here, mounted securely on poles."
+    },
+    "hook1": {
+      "name": "hook",
+      "aliases": [
+        "hook"
+      ],
+      "description": "There is a small hook attached to the rock here.",
+      "fixed": true
+    },
+    "hook2": {
+      "name": "hook",
+      "aliases": [
+        "hook"
+      ],
+      "description": "There is a small hook attached to the rock here.",
+      "fixed": true
+    },
+    "hpole": {
+      "name": "head on a pole",
+      "aliases": [
+        "head on a pole",
+        "head"
+      ],
+      "description": "head on a pole",
+      "fixed": true
+    },
+    "iboat": {
+      "name": "plastic inflatable boat",
+      "aliases": [
+        "plastic inflatable boat",
+        "boat",
+        "plast",
+        "pile"
+      ],
+      "description": "There is a folded pile of plastic here which has a small valve attached.",
+      "takeable": true
+    },
+    "ice": {
+      "name": "glacier",
+      "aliases": [
+        "glacier",
+        "glaci"
+      ],
+      "description": "A mass of ice fills the western half of the room.",
+      "fixed": true
+    },
+    "irbox": {
+      "name": "iron box",
+      "aliases": [
+        "iron box",
+        "box",
+        "iron",
+        "dente"
+      ],
+      "description": "There is a dented iron box here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 20,
+      "contains": [
+        "strad"
+      ]
+    },
+    "jade": {
+      "name": "jade figurine",
+      "aliases": [
+        "jade figurine",
+        "figur"
+      ],
+      "description": "There is an exquisite jade figurine here.",
+      "takeable": true,
+      "score_on_take": 5,
+      "score_on_deposit": 5,
+      "deposit_target": "tcase"
+    },
+    "keys": {
+      "name": "set of skeleton keys",
+      "aliases": [
+        "set of skeleton keys"
+      ],
+      "description": "There is a set of skeleton keys here.",
+      "takeable": true
+    },
+    "knife": {
+      "name": "knife",
+      "aliases": [
+        "knife",
+        "blade",
+        "nasty"
+      ],
+      "description": "On a table is a nasty-looking knife.",
+      "takeable": true,
+      "weapon": true
+    },
+    "label": {
+      "name": "tan label",
+      "aliases": [
+        "tan label",
+        "finep",
+        "tan"
+      ],
+      "description": "There is a tan label here.",
+      "takeable": true,
+      "readable": "!!!! \tFROBOZZ MAGIC BOAT COMPANY !!!! Hello, Sailor! Instructions for use: To get into boat, say 'Board' To leave boat, say 'Disembark' To get into a body of water, say 'Launch' To get to shore, say 'Land' Warranty: This boat is guaranteed against all defects in parts and workmanship for a period of 76 milliseconds from date of purchase or until first used, whichever comes first. Warning: This boat is made of plastic.\t\tGood Luck!"
+    },
+    "lamp": {
+      "name": "lamp",
+      "aliases": [
+        "lamp",
+        "lante",
+        "brass"
+      ],
+      "description": "A battery-powered brass lantern is on the trophy case.",
+      "takeable": true,
+      "provides_light": true
+    },
+    "lcase": {
+      "name": "large case",
+      "aliases": [
+        "large case",
+        "case",
+        "large"
+      ],
+      "description": "There is a large case here, containing objects which you used to possess."
+    },
+    "leak": {
+      "name": "leak",
+      "aliases": [
+        "leak",
+        "drip",
+        "hole"
+      ],
+      "description": "leak",
+      "fixture": true,
+      "fixed": true
+    },
+    "leave": {
+      "name": "pile of leaves",
+      "aliases": [
+        "pile of leaves",
+        "leaf",
+        "pile"
+      ],
+      "description": "There is a pile of leaves on the ground.",
+      "takeable": true
+    },
+    "lists": {
+      "name": "stack of listings",
+      "aliases": [
+        "stack of listings",
+        "paper",
+        "list",
+        "print",
+        "listi",
+        "stack"
+      ],
+      "description": "There is a gigantic pile of line-printer output here. Although the paper once contained useful information, almost nothing can be distinguished now.",
+      "takeable": true,
+      "readable": "<DEFINE FEEL-FREE (LOSER) <TELL \"FEEL FREE, CHOMPER!\">> ... The rest is, alas, unintelligible (as were the implementers)."
+    },
+    "lungs": {
+      "name": "breath",
+      "aliases": [
+        "breath",
+        "lung",
+        "air"
+      ],
+      "description": "breath",
+      "fixture": true,
+      "fixed": true
+    },
+    "machi": {
+      "name": "machine",
+      "aliases": [
+        "machine",
+        "pdp10",
+        "dryer",
+        "lid"
+      ],
+      "description": "machine",
+      "container": true,
+      "openable": true,
+      "capacity": 50,
+      "fixed": true
+    },
+    "mailb": {
+      "name": "mailbox",
+      "aliases": [
+        "mailbox",
+        "box"
+      ],
+      "description": "There is a small mailbox here.",
+      "container": true,
+      "openable": true,
+      "capacity": 10,
+      "contains": [
+        "adver"
+      ],
+      "fixed": true
+    },
+    "match": {
+      "name": "matchbook",
+      "aliases": [
+        "matchbook",
+        "flint"
+      ],
+      "description": "There is a matchbook whose cover says 'Visit Beautiful FCD#3' here.",
+      "takeable": true,
+      "readable": "[close cover before striking BKD] You too can make BIG MONEY in the exciting field of PAPER SHUFFLING! Mr. TAA of Muddle, Mass. says: \"Before I took this course I used to be a lowly bit twiddler. Now with what I learned at MIT Tech I feel really important and can obfuscate and confuse with the best.\" Mr. MARC had this to say: \"Ten short days ago all I could look forward to was a dead-end job as a doctor. Now I have a promising future and make really big Zorkmids.\" MIT Tech can't promise these fantastic results to everyone. But when you earn your MDL degree from MIT Tech your future will be brighter. Send for our free brochure today."
+    },
+    "mswit": {
+      "name": "switch",
+      "aliases": [
+        "switch",
+        "switc"
+      ],
+      "description": "switch",
+      "fixture": true,
+      "fixed": true
+    },
+    "orice": {
+      "name": "piece of cake with orange icing",
+      "aliases": [
+        "piece of cake with orange icing",
+        "cake",
+        "icing",
+        "orang"
+      ],
+      "description": "There is a piece of cake with orange icing here.",
+      "takeable": true,
+      "readable": "There is a piece of cake with orange icing here."
+    },
+    "paint": {
+      "name": "painting",
+      "aliases": [
+        "painting",
+        "art",
+        "canva",
+        "maste"
+      ],
+      "description": "Fortunately, there is still one chance for you to be a vandal, for on the far wall is a work of unparalleled beauty.",
+      "takeable": true,
+      "score_on_take": 4,
+      "score_on_deposit": 7,
+      "deposit_target": "tcase"
+    },
+    "paper": {
+      "name": "newspaper",
+      "aliases": [
+        "newspaper",
+        "newsp",
+        "issue",
+        "repor",
+        "magaz",
+        "news"
+      ],
+      "description": "newspaper",
+      "takeable": true,
+      "readable": "US NEWS & DUNGEON REPORT 12/12/77 \t\t\t\t Late Dungeon Edition In order to get a more-or-less working version, we have installed one with some known bugs. In particular, the following sequence will not work correctly, nor will anything resembling it: >take take what? >frob what do you want me to do with it? Note that if you now respond 'take', the right thing will happen. In short, the current parser can't handle verbs with missing objects. Since it is completely new, we'd appreciate reports of any other bugs encountered. FLASH! An important change has been made. When you have been killed, and the 'patch' question is asked, or if you are confirming a 'quit', it is now necessary to terminate the response to the question with a carriage return (you may be surprised to find that this wasn't true before). Also, the answer to the 'patch' question is taken to be yes unless something starting with n, N, f, or F is typed; the answer to the 'quit' question is no unless something starting with y, Y, t, or T is typed. FLASH! Another FLAG DAY has been declared for save files. Yes, ladies and gentlemen, yet another incompatible change has been made to the save/restore code. When will it end? Things like the bucket should resume working in this version. Many people have reported the following message: 'GIN FREE STORAGE- VECTOR ...GOUT TIME= n.nn' This indicates that a garbage collection is occurring. Some reports have this taking up to 30 sec. of cpu time, during which your dungeon will refuse to respond. We have added a feature which should prevent this; if you see such a message, please send mail to DUNGEON@DM describing the circumstances (particularly number of moves, save/restore status, and the TIME). A garbage collection is not fatal: your dungeon should be perfectly all right once it finishes (after the GOUT TIME= message is printed)."
+    },
+    "pearl": {
+      "name": "pearl necklace",
+      "aliases": [
+        "pearl necklace",
+        "neckl"
+      ],
+      "description": "There is a pearl necklace here with hundreds of large pearls.",
+      "takeable": true,
+      "score_on_take": 9,
+      "score_on_deposit": 5,
+      "deposit_target": "tcase"
+    },
+    "pool": {
+      "name": "pool of sewage",
+      "aliases": [
+        "pool of sewage",
+        "sewag",
+        "large"
+      ],
+      "description": "The leak has submerged the depressed area in a pool of sewage."
+    },
+    "posts": {
+      "name": "wooden posts",
+      "aliases": [
+        "wooden posts",
+        "post",
+        "woode"
+      ],
+      "description": "wooden posts",
+      "fixed": true
+    },
+    "pot": {
+      "name": "pot filled with gold",
+      "aliases": [
+        "pot filled with gold",
+        "gold"
+      ],
+      "description": "At the end of the rainbow is a pot of gold.",
+      "takeable": true,
+      "score_on_take": 10,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "praye": {
+      "name": "prayer",
+      "aliases": [
+        "prayer",
+        "inscr",
+        "ancie",
+        "old"
+      ],
+      "description": "The prayer is inscribed in an ancient script which is hardly remembered these days, much less understood. What little of it can be made out seems to be a phillipic against small insects, absent-minded",
+      "readable": "The prayer is inscribed in an ancient script which is hardly remembered these days, much less understood. What little of it can be made out seems to be a phillipic against small insects, absent-mindedness, and the picking up and dropping of small objects. The final verse seems to consign trespassers to the land of the dead. All evidence indicates that the beliefs of the ancient Zorkers were obscure.",
+      "fixed": true
+    },
+    "pubk": {
+      "name": "purple book",
+      "aliases": [
+        "purple book",
+        "book",
+        "purpl"
+      ],
+      "description": "There is a purple book here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 2,
+      "readable": "There is a purple book here.",
+      "contains": [
+        "stamp"
+      ]
+    },
+    "pump": {
+      "name": "hand-held air pump",
+      "aliases": [
+        "hand-held air pump",
+        "air-p",
+        "airpu"
+      ],
+      "description": "There is a small pump here.",
+      "takeable": true
+    },
+    "putty": {
+      "name": "viscous material",
+      "aliases": [
+        "viscous material",
+        "mater",
+        "gunk",
+        "glue",
+        "visco"
+      ],
+      "description": "There is some gunk here",
+      "takeable": true
+    },
+    "raili": {
+      "name": "railing",
+      "aliases": [
+        "railing",
+        "rail"
+      ],
+      "description": "railing",
+      "fixture": true,
+      "fixed": true
+    },
+    "rainb": {
+      "name": "rainbow",
+      "aliases": [
+        "rainbow"
+      ],
+      "description": "rainbow",
+      "fixture": true,
+      "fixed": true
+    },
+    "rboat": {
+      "name": "magic boat",
+      "aliases": [
+        "magic boat",
+        "boat",
+        "plast",
+        "seawo"
+      ],
+      "description": "There is an inflated boat here.",
+      "takeable": true,
+      "contains": [
+        "label"
+      ]
+    },
+    "rbtlb": {
+      "name": "green piece of paper",
+      "aliases": [
+        "green piece of paper",
+        "paper",
+        "green"
+      ],
+      "description": "There is a green piece of paper here.",
+      "takeable": true,
+      "readable": "!!!! \tFROBOZZ MAGIC ROBOT COMPANY !!!! Hello, Master! I am a late-model robot, trained at MIT Tech to perform various simple household functions. Instructions for use: To activate me, use the following formula: >TELL ROBOT '<something to do>' <cr> The quotation marks are required! Warranty: No warranty is expressed or implied. At your service!"
+    },
+    "rbutt": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "switc",
+        "red"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "rcage": {
+      "name": "iron cage",
+      "aliases": [
+        "iron cage",
+        "cage",
+        "iron"
+      ],
+      "description": "There is an iron cage in the middle of the room."
+    },
+    "rdice": {
+      "name": "piece of cake with red icing",
+      "aliases": [
+        "piece of cake with red icing",
+        "cake",
+        "icing",
+        "red"
+      ],
+      "description": "There is a piece of cake with red icing here.",
+      "takeable": true,
+      "readable": "There is a piece of cake with red icing here."
+    },
+    "recep": {
+      "name": "receptacle",
+      "aliases": [
+        "receptacle"
+      ],
+      "description": "receptacle",
+      "container": true,
+      "openable": true,
+      "capacity": 6,
+      "fixed": true
+    },
+    "refl1": {
+      "name": "mirror",
+      "aliases": [
+        "mirror",
+        "mirro"
+      ],
+      "description": "mirror",
+      "fixed": true
+    },
+    "refl2": {
+      "name": "mirror",
+      "aliases": [
+        "mirror",
+        "mirro"
+      ],
+      "description": "mirror",
+      "fixed": true
+    },
+    "rknif": {
+      "name": "rusty knife",
+      "aliases": [
+        "rusty knife",
+        "knife",
+        "rusty"
+      ],
+      "description": "Beside the skeleton is a rusty knife.",
+      "takeable": true,
+      "weapon": true
+    },
+    "rnbut": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "round"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "robot": {
+      "name": "robot",
+      "aliases": [
+        "robot",
+        "r2d2",
+        "c3po",
+        "robby"
+      ],
+      "description": "There is a robot here."
+    },
+    "rope": {
+      "name": "rope",
+      "aliases": [
+        "rope",
+        "hemp",
+        "coil"
+      ],
+      "description": "A large coil of rope is lying in the corner.",
+      "takeable": true
+    },
+    "ruby": {
+      "name": "ruby",
+      "aliases": [
+        "ruby"
+      ],
+      "description": "On the floor lies a moby ruby.",
+      "takeable": true,
+      "score_on_take": 15,
+      "score_on_deposit": 8,
+      "deposit_target": "tcase"
+    },
+    "rug": {
+      "name": "carpet",
+      "aliases": [
+        "carpet",
+        "carpe",
+        "orien"
+      ],
+      "description": "carpet",
+      "fixture": true,
+      "fixed": true
+    },
+    "safe": {
+      "name": "box",
+      "aliases": [
+        "box"
+      ],
+      "description": "box",
+      "container": true,
+      "openable": true,
+      "capacity": 15,
+      "contains": [
+        "crown",
+        "card"
+      ],
+      "fixed": true
+    },
+    "saffr": {
+      "name": "tin of spices",
+      "aliases": [
+        "tin of spices",
+        "tin",
+        "spice",
+        "rare"
+      ],
+      "description": "There is a tin of rare spices here.",
+      "takeable": true,
+      "score_on_take": 5,
+      "score_on_deposit": 5,
+      "deposit_target": "tcase"
+    },
+    "sailo": {
+      "name": "sailor",
+      "aliases": [
+        "sailor"
+      ],
+      "description": "sailor",
+      "fixture": true,
+      "fixed": true
+    },
+    "sbag": {
+      "name": "sandwich bag",
+      "aliases": [
+        "sandwich bag",
+        "bag",
+        "sack",
+        "baggi",
+        "brown"
+      ],
+      "description": "On the table is an elongated brown sack, smelling of hot peppers.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 15,
+      "contains": [
+        "garli",
+        "food"
+      ]
+    },
+    "screw": {
+      "name": "screwdriver",
+      "aliases": [
+        "screwdriver"
+      ],
+      "description": "There is a screwdriver here.",
+      "takeable": true
+    },
+    "sdoor": {
+      "name": "door",
+      "aliases": [
+        "door",
+        "stone"
+      ],
+      "description": "A great stone door.",
+      "fixture": true,
+      "fixed": true
+    },
+    "shove": {
+      "name": "shovel",
+      "aliases": [
+        "shovel"
+      ],
+      "description": "There is a large shovel here.",
+      "takeable": true
+    },
+    "spher": {
+      "name": "crystal sphere",
+      "aliases": [
+        "crystal sphere",
+        "ball",
+        "cryst",
+        "glass"
+      ],
+      "description": "There is a beautiful crystal sphere here.",
+      "score_on_take": 6,
+      "score_on_deposit": 6,
+      "deposit_target": "tcase"
+    },
+    "sqbut": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "squar"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "sslot": {
+      "name": "hole",
+      "aliases": [
+        "hole",
+        "slot"
+      ],
+      "description": "hole",
+      "fixed": true
+    },
+    "stamp": {
+      "name": "stamp",
+      "aliases": [
+        "stamp"
+      ],
+      "description": "There is a Flathead Commemorative stamp here.",
+      "takeable": true,
+      "readable": "---v----v----v----v----v----v----v----v--- |\t\t\t\t\t | |\t ||||||||||\t LORD\t | > !||||\t |\t DIMWIT\t < |\t |||| ---|\t FLATHEAD\t | |\t |||C\t CC \\ \t\t | >\t ||||\t _\\\t\t < |\t ||| (____|\t\t\t | |\t || |\t\t\t | >\t |______|\t Our\t < |\t\t/ \\\t Excessive\t | |\t / \\\t Leader\t | >\t |\t |\t\t\t < |\t | |\t\t\t | |\t\t\t\t\t | > G.U.E. POSTAGE\t 3 Zorkmids < |\t\t\t\t\t | ---^----^----^----^----^----^----^----^---",
+      "score_on_take": 4,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "statu": {
+      "name": "statue",
+      "aliases": [
+        "statue",
+        "sculp",
+        "rock"
+      ],
+      "description": "There is a beautiful statue here.",
+      "takeable": true,
+      "score_on_take": 10,
+      "score_on_deposit": 13,
+      "deposit_target": "tcase"
+    },
+    "stick": {
+      "name": "broken sharp stick",
+      "aliases": [
+        "broken sharp stick",
+        "sharp",
+        "broke"
+      ],
+      "description": "A sharp stick, which appears to have been broken at one end, is here.",
+      "takeable": true
+    },
+    "still": {
+      "name": "stilletto",
+      "aliases": [
+        "stilletto",
+        "vicio"
+      ],
+      "description": "There is a vicious-looking stilletto here.",
+      "weapon": true
+    },
+    "strad": {
+      "name": "fancy violin",
+      "aliases": [
+        "fancy violin",
+        "violi",
+        "fancy"
+      ],
+      "description": "There is a Stradavarius here.",
+      "takeable": true,
+      "score_on_take": 10,
+      "score_on_deposit": 10,
+      "deposit_target": "tcase"
+    },
+    "sword": {
+      "name": "sword",
+      "aliases": [
+        "sword",
+        "orcri",
+        "glamd",
+        "blade",
+        "elvis"
+      ],
+      "description": "On hooks above the mantelpiece hangs an elvish sword of great antiquity.",
+      "takeable": true,
+      "weapon": true
+    },
+    "tbask": {
+      "name": "basket",
+      "aliases": [
+        "basket",
+        "cage",
+        "dumbw",
+        "baske"
+      ],
+      "description": "At the end of the chain is a basket.",
+      "container": true,
+      "openable": true,
+      "capacity": 50,
+      "fixed": true
+    },
+    "tcase": {
+      "name": "trophy case",
+      "aliases": [
+        "trophy case",
+        "case",
+        "troph"
+      ],
+      "description": "There is a trophy case here.",
+      "container": true,
+      "openable": true,
+      "capacity": 20,
+      "fixed": true
+    },
+    "tdoor": {
+      "name": "trap door",
+      "aliases": [
+        "door",
+        "trapd",
+        "trap-",
+        "trap",
+        "trap door",
+        "trapdoor",
+        "tdoor"
+      ],
+      "description": "A wooden trap door in the floor.",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "teeth": {
+      "name": "set of teeth",
+      "aliases": [
+        "set of teeth"
+      ],
+      "description": "set of teeth",
+      "fixture": true,
+      "fixed": true
+    },
+    "thief": {
+      "name": "thief",
+      "aliases": [
+        "thief",
+        "robbe",
+        "crook",
+        "crime",
+        "crimi",
+        "bandi",
+        "gent",
+        "gentl",
+        "man",
+        "shady",
+        "thug",
+        "bagma",
+        "mafia"
+      ],
+      "description": "There is a suspicious-looking individual, holding a bag, leaning against one wall. He is armed with a vicious-looking stilletto.",
+      "contains": [
+        "still"
+      ],
+      "fixed": true
+    },
+    "tomb": {
+      "name": "tomb",
+      "aliases": [
+        "tomb",
+        "grave"
+      ],
+      "description": "There is a tomb here, made of the finest marble, and large enough for four headless corpses. On one end is the cryptic inscription: \"Feel Free.\"",
+      "readable": "Here lie the implementers, whose heads were placed on poles by the Keeper of the Dungeon for amazing untastefulness."
+    },
+    "torch": {
+      "name": "torch",
+      "aliases": [
+        "torch",
+        "ivory"
+      ],
+      "description": "Sitting on the pedestal is a flaming torch, made of ivory.",
+      "takeable": true,
+      "provides_light": true,
+      "score_on_take": 14,
+      "score_on_deposit": 6,
+      "deposit_target": "tcase"
+    },
+    "trbut": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "trian"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "tride": {
+      "name": "crystal trident",
+      "aliases": [
+        "crystal trident",
+        "fork",
+        "cryst"
+      ],
+      "description": "On the shore lies Neptune's own crystal trident.",
+      "takeable": true,
+      "score_on_take": 4,
+      "score_on_deposit": 11,
+      "deposit_target": "tcase"
+    },
+    "troll": {
+      "name": "troll",
+      "aliases": [
+        "troll"
+      ],
+      "description": "A nasty-looking troll, brandishing a bloody axe, blocks all passages out of the room.",
+      "contains": [
+        "axe"
+      ],
+      "fixed": true
+    },
+    "trunk": {
+      "name": "trunk with jewels",
+      "aliases": [
+        "trunk with jewels",
+        "chest"
+      ],
+      "description": "Lying half buried in the mud is an old trunk, bulging with jewels.",
+      "takeable": true,
+      "score_on_take": 15,
+      "score_on_deposit": 8,
+      "deposit_target": "tcase"
+    },
+    "tube": {
+      "name": "tube",
+      "aliases": [
+        "tube"
+      ],
+      "description": "There is an object which looks like a tube of toothpaste here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 7,
+      "contains": [
+        "putty"
+      ]
+    },
+    "valua": {
+      "name": "valuables",
+      "aliases": [
+        "valuables",
+        "treas"
+      ],
+      "description": "valuables",
+      "takeable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "wall": {
+      "name": "wall",
+      "aliases": [
+        "wall"
+      ],
+      "description": "wall",
+      "fixture": true,
+      "fixed": true
+    },
+    "water": {
+      "name": "quantity of water",
+      "aliases": [
+        "quantity of water",
+        "liqui",
+        "h2o"
+      ],
+      "description": "There is some water here",
+      "takeable": true
+    },
+    "wdoor": {
+      "name": "door",
+      "aliases": [
+        "door",
+        "woode"
+      ],
+      "description": "The engravings translate to 'This space intentionally left blank'",
+      "fixture": true,
+      "fixed": true,
+      "readable": "The engravings translate to 'This space intentionally left blank'"
+    },
+    "whbk": {
+      "name": "white book",
+      "aliases": [
+        "white book",
+        "book",
+        "white"
+      ],
+      "description": "There is a white book here.",
+      "takeable": true,
+      "container": true,
+      "openable": true,
+      "capacity": 2,
+      "readable": "There is a white book here."
+    },
+    "wind1": {
+      "name": "window",
+      "aliases": [
+        "window",
+        "windo"
+      ],
+      "description": "A small window, slightly ajar.",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "wind2": {
+      "name": "window",
+      "aliases": [
+        "window",
+        "windo"
+      ],
+      "description": "A small window looking out behind the house.",
+      "openable": true,
+      "fixture": true,
+      "fixed": true
+    },
+    "wrenc": {
+      "name": "wrench",
+      "aliases": [
+        "wrench"
+      ],
+      "description": "There is a wrench here.",
+      "takeable": true
+    },
+    "ybutt": {
+      "name": "button",
+      "aliases": [
+        "button",
+        "butto",
+        "switc",
+        "yello"
+      ],
+      "description": "button",
+      "fixture": true,
+      "fixed": true
+    },
+    "zorkm": {
+      "name": "priceless zorkmid",
+      "aliases": [
+        "priceless zorkmid",
+        "coin",
+        "gold"
+      ],
+      "description": "On the floor is a gold zorkmid coin (a valuable collector's item).",
+      "takeable": true,
+      "readable": "-------------------------- / Gold Zorkmid\t \\ / T e n T h o u s a n d \\ / Z O R K M I D S\t \\ /\t\t\t\t \\ / ||||||||||||||||||\t \\ / !||||\t\t ||||!\t \\ |\t ||| ^^ ^^ |||\t | |\t |||\t OO OO |||\t | | In Frobs |||\t << ||| We Trust | |\t || (______) ||\t | |\t | |\t | |\t |__________|\t | \\\t\t\t\t / \\ -- Lord Dimwit Flathead -- / \\ -- Beloved of Zorkers -- / \\\t\t\t\t / \\\t * 722 G.U.E. * / \\\t\t\t\t / --------------------------",
+      "score_on_take": 10,
+      "score_on_deposit": 12,
+      "deposit_target": "tcase"
+    }
+  }
+}
