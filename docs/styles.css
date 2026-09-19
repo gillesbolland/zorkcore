@@ -9,7 +9,9 @@
   --player: #3a2a1c;
   --companion: #221810;
   --border: #4a3424;
+  --radius: 0.9rem;
   --font: "IBM Plex Mono", "Cascadia Code", "SF Mono", Consolas, monospace;
+  --font-display: "Jacquard 12", Georgia, "Times New Roman", serif;
 }
 
 *,
@@ -33,6 +35,19 @@ body {
   background-image:
     radial-gradient(ellipse at 50% 0%, #2a1c12 0%, transparent 55%),
     linear-gradient(180deg, #0a0806 0%, var(--bg) 40%, #0a0806 100%);
+}
+
+a {
+  color: var(--amber);
+  text-decoration: underline;
+  text-decoration-color: var(--phosphor-dim);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: #f0c090;
+  text-decoration-color: var(--phosphor);
+  text-shadow: 0 0 8px var(--phosphor-glow);
 }
 
 .scanlines {
@@ -109,17 +124,20 @@ body {
   margin: 0 0 1.75rem;
   padding: 1rem 1.1rem;
   border: 1px solid var(--border);
+  border-radius: var(--radius);
   background: var(--bg-panel);
   box-shadow: inset 0 0 40px rgba(40, 24, 8, 0.4);
 }
 
 .section h2 {
-  margin: 0 0 0.75rem;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin: 0 0 0.85rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 6vw, 2.85rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+
   color: var(--amber);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .section p,
@@ -128,7 +146,8 @@ body {
   margin: 0 0 0.65rem;
 }
 
-.section ul {
+.section ul,
+.section ol {
   margin: 0;
   padding-left: 1.2rem;
 }
@@ -138,17 +157,123 @@ body {
   background: rgba(212, 165, 116, 0.1);
   padding: 0.05em 0.3em;
   border: 1px solid var(--border);
+  border-radius: 0.35rem;
 }
 
-/* --- Fake DM thread --- */
+.accordion {
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.55rem;
+  background: rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.accordion > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-display);
+  color: var(--amber);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+  line-height: 1.1;
+  user-select: none;
+}
+
+.accordion > summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion > summary::before {
+  content: "▸ ";
+  color: var(--phosphor-dim);
+}
+
+.accordion[open] > summary::before {
+  content: "▾ ";
+}
+
+.accordion > summary:hover {
+  color: #f0c090;
+  text-shadow: 0 0 8px var(--phosphor-glow);
+}
+
+.accordion-body {
+  padding: 0 0.75rem 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.accordion-body h3 {
+  margin: 0.85rem 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.5vw, 1.7rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+  font-weight: 400;
+}
+
+.cmd-list {
+  margin: 0;
+  padding: 0;
+}
+
+.cmd-list > div {
+  display: grid;
+  gap: 0.1rem 0.75rem;
+  margin: 0 0 0.45rem;
+}
+
+@media (min-width: 520px) {
+  .cmd-list > div {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: baseline;
+  }
+}
+
+.cmd-list dt {
+  margin: 0;
+  color: #e8c8a0;
+}
+
+.cmd-list dd {
+  margin: 0;
+  color: #c4a88a;
+  font-size: 0.9rem;
+}
+
+.cmd-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* --- Fake DM thread (grayscale UI; emojis stay colored) --- */
 
 .dm {
+  --dm-bg: #0e0e0e;
+  --dm-panel: #161616;
+  --dm-border: #4a4a4a;
+  --dm-border-soft: #3a3a3a;
+  --dm-text: #c8c8c8;
+  --dm-text-bright: #e8e8e8;
+  --dm-muted: #888;
+  --dm-player: #2a2a2a;
+  --dm-companion: #1a1a1a;
+  --dm-glow: rgba(180, 180, 180, 0.18);
+
   margin: 0 0 1.75rem;
-  border: 1px solid var(--phosphor-dim);
-  background: #100c08;
+  border: 1px solid var(--dm-border);
+  border-radius: var(--radius);
+  background: var(--dm-bg);
+  color: var(--dm-text);
   box-shadow:
-    0 0 24px var(--phosphor-glow),
-    inset 0 0 60px rgba(40, 24, 8, 0.55);
+    0 0 24px var(--dm-glow),
+    inset 0 0 60px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
 }
 
 .dm-header {
@@ -156,13 +281,14 @@ body {
   align-items: center;
   gap: 0.6rem;
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--dm-border-soft);
 }
 
 .dm-avatar {
   width: 2rem;
   height: 2rem;
-  border: 1px solid var(--phosphor-dim);
+  border: 1px solid var(--dm-border);
+  border-radius: 0.45rem;
   display: grid;
   place-items: center;
   font-size: 1rem;
@@ -175,12 +301,12 @@ body {
 
 .dm-meta .name {
   font-weight: 600;
-  color: #f0c090;
+  color: var(--dm-text-bright);
 }
 
 .dm-meta .sub {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--dm-muted);
 }
 
 .dm-thread {
@@ -195,7 +321,8 @@ body {
   max-width: 88%;
   padding: 0.06rem 0.55rem;
   line-height: 1.3;
-  border: 1px solid var(--border);
+  border: 1px solid var(--dm-border-soft);
+  border-radius: 0.55rem;
   white-space: pre-wrap;
   word-break: break-word;
   opacity: 0;
@@ -212,23 +339,24 @@ body {
 
 .bubble.player {
   align-self: flex-end;
-  background: var(--player);
-  border-color: var(--phosphor-dim);
-  color: #edd4b8;
+  background: var(--dm-player);
+  border-color: var(--dm-border);
+  color: var(--dm-text-bright);
 }
 
 .bubble.companion {
   align-self: flex-start;
-  background: var(--companion);
-  border-color: #5a4030;
-  color: #d4b090;
+  background: var(--dm-companion);
+  border-color: #555;
+  color: var(--dm-text);
 }
 
 .bubble.tip {
   align-self: flex-start;
-  background: #18120e;
+  background: #141414;
   border-style: dashed;
-  color: var(--muted);
+  border-color: #666;
+  color: var(--dm-muted);
   font-size: 0.85rem;
 }
 
@@ -237,8 +365,12 @@ body {
   font-size: 0.65rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--dm-muted);
   margin-bottom: 0;
+}
+
+.dm .mark {
+  color: #b0b0b0;
 }
 
 .mark {
@@ -255,7 +387,7 @@ body {
 }
 
 .links a {
-  color: var(--phosphor);
+  color: var(--amber);
   text-decoration: none;
   border-bottom: 1px solid var(--phosphor-dim);
 }
@@ -275,7 +407,7 @@ body {
 }
 
 .footer a {
-  color: var(--phosphor-dim);
+  color: var(--amber);
 }
 
 @media (max-width: 480px) {

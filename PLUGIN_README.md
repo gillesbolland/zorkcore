@@ -27,10 +27,9 @@ Defaults ship with **no local/flood advert**. Path hash mode defaults to **3-byt
 
 ### Player path
 
-1. Phone must have advertised as a Chat Node recently.
-2. Plugin imports freshest Chat Node pubkeys (default 6h / top 20).
-3. Player adds the companion via the plugin URL/QR.
-4. DM `new game` (also `new`, `start`, `play`, …). Other first messages (including `hello` / `?`) get short help. In-game `?` / `hello?` / `hello` **resend** the last reply. `again` / `g` / `repeat` **redo** the last gameplay command. Timed hazards use **⏱️** (no pause/resume).
+1. **Advert as a Chat Node** before the first DM so the plugin can import the phone’s pubkey. Once is enough before you start — you do not need to advert again for every command or every `new game`. If there is no reply, advert once more (the first one may have been too old, or never heard). The plugin imports freshest Chat Node pubkeys (default 6h / top 20).
+2. Player adds the companion via the plugin URL/QR.
+3. DM `new game` (also `new`, `start`, `play`, …). Other first messages (including `hello` / `?`) get short help. In-game `?` / `hello?` / `hello` **resend** the last reply. `again` / `g` / `repeat` **redo** the last gameplay command. Timed hazards use **⏱️** (no pause/resume).
 
 ### Radio-friendly commands
 

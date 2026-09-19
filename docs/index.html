@@ -8,6 +8,12 @@
       name="description"
       content="ZorCore: classic Zork / Dungeon on MeshCore, played by DM to Zork🕹️."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="crt-flicker">
@@ -52,12 +58,164 @@ Inside: leaflet.</div>
       </section>
 
       <section class="section">
-        <h2>How to enter</h2>
+        <h2>How to install</h2>
+        <ol>
+          <li>
+            On an OpenHop Repeater, install the ZorCore wheel from
+            <a href="https://github.com/gillesbolland/zorkcore/releases"
+              >Releases</a
+            >
+            and enable the plugin.
+          </li>
+          <li>
+            Open <code>/plugins/zorcore/</code>, set up the companion, then copy
+            the <code>meshcore://</code> link or QR.
+          </li>
+        </ol>
         <p>
-          On an OpenHop Repeater with ZorCore installed: open
-          <code>/plugins/zorcore/</code>, set up the companion, share the
-          <code>meshcore://</code> link, then DM <code>new game</code>.
+          Full install steps:
+          <a href="https://github.com/gillesbolland/zorkcore#install"
+            >GitHub README</a
+          >.
         </p>
+      </section>
+
+      <section class="section">
+        <h2>How to play</h2>
+        <ol>
+          <li>
+            <strong>Advert yourself</strong> as a Chat Node first so
+            <strong>Zork🕹️</strong> can add you and reply. Once is enough before
+            you start — you do not need to advert again for every
+            <code>new game</code>. If you never get a reply, advert once more
+            (the first one may have been too old, or never heard).
+          </li>
+          <li>
+            Add <strong>Zork🕹️</strong> from the operator’s
+            <code>meshcore://</code> link or QR.
+          </li>
+          <li>
+            DM <code>new game</code> (also <code>new</code> /
+            <code>start</code> / <code>play</code>).
+          </li>
+        </ol>
+
+        <details class="accordion">
+          <summary>Commands</summary>
+          <div class="accordion-body">
+            <h3>Start and help</h3>
+            <dl class="cmd-list">
+              <div>
+                <dt><code>new game</code> / <code>new</code> / <code>start</code> / <code>play</code></dt>
+                <dd>Begin (or restart) a run</dd>
+              </div>
+              <div>
+                <dt><code>hello</code> / <code>?</code> (first contact)</dt>
+                <dd>Short how-to-start help</dd>
+              </div>
+              <div>
+                <dt><code>help</code></dt>
+                <dd>Short help</dd>
+              </div>
+            </dl>
+
+            <h3>Movement and looking</h3>
+            <dl class="cmd-list">
+              <div>
+                <dt><code>n</code> <code>s</code> <code>e</code> <code>w</code> <code>u</code> <code>d</code> (and diagonals)</dt>
+                <dd>Move</dd>
+              </div>
+              <div>
+                <dt><code>look</code> / <code>l</code></dt>
+                <dd>Full room description (multipart if needed)</dd>
+              </div>
+              <div>
+                <dt><code>examine</code> / <code>x</code> / <code>look at …</code></dt>
+                <dd>Describe an object</dd>
+              </div>
+              <div>
+                <dt><code>look under …</code></dt>
+                <dd>Puzzle-critical (e.g. rug, leaves)</dd>
+              </div>
+              <div>
+                <dt><code>inventory</code> / <code>i</code></dt>
+                <dd>What you carry</dd>
+              </div>
+              <div>
+                <dt><code>score</code></dt>
+                <dd>Score and moves</dd>
+              </div>
+              <div>
+                <dt><code>wait</code> / <code>z</code></dt>
+                <dd>Time passes</dd>
+              </div>
+            </dl>
+
+            <h3>Radio-specific</h3>
+            <dl class="cmd-list">
+              <div>
+                <dt><code>?</code> / <code>hello?</code> / <code>hello</code></dt>
+                <dd>Resend the last reply (lost chunk)</dd>
+              </div>
+              <div>
+                <dt><code>again</code> / <code>g</code> / <code>repeat</code></dt>
+                <dd>Redo your last gameplay command</dd>
+              </div>
+            </dl>
+
+            <h3>Inventory batching</h3>
+            <dl class="cmd-list">
+              <div>
+                <dt><code>take all</code>, <code>drop all</code></dt>
+                <dd>Batch take / drop</dd>
+              </div>
+              <div>
+                <dt><code>take all except lamp</code></dt>
+                <dd>Except / but</dd>
+              </div>
+              <div>
+                <dt><code>take valuables</code></dt>
+                <dd>Valuables only</dd>
+              </div>
+              <div>
+                <dt><code>take lamp, sword and paper</code></dt>
+                <dd>Comma / and lists</dd>
+              </div>
+              <div>
+                <dt><code>examine it</code>, <code>drop them</code></dt>
+                <dd>Pronouns</dd>
+              </div>
+            </dl>
+
+            <h3>Meta</h3>
+            <dl class="cmd-list">
+              <div>
+                <dt><code>save</code></dt>
+                <dd>Checkpoint → <code>Saved.</code></dd>
+              </div>
+              <div>
+                <dt><code>restore</code></dt>
+                <dd>Load checkpoint</dd>
+              </div>
+              <div>
+                <dt><code>quit</code> / <code>q</code> / <code>bye</code></dt>
+                <dd>Leave the play slot (checkpoint kept)</dd>
+              </div>
+              <div>
+                <dt><code>brief</code> / <code>verbose</code></dt>
+                <dd>Description verbosity</dd>
+              </div>
+              <div>
+                <dt><code>version</code></dt>
+                <dd>Plugin / content versions</dd>
+              </div>
+            </dl>
+            <p class="cmd-note">
+              Most classic dungeon verbs are understood; unimplemented ones get a
+              short stub reply.
+            </p>
+          </div>
+        </details>
       </section>
 
       <section class="section">
@@ -76,6 +234,34 @@ Inside: leaflet.</div>
             Lost a chunk? DM <code>?</code> / <code>hello?</code> to
             <strong>resend</strong> the last reply. Use <code>again</code> /
             <code>g</code> to <strong>redo</strong> your last command.
+          </li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Radio safety</h2>
+        <p>
+          Mesh airtime is shared. ZorCore limits how many players can generate
+          game traffic at once so the dungeon does not flood the radio.
+        </p>
+        <ul>
+          <li>
+            Play is <strong>DM-only</strong> to <strong>Zork🕹️</strong> — no game
+            spam on public channels.
+          </li>
+          <li>
+            Remote play opens only when OpenHop
+            <strong>Adaptive Rate Limiting</strong> says the mesh is quiet enough;
+            otherwise deeper-hop players wait in a FIFO queue.
+          </li>
+          <li>
+            Nearby players (path ≤ <code>local_max_hops</code>) can still get a
+            <strong>local fast-pass</strong> when the mesh is busy for remotes,
+            with a capped number of concurrent locals.
+          </li>
+          <li>
+            Single-player mode (when enabled) keeps one remote turn at a time;
+            others are queued and DMed when a slot opens.
           </li>
         </ul>
       </section>

@@ -28,12 +28,12 @@ Plugin id: `zorcore` · distribution: `zorcore-plugin` · console script: `zorco
 [How it works](#how-it-works) ·
 [Reuse / fork](#reuse--fork)
 
-[Project site](https://gillesbolland.github.io/zorkcore/) — ASCII landing with a sample MeshCore DM thread.
+[Project site](https://gillesbolland.github.io/zorkcore/) — how to play, plus an ASCII landing with a sample MeshCore DM thread.
 
 ## Quick start
 
 > [!TIP]
-> **Wheel in, companion up, `new game`.** On the Repeater: **Plugins** → upload/install the ZorCore `.whl` → **Enable**. Open `/plugins/zorcore/`, set up the companion, share the `meshcore://` URL, then DM **`new game`**.
+> **Wheel in, companion up, share the join link.** On the Repeater: **Plugins** → upload/install the ZorCore `.whl` → **Enable**. Open `/plugins/zorcore/`, set up the companion, then share the `meshcore://` URL or QR with players. How to play (advert, join, `new game`): [project site](https://gillesbolland.github.io/zorkcore/).
 
 ## Features at a glance
 
@@ -138,10 +138,12 @@ Most classic dungeon verbs are understood; unimplemented ones get a short stub r
 
 ## Install
 
-| Your Repeater | How ZorCore gets there |
-| --- | --- |
-| **Plugins** page | Upload the Release `.whl`, **Enable**, then open `/plugins/zorcore/` |
-| From source | Build the wheel from this repo (`python -m build --wheel`), then upload as above |
+Operator how-to — install ZorCore on an OpenHop Repeater and hand players a join link. For advert → join → `new game`, see the [project site](https://gillesbolland.github.io/zorkcore/).
+
+1. Download the Release `.whl` (or build from this repo with `python -m build --wheel`).
+2. On the Repeater **Plugins** page: upload the wheel, then **Enable**.
+3. Open `/plugins/zorcore/` while logged into the dashboard.
+4. Set up the companion (silent on `127.0.0.1:1977`), then copy the `meshcore://` URL or QR and share it privately with players.
 
 ### Requirements
 
