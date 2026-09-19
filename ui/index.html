@@ -79,58 +79,206 @@
     <div class="tab-panel" id="tab-safety" role="tabpanel" aria-labelledby="tab-btn-safety" hidden>
       <section class="panel">
         <h2>Safety / mesh gate</h2>
-        <p class="hint">Play follows OpenHop <strong>Adaptive Rate Limiting</strong> tiers (quiet → congested), not clock time and not a utilization percentage. Enable Adaptive Rate Limiting on this Repeater (<code>repeater.advert_adaptive</code>). When the mesh is above the selected max, ≤3-hop players can still play (busy-local exception).</p>
-        <p class="mono small warn-line" id="arl-warn" hidden></p>
-        <div class="form-grid">
-          <label class="check"><input type="checkbox" id="safety_enabled" /> Safety enabled (tier gate + queue)</label>
-          <label class="check"><input type="checkbox" id="single_player_enabled" /> Single-player queue</label>
-          <label class="check"><input type="checkbox" id="bans_enabled" /> Honor bans</label>
-          <label class="check"><input type="checkbox" id="daemons_enabled" /> Living dungeon (NPC daemons)</label>
-          <label class="check"><input type="checkbox" id="world_events_enabled" /> World event broadcasts</label>
-        </div>
-        <p class="field-label">Max play tier</p>
-        <div class="tier-segment" id="play-max-tier" role="group" aria-label="Max play tier">
-          <button type="button" data-tier="quiet">Quiet</button>
-          <button type="button" data-tier="normal">Normal</button>
-          <button type="button" data-tier="busy">Busy</button>
-        </div>
-        <div class="form-grid">
-          <label class="field">
-            <span>Quiet hold (seconds)</span>
-            <input type="number" id="quiet_hold_seconds" min="0" max="3600" />
-          </label>
-          <label class="field">
-            <span>Poll interval (seconds)</span>
-            <input type="number" id="quiet_poll_seconds" min="5" max="600" />
-          </label>
-          <label class="field">
-            <span>Offer timeout (seconds)</span>
-            <input type="number" id="offer_timeout_seconds" min="30" max="86400" />
-          </label>
-          <label class="field">
-            <span>Queue max</span>
-            <input type="number" id="queue_max" min="1" max="200" />
-          </label>
-          <label class="field">
-            <span>Concurrent local players</span>
-            <input type="number" id="max_local_players" min="1" max="4" />
-          </label>
-          <label class="field">
-            <span>Daemon idle pause (seconds)</span>
-            <input type="number" id="daemon_idle_pause_seconds" min="30" max="86400" />
-          </label>
-          <label class="field">
-            <span>TX settle (ms)</span>
-            <input type="number" id="reply_settle_ms" min="0" max="10000" />
-          </label>
-          <label class="field">
-            <span>Chunk gap (ms)</span>
-            <input type="number" id="inter_chunk_delay_ms" min="0" max="10000" />
-          </label>
-        </div>
-        <p class="mono small" id="quiet-detail">—</p>
+        <p class="hint">
+          Play follows OpenHop <strong>Adaptive Rate Limiting</strong> tiers
+          (quiet → congested). Remote play stays closed unless ARL is on and the
+          tier is at or below the max you set. Nearby players (≤3 hops) can still
+          get a local fast-pass when remotes are blocked.
+        </p>
+
+        <details class="accordion" open>
+          <summary>Mesh gate</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              When the gate is on, ZorCore reads
+              <code>/api/advert_rate_limit_stats</code> and only opens remote play
+              after the mesh stays quiet enough for the hold time.
+            </p>
+            <p class="mono small warn-line" id="arl-warn" hidden></p>
+            <div class="setting">
+              <label class="check"
+                ><input type="checkbox" id="safety_enabled" /> Safety enabled
+                (tier gate + queue)</label
+              >
+              <p class="field-help">
+                Master switch. Off = legacy multi-session (bans still apply if
+                honor bans is on). Default: on.
+              </p>
+            </div>
+            <p class="field-label">Max play tier</p>
+            <p class="field-help">
+              Remote play allowed when ARL current tier is at or below this
+              (<code>quiet</code> / <code>normal</code> / <code>busy</code>).
+              Default: <code>normal</code>.
+            </p>
+            <div class="tier-segment" id="play-max-tier" role="group" aria-label="Max play tier">
+              <button type="button" data-tier="quiet">Quiet</button>
+              <button type="button" data-tier="normal">Normal</button>
+              <button type="button" data-tier="busy">Busy</button>
+            </div>
+            <div class="form-grid">
+              <label class="field">
+                <span>Quiet hold (seconds)</span>
+                <span class="field-help"
+                  >Mesh must stay under the max tier this long before remote play
+                  opens. Default 120; range 0–3600.</span
+                >
+                <input type="number" id="quiet_hold_seconds" min="0" max="3600" />
+              </label>
+              <label class="field">
+                <span>Poll interval (seconds)</span>
+                <span class="field-help"
+                  >How often to refresh ARL / mesh stats. Default 30; range
+                  5–600.</span
+                >
+                <input type="number" id="quiet_poll_seconds" min="5" max="600" />
+              </label>
+            </div>
+            <p class="mono small" id="quiet-detail">—</p>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Queue and locals</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Remotes take turns through a FIFO queue. Locals (path ≤
+              <code>local_max_hops</code>, default 3) can share the dungeon under
+              the busy-local exception.
+            </p>
+            <div class="setting">
+              <label class="check"
+                ><input type="checkbox" id="single_player_enabled" /> Single-player
+                queue</label
+              >
+              <p class="field-help">
+                One remote active player at a time; others wait and get a DM when
+                their turn opens. Default: on.
+              </p>
+            </div>
+            <div class="setting">
+              <label class="check"
+                ><input type="checkbox" id="bans_enabled" /> Honor bans</label
+              >
+              <p class="field-help">
+                Block listed pubkeys from playing. Managed on the Bans tab.
+                Default: on.
+              </p>
+            </div>
+            <div class="form-grid">
+              <label class="field">
+                <span>Offer timeout (seconds)</span>
+                <span class="field-help"
+                  >How long a queued player has to answer a turn offer before it
+                  passes on. Default 900 (15 min); range 30–86400.</span
+                >
+                <input
+                  type="number"
+                  id="offer_timeout_seconds"
+                  min="30"
+                  max="86400"
+                />
+              </label>
+              <label class="field">
+                <span>Queue max</span>
+                <span class="field-help"
+                  >Maximum waiting remotes. Default 20; range 1–200.</span
+                >
+                <input type="number" id="queue_max" min="1" max="200" />
+              </label>
+              <label class="field">
+                <span>Concurrent local players</span>
+                <span class="field-help"
+                  >Max nearby players (≤3 hops) sharing the dungeon at once.
+                  Default 2; range 1–4.</span
+                >
+                <input type="number" id="max_local_players" min="1" max="4" />
+              </label>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Living dungeon</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Shared world NPCs (thief, troll, cyclops). Everyone meets the same
+              creatures; see the Dungeon tab for live state.
+            </p>
+            <div class="setting">
+              <label class="check"
+                ><input type="checkbox" id="daemons_enabled" /> Living dungeon (NPC
+                daemons)</label
+              >
+              <p class="field-help">
+                Run wandering / combat daemons on a shared clock. Default: on.
+              </p>
+            </div>
+            <div class="setting">
+              <label class="check"
+                ><input type="checkbox" id="world_events_enabled" /> World event
+                broadcasts</label
+              >
+              <p class="field-help">
+                Short one-shot DMs to other active players on events like a kill.
+                Default: on.
+              </p>
+            </div>
+            <div class="form-grid">
+              <label class="field">
+                <span>Daemon idle pause (seconds)</span>
+                <span class="field-help"
+                  >Freeze the dungeon clock when nobody is playing so an empty cave
+                  does not run ahead. Default 300; range 30–86400.</span
+                >
+                <input
+                  type="number"
+                  id="daemon_idle_pause_seconds"
+                  min="30"
+                  max="86400"
+                />
+              </label>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>TX pacing</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Half-duplex radios cannot RX and TX at once. These delays reduce lost
+              replies and multipart collisions on the mesh.
+            </p>
+            <div class="form-grid">
+              <label class="field">
+                <span>TX settle (ms)</span>
+                <span class="field-help"
+                  >Wait after a player command before sending the reply so the phone
+                  can finish retries. Default 3500; range 0–10000.</span
+                >
+                <input type="number" id="reply_settle_ms" min="0" max="10000" />
+              </label>
+              <label class="field">
+                <span>Chunk gap (ms)</span>
+                <span class="field-help"
+                  >Pause between multipart story DMs (<code>1/3…</code> /
+                  <code>.3/3</code>). Default 800; range 0–10000.</span
+                >
+                <input
+                  type="number"
+                  id="inter_chunk_delay_ms"
+                  min="0"
+                  max="10000"
+                />
+              </label>
+            </div>
+          </div>
+        </details>
+
         <div class="actions">
-          <button type="button" class="primary" id="btn-safety">Save safety settings</button>
+          <button type="button" class="primary" id="btn-safety">
+            Save safety settings
+          </button>
         </div>
         <p class="mono small" id="safety-msg"></p>
       </section>
@@ -139,7 +287,7 @@
     <div class="tab-panel" id="tab-dungeon" role="tabpanel" aria-labelledby="tab-btn-dungeon" hidden>
       <section class="panel">
         <h2>Dungeon</h2>
-        <p class="hint">NPCs are shared by everyone playing: one troll, one thief, one cyclops for the whole mesh.</p>
+        <p class="hint">NPCs are shared by everyone playing: one troll, one thief, one cyclops for the whole mesh. Reset restores default NPC positions/lives (does not wipe player sessions).</p>
         <div id="dungeon-box" class="mono small">—</div>
         <table>
           <thead>
@@ -156,57 +304,145 @@
 
     <div class="tab-panel" id="tab-radio" role="tabpanel" aria-labelledby="tab-btn-radio" hidden>
       <section class="panel">
-        <h2>Game interfaces</h2>
-        <p class="hint">Installs a <strong>silent</strong> companion on TCP <code>127.0.0.1:1977</code> (3-byte path hash). Once the chips below are green, you normally leave these alone — use them again only if you deleted the companion in OpenHop or need to re-link the plugin.</p>
-        <div class="chips" id="iface-chips"></div>
-        <p class="field-label">Region scope</p>
-        <div class="tier-segment" id="region-scope-toggle" role="group" aria-label="Region scope">
-          <button type="button" data-scope="off">Unscoped</button>
-          <button type="button" data-scope="on">Scoped</button>
-        </div>
-        <label class="field" id="region-scope-field">
-          <span>Scope code</span>
-          <input type="text" id="region-scope" maxlength="29" placeholder="e.g. be" autocomplete="off" />
-        </label>
-        <div class="actions">
-          <button type="button" id="btn-region">Save region</button>
-        </div>
-        <p class="mono small" id="region-msg"></p>
-        <div class="actions">
-          <button type="button" id="btn-create" title="Creates the companion identity if it is missing">Create companion</button>
-          <button type="button" id="btn-link" title="Writes the companion public key into plugin settings and restarts">Link companion</button>
-          <button type="button" class="primary" id="btn-setup">Setup / repair</button>
-        </div>
-        <p class="mono small" id="setup-msg"></p>
-      </section>
+        <h2>Radio</h2>
+        <p class="hint">
+          Companion identity, join QR, and mesh discovery. Prefer silent mode on a
+          production mesh unless you intentionally want Zork🕹️ to announce itself.
+        </p>
 
-      <section class="panel">
-        <h2>Join path</h2>
-        <p class="hint">Phone must have advertised as a Chat Node recently. Scan the QR or open the <code>meshcore://</code> link → DM <code>new game</code>.</p>
-        <div class="join-grid">
-          <div>
-            <h3 id="join-title">Companion (game)</h3>
-            <p class="mono small" id="adv-key">—</p>
-            <p class="mono small"><a id="adv-url" href="#" class="mesh-link">—</a></p>
+        <details class="accordion" open>
+          <summary>Companion setup</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Installs a <strong>silent</strong> companion on TCP
+              <code>127.0.0.1:1977</code> (3-byte path hash). Once the chips are
+              green, leave these alone unless you deleted the companion or need to
+              re-link.
+            </p>
+            <div class="chips" id="iface-chips"></div>
+            <div class="actions">
+              <button
+                type="button"
+                id="btn-create"
+                title="Creates the companion identity if it is missing"
+              >
+                Create companion
+              </button>
+              <button
+                type="button"
+                id="btn-link"
+                title="Writes the companion public key into plugin settings and restarts"
+              >
+                Link companion
+              </button>
+              <button type="button" class="primary" id="btn-setup">
+                Setup / repair
+              </button>
+            </div>
+            <p class="field-help">
+              <strong>Create</strong> makes the OpenHop companion if missing.
+              <strong>Link</strong> stores its pubkey in plugin settings.
+              <strong>Setup / repair</strong> does both and restarts when needed.
+            </p>
+            <p class="mono small" id="setup-msg"></p>
           </div>
-          <canvas id="adv-qr" width="180" height="180" aria-label="Zork companion QR"></canvas>
-        </div>
-        <p class="mono small" id="qr-msg"></p>
-      </section>
+        </details>
 
-      <section class="panel warn">
-        <h2>Discovery</h2>
-        <p class="hint">Silent / stealth keeps the companion invisible on the mesh. Local or flood advert asks it to announce itself (visible on the production mesh).</p>
-        <label class="check">
-          <input type="checkbox" id="stealth_mode" />
-          Silent / stealth mode
-        </label>
-        <p id="advert-mode" class="mono small">advert_mode: silent</p>
-        <div class="actions">
-          <button type="button" id="btn-advert-local">Local advert</button>
-          <button type="button" id="btn-advert-flood">Flood advert</button>
-        </div>
-        <p class="mono small" id="advert-msg"></p>
+        <details class="accordion">
+          <summary>Region</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Optional MeshCore region scope on the companion. Unscoped = no
+              region filter. Scoped = set a short code (e.g. <code>be</code>).
+            </p>
+            <p class="field-label">Region scope</p>
+            <div
+              class="tier-segment"
+              id="region-scope-toggle"
+              role="group"
+              aria-label="Region scope"
+            >
+              <button type="button" data-scope="off">Unscoped</button>
+              <button type="button" data-scope="on">Scoped</button>
+            </div>
+            <label class="field" id="region-scope-field">
+              <span>Scope code</span>
+              <span class="field-help"
+                >Max 29 characters. Applied to the companion radio identity.</span
+              >
+              <input
+                type="text"
+                id="region-scope"
+                maxlength="29"
+                placeholder="e.g. be"
+                autocomplete="off"
+              />
+            </label>
+            <div class="actions">
+              <button type="button" id="btn-region">Save region</button>
+            </div>
+            <p class="mono small" id="region-msg"></p>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Join path</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Players must <strong>advert as a Chat Node</strong> once before the
+              first DM so Zork can import their pubkey. Then scan the QR / open the
+              link and DM <code>new game</code>.
+            </p>
+            <div class="join-grid">
+              <div>
+                <h3 id="join-title">Companion (game)</h3>
+                <p class="mono small" id="adv-key">—</p>
+                <p class="mono small">
+                  <a id="adv-url" href="#" class="mesh-link">—</a>
+                </p>
+              </div>
+              <canvas
+                id="adv-qr"
+                width="180"
+                height="180"
+                aria-label="Zork companion QR"
+              ></canvas>
+            </div>
+            <p class="mono small" id="qr-msg"></p>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Discovery</summary>
+          <div class="accordion-body">
+            <p class="field-help">
+              Silent / stealth keeps the companion invisible on the mesh. Local or
+              flood advert announces it (visible on the production mesh — use with
+              care).
+            </p>
+            <div class="setting">
+              <label class="check">
+                <input type="checkbox" id="stealth_mode" />
+                Silent / stealth mode
+              </label>
+              <p class="field-help">
+                On = no companion advert (default / recommended). Off = you may
+                send a one-shot local or flood advert below.
+              </p>
+            </div>
+            <p id="advert-mode" class="mono small">advert_mode: silent</p>
+            <div class="actions">
+              <button type="button" id="btn-advert-local">Local advert</button>
+              <button type="button" id="btn-advert-flood">Flood advert</button>
+            </div>
+            <p class="field-help">
+              <strong>Local</strong> = nearby radios only.
+              <strong>Flood</strong> = mesh-wide announce. Both require stealth
+              off.
+            </p>
+            <p class="mono small" id="advert-msg"></p>
+          </div>
+        </details>
       </section>
     </div>
 
