@@ -285,3 +285,50 @@ def test_runtime_lists_every_active_player(tmp_path: Path):
     runtime = ctrl.to_runtime()
     assert {row["pubkey"] for row in runtime["actives"]} == {alice, bob}
     assert runtime["active"] is not None
+
+
+def test_grace_keeps_recent_active_when_busy(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    a = "11" * 32
+    assert _eval(ctrl, a, is_quiet=True, path_len=5).allow_play is True
+    d = _eval(
+        ctrl,
+        a,
+        is_quiet=False,
+        path_len=5,
+        last_activity_at=time.time() - 60,
+        active_grace_seconds=1200,
+    )
+    assert d.allow_play is True
+    assert ctrl.is_active(a)
+
+
+def test_grace_blocks_stale_active_when_busy(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    a = "22" * 32
+    assert _eval(ctrl, a, is_quiet=True, path_len=5).allow_play is True
+    d = _eval(
+        ctrl,
+        a,
+        is_quiet=False,
+        path_len=5,
+        last_activity_at=time.time() - 2000,
+        active_grace_seconds=1200,
+    )
+    assert d.allow_play is False
+    assert d.reply == MSG_BUSY
+
+
+def test_grace_does_not_admit_new_remote_when_busy(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    a = "33" * 32
+    d = _eval(
+        ctrl,
+        a,
+        is_quiet=False,
+        path_len=5,
+        last_activity_at=time.time(),
+        active_grace_seconds=1200,
+    )
+    assert d.allow_play is False
+    assert not ctrl.is_active(a)

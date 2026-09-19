@@ -9,7 +9,7 @@ from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable
 
-from zorcore.config import Settings
+from zorcore.config import Settings, autochannel_mesh_name
 from zorcore.contact_sync import normalize_pubkey, resolve_pubkey
 from zorcore.text import format_multipart, normalize_command
 
@@ -166,17 +166,8 @@ class CompanionClient:
             return False
 
     async def _apply_advert_policy(self) -> None:
-        assert self.meshcore is not None
-        s = self.settings
-        if not s.companion_advert_enabled:
-            logger.info("Companion advert disabled (silent mode)")
-            return
-        flood = bool(s.companion_advert_flood)
-        local = bool(s.companion_advert_local) or flood
-        if not local and not flood:
-            logger.info("Advert master on but local/flood off — staying silent")
-            return
-        await self.send_advert(flood=flood)
+        """Never auto-advert. Companion stays silent unless an admin queues send_advert."""
+        logger.info("Companion advert policy: silent (manual Local/Flood only)")
 
     async def apply_radio_policy(self) -> None:
         """Re-apply name / path / region / advert after a soft settings reload."""
@@ -406,6 +397,81 @@ class CompanionClient:
             return True
         except Exception:
             logger.exception("send_dm failed")
+            return False
+
+    async def resolve_autochannel_index(self, name: str) -> int | None:
+        """Find or create a companion channel slot for an autochannel #name."""
+        mesh_name = autochannel_mesh_name(name)
+        if not mesh_name or not self.meshcore or not self.connected:
+            return None
+        cmds = self.meshcore.commands
+        if not hasattr(cmds, "get_channel") or not hasattr(cmds, "set_channel"):
+            logger.warning("Companion lacks get_channel/set_channel")
+            return None
+        free: int | None = None
+        try:
+            for idx in range(40):
+                result = await cmds.get_channel(idx)
+                if result is None or getattr(result, "is_error", lambda: False)():
+                    continue
+                payload = getattr(result, "payload", None) or {}
+                if not isinstance(payload, dict):
+                    continue
+                existing = str(payload.get("channel_name") or "").strip()
+                if existing == mesh_name:
+                    return idx
+                if not existing and free is None:
+                    free = idx
+            if free is None:
+                logger.warning("No free companion channel slot for %s", mesh_name)
+                return None
+            set_result = await cmds.set_channel(free, mesh_name)
+            if set_result is None or getattr(set_result, "is_error", lambda: False)():
+                logger.warning(
+                    "set_channel failed idx=%s name=%s: %s",
+                    free,
+                    mesh_name,
+                    getattr(set_result, "payload", set_result),
+                )
+                return None
+            logger.info("Autochannel %s installed at companion slot %s", mesh_name, free)
+            return free
+        except Exception:
+            logger.exception("resolve_autochannel_index failed for %s", mesh_name)
+            return None
+
+    async def send_channel(self, name: str, text: str) -> bool:
+        """Send one unchunked line to a MeshCore autochannel by name (#…)."""
+        if not self.meshcore or not self.connected:
+            return False
+        msg = (text or "").strip()
+        if not msg:
+            return False
+        chan = await self.resolve_autochannel_index(name)
+        if chan is None:
+            return False
+        cmds = self.meshcore.commands
+        try:
+            if hasattr(cmds, "send_chan_msg"):
+                result = await cmds.send_chan_msg(int(chan), msg)
+            elif hasattr(cmds, "send_channel_msg"):
+                result = await cmds.send_channel_msg(int(chan), msg)
+            else:
+                logger.warning("No send_chan_msg on meshcore client")
+                return False
+            if result is None:
+                return False
+            if getattr(result, "is_error", lambda: False)():
+                logger.warning(
+                    "send_channel error name=%s idx=%s: %s",
+                    name,
+                    chan,
+                    getattr(result, "payload", result),
+                )
+                return False
+            return True
+        except Exception:
+            logger.exception("send_channel failed name=%s", name)
             return False
 
     async def list_contact_pubkeys(self) -> set[str]:

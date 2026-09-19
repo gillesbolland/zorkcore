@@ -180,6 +180,7 @@ class PluginApp:
                 "play_max_tier": self.settings.play_max_tier,
                 "quiet_hold_seconds": self.settings.quiet_hold_seconds,
                 "quiet_poll_seconds": self.settings.quiet_poll_seconds,
+                "active_grace_seconds": self.settings.active_grace_seconds,
                 "offer_timeout_seconds": self.settings.offer_timeout_seconds,
                 "queue_max": self.settings.queue_max,
                 "local_max_hops": self.settings.local_max_hops,
@@ -187,9 +188,13 @@ class PluginApp:
                 "daemons_enabled": self.settings.daemons_enabled,
                 "daemon_idle_pause_seconds": self.settings.daemon_idle_pause_seconds,
                 "world_events_enabled": self.settings.world_events_enabled,
+                "world_events_channel_enabled": self.settings.world_events_channel_enabled,
+                "world_events_channel_name": self.settings.world_events_channel_name,
                 "reply_settle_ms": self.settings.reply_settle_ms,
                 "inter_chunk_delay_ms": self.settings.inter_chunk_delay_ms,
             },
+            "available_regions": self.stats.get("available_regions")
+            or self._fetch_available_regions(),
             "dungeon": self.world_state.to_runtime(self.game_data.npcs),
             "quiet": self.quiet.to_runtime(),
             "access": self.access.to_runtime(),
@@ -459,22 +464,43 @@ class PluginApp:
                     continue
                 await self._notify(key, text)
 
-        if not broadcasts or not self.settings.world_events_enabled:
+        if not broadcasts:
+            return
+        dm_on = bool(self.settings.world_events_enabled)
+        channel_on = bool(self.settings.world_events_channel_enabled)
+        if not dm_on and not channel_on:
             return
         now = time.time()
         gap = float(self.settings.broadcast_min_interval_seconds or 0)
         if gap and (now - self._last_broadcast_at) < gap:
             return
-        targets = [
-            k
-            for k in self.access.actives
-            if k != normalize_pubkey(actor_key) and self._may_send_to(k)
-        ]
-        if not targets:
+        targets = (
+            [
+                k
+                for k in self.access.actives
+                if k != normalize_pubkey(actor_key) and self._may_send_to(k)
+            ]
+            if dm_on
+            else []
+        )
+        if not targets and not channel_on:
             return
         for text in broadcasts[:1]:
             for key in targets:
                 await self._notify(key, text)
+            if channel_on:
+                chan_name = (self.settings.world_events_channel_name or "").strip()
+                if not chan_name:
+                    logger.warning(
+                        "world_events_channel_enabled but world_events_channel_name empty"
+                    )
+                else:
+                    await self._settle_before_tx()
+                    ok = await self.companion.send_channel(chan_name, text)
+                    if ok:
+                        self.stats["messages_out"] = (
+                            int(self.stats.get("messages_out", 0)) + 1
+                        )
             self._last_broadcast_at = time.time()
 
     async def _drain_game_outbound(self, actor_key: str = "") -> None:
@@ -530,6 +556,57 @@ class PluginApp:
         """True when any current player is near enough to keep playing."""
         hops = self.settings.local_max_hops
         return any(self.access.is_local(k, local_max_hops=hops) for k in self.access.actives)
+
+    def _within_active_grace(self, pubkey: str) -> bool:
+        """True when pubkey holds an active slot and last session save is within grace."""
+        key = normalize_pubkey(pubkey)
+        if not self.access.is_active(key):
+            return False
+        grace = int(getattr(self.settings, "active_grace_seconds", 0) or 0)
+        if grace <= 0:
+            return False
+        session = self.sessions.load(key)
+        if session is None or not float(session.updated_at or 0):
+            return False
+        return (time.time() - float(session.updated_at)) <= grace
+
+    def _fetch_available_regions(self) -> list[str]:
+        """Region codes from OpenHop transport keys (#be → be)."""
+        try:
+            import urllib.request
+
+            url = f"{self.settings.repeater_api_base}/api/transport_keys"
+            req = urllib.request.Request(
+                url, headers=api_headers(self.settings), method="GET"
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                body = json.loads(resp.read().decode("utf-8") or "{}")
+            rows = body.get("data") if isinstance(body, dict) else None
+            if not isinstance(rows, list):
+                return []
+            out: list[str] = []
+            seen: set[str] = set()
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                name = str(row.get("name") or "").strip()
+                if not name:
+                    continue
+                if name.startswith("#"):
+                    name = name[1:].strip()
+                if not name or name == "*":
+                    continue
+                key = name.lower()
+                if key in seen:
+                    continue
+                seen.add(key)
+                out.append(name)
+            out.sort(key=lambda s: s.lower())
+            self.stats["available_regions"] = out
+            return out
+        except Exception:
+            logger.debug("transport_keys fetch failed", exc_info=True)
+            return list(self.stats.get("available_regions") or [])
 
     def _persist_adventurer_key(self, key: str) -> None:
         """Keep config.json aligned with the live companion identity."""
@@ -589,6 +666,9 @@ class PluginApp:
         self.access.note_mesh_state(self.quiet.is_quiet)
         self.world_state.note_player_activity()
 
+        existing = self.sessions.load(sender_key)
+        last_activity_at = float(existing.updated_at) if existing else None
+
         decision = self.access.evaluate(
             sender_key,
             display_name,
@@ -601,6 +681,8 @@ class PluginApp:
             path_len=path_len,
             local_max_hops=self.settings.local_max_hops,
             max_local_players=self.settings.max_local_players,
+            last_activity_at=last_activity_at,
+            active_grace_seconds=self.settings.active_grace_seconds,
         )
         if not decision.allow_play:
             if decision.silent or not decision.reply:
@@ -615,7 +697,7 @@ class PluginApp:
             return
 
         self.access.record_command(sender_key, display_name)
-        session = self.sessions.load(sender_key)
+        session = existing
 
         if session is None:
             if raw in self.start_phrases:
@@ -741,10 +823,16 @@ class PluginApp:
                             ):
                                 await self._notify(pubkey, self._voiced(msg))
                     else:
-                        # Mesh above max tier: demote remote active so local players can take the slot.
-                        if self.access.active and not self._active_is_local():
-                            demoted = self.access.active
-                            demoted_key = demoted.pubkey
+                        # Mesh above max tier: demote stale remote actives so locals can take slots.
+                        # Recently active remotes keep playing through flaps (active_grace_seconds).
+                        for demoted_key in list(
+                            self.access.nonlocal_active_keys(local_max_hops=hops)
+                        ):
+                            if self._within_active_grace(demoted_key):
+                                continue
+                            demoted = self.access.actives.get(demoted_key)
+                            if demoted is None:
+                                continue
                             demoted_name = demoted.display_name
                             # Preserve busy-notice state across demotion.
                             q = QueueEntry(
@@ -765,9 +853,6 @@ class PluginApp:
                                     demoted_key, self.msg("paused", msg)
                                 )
                                 self.access.mark_busy_ack(demoted_key, ok)
-                        elif self.access.active and self.access.active.paused:
-                            # Local active while mesh closed — ensure paused state is consistent.
-                            pass
                         if not self.access.active:
                             for pubkey, msg in self.access.maybe_offer_after_quiet(
                                 timeout, mesh_open=False, local_max_hops=hops

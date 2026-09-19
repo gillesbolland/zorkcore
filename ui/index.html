@@ -101,8 +101,8 @@
                 (tier gate + queue)</label
               >
               <p class="field-help">
-                Master switch. Off = legacy multi-session (bans still apply if
-                honor bans is on). Default: on.
+                Master switch. Off = legacy multi-session (ban list still applies
+                if Enforce ban list is on). Default: on.
               </p>
             </div>
             <p class="field-label">Max play tier</p>
@@ -124,6 +124,20 @@
                   opens. Default 120; range 0–3600.</span
                 >
                 <input type="number" id="quiet_hold_seconds" min="0" max="3600" />
+              </label>
+              <label class="field">
+                <span>Active grace (seconds)</span>
+                <span class="field-help"
+                  >Recently active remotes keep their slot through busy mesh flaps
+                  if they commanded within this window. Default 1200 (20 min);
+                  range 0–86400. New / stale remotes still wait for quiet.</span
+                >
+                <input
+                  type="number"
+                  id="active_grace_seconds"
+                  min="0"
+                  max="86400"
+                />
               </label>
               <label class="field">
                 <span>Poll interval (seconds)</span>
@@ -158,11 +172,11 @@
             </div>
             <div class="setting">
               <label class="check"
-                ><input type="checkbox" id="bans_enabled" /> Honor bans</label
+                ><input type="checkbox" id="bans_enabled" /> Enforce ban list</label
               >
               <p class="field-help">
-                Block listed pubkeys from playing. Managed on the Bans tab.
-                Default: on.
+                When on, pubkeys on the Bans tab cannot play. When off, the list
+                is kept but ignored (useful for temporary reopen). Default: on.
               </p>
             </div>
             <div class="form-grid">
@@ -224,6 +238,16 @@
                 Default: on.
               </p>
             </div>
+            <div class="setting">
+              <label class="check"
+                ><input type="checkbox" id="world_events_channel_enabled" /> Also
+                publish to MeshCore channel</label
+              >
+              <p class="field-help">
+                Mirror the same short world-event line to a MeshCore autochannel.
+                Uses airtime — off by default.
+              </p>
+            </div>
             <div class="form-grid">
               <label class="field">
                 <span>Daemon idle pause (seconds)</span>
@@ -236,6 +260,21 @@
                   id="daemon_idle_pause_seconds"
                   min="30"
                   max="86400"
+                />
+              </label>
+              <label class="field">
+                <span>Autochannel name</span>
+                <span class="field-help"
+                  >e.g. <code>#zork</code> or <code>zork</code> (leading
+                  <code>#</code> added if omitted). Companion slot is looked up or
+                  created automatically.</span
+                >
+                <input
+                  type="text"
+                  id="world_events_channel_name"
+                  maxlength="31"
+                  placeholder="#zork"
+                  autocomplete="off"
                 />
               </label>
             </div>
@@ -352,32 +391,18 @@
           <summary>Region</summary>
           <div class="accordion-body">
             <p class="field-help">
-              Optional MeshCore region scope on the companion. Unscoped = no
-              region filter. Scoped = set a short code (e.g. <code>be</code>).
+              Optional MeshCore region scope on the companion. Choices come from
+              OpenHop transport keys. Unscoped = no region filter.
             </p>
-            <p class="field-label">Region scope</p>
-            <div
-              class="tier-segment"
-              id="region-scope-toggle"
-              role="group"
-              aria-label="Region scope"
-            >
-              <button type="button" data-scope="off">Unscoped</button>
-              <button type="button" data-scope="on">Scoped</button>
-            </div>
             <label class="field" id="region-scope-field">
-              <span>Scope code</span>
+              <span>Region scope</span>
               <span class="field-help"
-                >Max 29 characters. Applied to the companion radio identity.</span
+                >Applied to the companion radio identity. Leading
+                <code>#</code> is stripped when saving.</span
               >
-              <input
-                type="text"
-                id="region-scope"
-                maxlength="29"
-                placeholder="e.g. be"
-                autocomplete="off"
-              />
+              <select id="region-scope" aria-label="Region scope"></select>
             </label>
+            <p class="mono small" id="region-hint"></p>
             <div class="actions">
               <button type="button" id="btn-region">Save region</button>
             </div>
@@ -391,7 +416,8 @@
             <p class="field-help">
               Players must <strong>advert as a Chat Node</strong> once before the
               first DM so Zork can import their pubkey. Then scan the QR / open the
-              link and DM <code>new game</code>.
+              link and DM <code>new game</code>. The companion never auto-adverts —
+              use the buttons below only when you want to announce it on the mesh.
             </p>
             <div class="join-grid">
               <div>
@@ -409,37 +435,16 @@
               ></canvas>
             </div>
             <p class="mono small" id="qr-msg"></p>
-          </div>
-        </details>
-
-        <details class="accordion">
-          <summary>Discovery</summary>
-          <div class="accordion-body">
+            <p class="field-label">Announce companion</p>
             <p class="field-help">
-              Silent / stealth keeps the companion invisible on the mesh. Local or
-              flood advert announces it (visible on the production mesh — use with
-              care).
+              One-shot only. <strong>Local</strong> = nearby radios.
+              <strong>Flood</strong> = mesh-wide (use with care). Settings stay
+              silent afterward.
             </p>
-            <div class="setting">
-              <label class="check">
-                <input type="checkbox" id="stealth_mode" />
-                Silent / stealth mode
-              </label>
-              <p class="field-help">
-                On = no companion advert (default / recommended). Off = you may
-                send a one-shot local or flood advert below.
-              </p>
-            </div>
-            <p id="advert-mode" class="mono small">advert_mode: silent</p>
             <div class="actions">
               <button type="button" id="btn-advert-local">Local advert</button>
               <button type="button" id="btn-advert-flood">Flood advert</button>
             </div>
-            <p class="field-help">
-              <strong>Local</strong> = nearby radios only.
-              <strong>Flood</strong> = mesh-wide announce. Both require stealth
-              off.
-            </p>
             <p class="mono small" id="advert-msg"></p>
           </div>
         </details>

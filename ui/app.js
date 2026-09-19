@@ -278,25 +278,47 @@ function setMeshLink(id, url) {
   }
 }
 
-let regionScoped = false;
+function fillRegionSelect(runtime, config) {
+  const sel = document.getElementById("region-scope");
+  if (!sel) return;
+  if (document.activeElement === sel) return;
 
-function setRegionToggle(scoped, code) {
-  regionScoped = !!scoped;
-  const root = document.getElementById("region-scope-toggle");
-  if (root) {
-    for (const btn of root.querySelectorAll("button[data-scope]")) {
-      btn.classList.toggle(
-        "active",
-        btn.getAttribute("data-scope") === (regionScoped ? "on" : "off")
-      );
-    }
+  const current = String(runtime.region_scope ?? config.region_scope ?? "")
+    .trim()
+    .replace(/^#/, "");
+  const regions = Array.isArray(runtime.available_regions)
+    ? runtime.available_regions
+        .map((r) => String(r || "").trim().replace(/^#/, ""))
+        .filter(Boolean)
+    : [];
+  const seen = new Set();
+  const options = [{ value: "", label: "Unscoped" }];
+  for (const code of regions) {
+    const key = code.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    options.push({ value: code, label: `#${code}` });
   }
-  const field = document.getElementById("region-scope-field");
-  if (field) field.classList.toggle("is-hidden", !regionScoped);
-  const input = document.getElementById("region-scope");
-  if (input && document.activeElement !== input) {
-    input.value = regionScoped ? code || "" : "";
-    input.disabled = !regionScoped;
+  if (current && !seen.has(current.toLowerCase())) {
+    options.push({ value: current, label: `#${current} (saved)` });
+  }
+
+  const prev = sel.value;
+  sel.innerHTML = options
+    .map(
+      (o) =>
+        `<option value="${String(o.value).replace(/"/g, "&quot;")}">${o.label}</option>`
+    )
+    .join("");
+  const want = current || "";
+  const hasWant = Array.from(sel.options).some((o) => o.value === want);
+  sel.value = hasWant ? want : prev || "";
+
+  const hint = document.getElementById("region-hint");
+  if (hint) {
+    hint.textContent = regions.length
+      ? `${regions.length} region(s) from OpenHop transport keys`
+      : "No transport keys loaded — showing Unscoped / saved only";
   }
 }
 
@@ -407,6 +429,8 @@ function safetyFrom(runtime, config) {
     play_max_tier: s.play_max_tier ?? config.play_max_tier ?? "normal",
     quiet_hold_seconds: s.quiet_hold_seconds ?? config.quiet_hold_seconds ?? 120,
     quiet_poll_seconds: s.quiet_poll_seconds ?? config.quiet_poll_seconds ?? 30,
+    active_grace_seconds:
+      s.active_grace_seconds ?? config.active_grace_seconds ?? 1200,
     offer_timeout_seconds:
       s.offer_timeout_seconds ?? config.offer_timeout_seconds ?? 900,
     queue_max: s.queue_max ?? config.queue_max ?? 20,
@@ -416,6 +440,12 @@ function safetyFrom(runtime, config) {
       s.daemon_idle_pause_seconds ?? config.daemon_idle_pause_seconds ?? 300,
     world_events_enabled:
       s.world_events_enabled ?? config.world_events_enabled ?? true,
+    world_events_channel_enabled:
+      s.world_events_channel_enabled ??
+      config.world_events_channel_enabled ??
+      false,
+    world_events_channel_name:
+      s.world_events_channel_name ?? config.world_events_channel_name ?? "",
     reply_settle_ms: s.reply_settle_ms ?? config.reply_settle_ms ?? 3500,
     inter_chunk_delay_ms:
       s.inter_chunk_delay_ms ?? config.inter_chunk_delay_ms ?? 800,
@@ -441,6 +471,7 @@ function fillSafetyForm(runtime, config) {
     "bans_enabled",
     "daemons_enabled",
     "world_events_enabled",
+    "world_events_channel_enabled",
   ];
   for (const id of ids) {
     const el = document.getElementById(id);
@@ -449,6 +480,7 @@ function fillSafetyForm(runtime, config) {
   const nums = [
     "quiet_hold_seconds",
     "quiet_poll_seconds",
+    "active_grace_seconds",
     "offer_timeout_seconds",
     "queue_max",
     "max_local_players",
@@ -459,6 +491,10 @@ function fillSafetyForm(runtime, config) {
   for (const id of nums) {
     const el = document.getElementById(id);
     if (el && document.activeElement !== el) el.value = String(s[id]);
+  }
+  const chanName = document.getElementById("world_events_channel_name");
+  if (chanName && document.activeElement !== chanName) {
+    chanName.value = s.world_events_channel_name || "";
   }
   setTierSegment(s.play_max_tier);
 }
@@ -756,11 +792,7 @@ function render(runtime, identities, config = {}) {
       : "");
   const region = runtime.region_scope ?? config.region_scope ?? "";
   const pathMode = runtime.path_hash_mode ?? config.path_hash_mode ?? 2;
-  const regionFocused =
-    document.activeElement && document.activeElement.id === "region-scope";
-  if (!regionFocused) {
-    setRegionToggle(!!region, region);
-  }
+  fillRegionSelect(runtime, config);
 
   fillSafetyForm(runtime, config);
   renderQuietChip(runtime);
@@ -814,20 +846,6 @@ function render(runtime, identities, config = {}) {
   setMeshLink("adv-url", advUrl);
   drawCompanionQr(document.getElementById("adv-qr"), advUrl);
 
-  const stealth = document.getElementById("stealth_mode");
-  if (stealth && document.activeElement !== stealth) {
-    const silent =
-      (runtime.advert_mode || "silent") === "silent" ||
-      runtime.companion_advert_enabled === false ||
-      (config.companion_advert_enabled === false &&
-        runtime.companion_advert_enabled == null);
-    stealth.checked = silent;
-  }
-  const advertMode = document.getElementById("advert-mode");
-  if (advertMode) {
-    advertMode.textContent = `advert_mode: ${runtime.advert_mode || "silent"}`;
-  }
-
   const companion = findCompanion(identities, name);
   const linked = isLinked(runtime, config);
   renderChips({
@@ -875,19 +893,20 @@ async function linkToPlugin() {
   }
 
   const cfg = await fetchPluginConfig();
-  const region = regionScoped
-    ? (document.getElementById("region-scope").value || "")
-        .trim()
-        .replace(/^#/, "")
-    : "";
+  const region = (
+    document.getElementById("region-scope")?.value ||
+    ""
+  )
+    .trim()
+    .replace(/^#/, "");
 
   Object.assign(cfg, {
     meshcore_host: BIND,
     meshcore_port: TCP_PORT,
     adventurer_public_key: advKey,
-    companion_advert_enabled: cfg.companion_advert_enabled ?? false,
-    companion_advert_local: cfg.companion_advert_local ?? false,
-    companion_advert_flood: cfg.companion_advert_flood ?? false,
+    companion_advert_enabled: false,
+    companion_advert_local: false,
+    companion_advert_flood: false,
     advert_sync_hours: cfg.advert_sync_hours ?? 6,
     advert_sync_limit: cfg.advert_sync_limit ?? 20,
     path_hash_mode: 2,
@@ -915,6 +934,9 @@ async function saveSafetySettings() {
   cfg.quiet_poll_seconds = Number(
     document.getElementById("quiet_poll_seconds").value
   );
+  cfg.active_grace_seconds = Number(
+    document.getElementById("active_grace_seconds").value
+  );
   cfg.offer_timeout_seconds = Number(
     document.getElementById("offer_timeout_seconds").value
   );
@@ -926,6 +948,15 @@ async function saveSafetySettings() {
   cfg.world_events_enabled = document.getElementById(
     "world_events_enabled"
   ).checked;
+  cfg.world_events_channel_enabled = document.getElementById(
+    "world_events_channel_enabled"
+  ).checked;
+  cfg.world_events_channel_name = (
+    document.getElementById("world_events_channel_name").value || ""
+  )
+    .trim()
+    .replace(/^#/, "");
+  delete cfg.world_events_channel_index;
   cfg.daemon_idle_pause_seconds = Number(
     document.getElementById("daemon_idle_pause_seconds").value
   );
@@ -974,14 +1005,9 @@ async function refreshAll() {
 
 async function saveRegionScope() {
   const cfg = await fetchPluginConfig();
-  const code = regionScoped
-    ? (document.getElementById("region-scope").value || "")
-        .trim()
-        .replace(/^#/, "")
-    : "";
-  if (regionScoped && !code) {
-    throw new Error("Enter a scope code, or switch to Unscoped.");
-  }
+  const code = (document.getElementById("region-scope").value || "")
+    .trim()
+    .replace(/^#/, "");
   cfg.region_scope = code;
   cfg.admin_actions = [{ op: "apply_radio_policy" }];
   await api("/api/plugins/settings", {
@@ -993,41 +1019,20 @@ async function saveRegionScope() {
     : "Region scope cleared — companion is unscoped.";
 }
 
-async function saveStealthMode(silent) {
-  const cfg = await fetchPluginConfig();
-  cfg.companion_advert_enabled = !silent;
-  if (silent) {
-    cfg.companion_advert_local = false;
-    cfg.companion_advert_flood = false;
-  }
-  cfg.admin_actions = [{ op: "apply_radio_policy" }];
-  await api("/api/plugins/settings", {
-    method: "POST",
-    body: JSON.stringify({ id: PLUGIN_ID, config: cfg, restart: false }),
-  });
-  return silent
-    ? "Silent / stealth mode on — companion will not advert."
-    : "Stealth off — use Local / Flood advert to announce the companion.";
-}
-
 async function requestAdvert(flood) {
   const cfg = await fetchPluginConfig();
-  cfg.companion_advert_enabled = true;
-  cfg.companion_advert_local = true;
-  cfg.companion_advert_flood = !!flood;
-  cfg.admin_actions = [
-    { op: "apply_radio_policy" },
-    { op: "send_advert", flood: !!flood },
-  ];
+  // One-shot only — never leave auto-advert enabled.
+  cfg.companion_advert_enabled = false;
+  cfg.companion_advert_local = false;
+  cfg.companion_advert_flood = false;
+  cfg.admin_actions = [{ op: "send_advert", flood: !!flood }];
   await api("/api/plugins/settings", {
     method: "POST",
     body: JSON.stringify({ id: PLUGIN_ID, config: cfg, restart: false }),
   });
-  const stealth = document.getElementById("stealth_mode");
-  if (stealth) stealth.checked = false;
   return flood
-    ? "Flood advert requested — companion is visible mesh-wide."
-    : "Local advert requested — companion is visible nearby.";
+    ? "Flood advert requested — companion announced mesh-wide (stays silent after)."
+    : "Local advert requested — companion announced nearby (stays silent after).";
 }
 
 function wireButtons() {
@@ -1057,17 +1062,6 @@ function wireButtons() {
     });
   }
 
-  const scopeRoot = document.getElementById("region-scope-toggle");
-  if (scopeRoot) {
-    scopeRoot.addEventListener("click", (ev) => {
-      const btn = ev.target.closest("button[data-scope]");
-      if (!btn) return;
-      const on = btn.getAttribute("data-scope") === "on";
-      const current = document.getElementById("region-scope")?.value || "";
-      setRegionToggle(on, current);
-    });
-  }
-
   const btnRegion = document.getElementById("btn-region");
   if (btnRegion) {
     btnRegion.onclick = async () => {
@@ -1078,22 +1072,6 @@ function wireButtons() {
         setTimeout(refreshAll, 1200);
       } catch (e) {
         setSoftMsg("region-msg", e.message || String(e), true);
-      } finally {
-        busy(false);
-      }
-    };
-  }
-
-  const stealth = document.getElementById("stealth_mode");
-  if (stealth) {
-    stealth.onchange = async () => {
-      busy(true);
-      try {
-        const msg = await saveStealthMode(stealth.checked);
-        setSoftMsg("advert-msg", msg, false);
-        setTimeout(refreshAll, 1200);
-      } catch (e) {
-        setSoftMsg("advert-msg", e.message || String(e), true);
       } finally {
         busy(false);
       }

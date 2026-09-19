@@ -710,6 +710,8 @@ class AccessController:
         path_len: int | None = None,
         local_max_hops: int = DEFAULT_LOCAL_MAX_HOPS,
         max_local_players: int = 1,
+        last_activity_at: float | None = None,
+        active_grace_seconds: int = 1200,
     ) -> AccessDecision:
         key = normalize_pubkey(pubkey)
         self._touch_name(key, display_name)
@@ -723,7 +725,16 @@ class AccessController:
             return AccessDecision(allow_play=True)
 
         local = self.is_local(key, path_len=path_len, local_max_hops=local_max_hops)
-        may_play = is_quiet or local
+        grace = max(0, int(active_grace_seconds or 0))
+        recent = False
+        if (
+            grace
+            and self.is_active(key)
+            and last_activity_at is not None
+            and float(last_activity_at) > 0
+        ):
+            recent = (time.time() - float(last_activity_at)) <= grace
+        may_play = is_quiet or local or recent
         local_exception = (not is_quiet) and local
 
         if not may_play:

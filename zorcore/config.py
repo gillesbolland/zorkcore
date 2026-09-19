@@ -42,6 +42,7 @@ DEFAULTS: dict[str, Any] = {
     "play_max_tier": "normal",
     "quiet_hold_seconds": 120,
     "quiet_poll_seconds": 30,
+    "active_grace_seconds": 1200,
     "single_player_enabled": True,
     "offer_timeout_seconds": 900,
     "queue_max": 20,
@@ -51,6 +52,8 @@ DEFAULTS: dict[str, Any] = {
     "daemon_idle_pause_seconds": 300,
     "daemon_min_interval_seconds": 60,
     "world_events_enabled": True,
+    "world_events_channel_enabled": False,
+    "world_events_channel_name": "",
     "broadcast_min_interval_seconds": 30,
     "log_level": "INFO",
 }
@@ -82,6 +85,7 @@ class Settings:
     play_max_tier: str
     quiet_hold_seconds: int
     quiet_poll_seconds: int
+    active_grace_seconds: int
     single_player_enabled: bool
     offer_timeout_seconds: int
     queue_max: int
@@ -91,6 +95,8 @@ class Settings:
     daemon_idle_pause_seconds: int
     daemon_min_interval_seconds: int
     world_events_enabled: bool
+    world_events_channel_enabled: bool
+    world_events_channel_name: str
     broadcast_min_interval_seconds: int
     log_level: str
 
@@ -132,6 +138,28 @@ def _require_str(raw: Any, key: str) -> str:
     if not isinstance(raw, str):
         raise ValueError(f"{key} must be a string")
     return raw
+
+
+def normalize_autochannel_name(raw: Any) -> str:
+    """Store channel name without leading #; empty means unset."""
+    name = _require_str(raw if raw is not None else "", "world_events_channel_name").strip()
+    if name.startswith("#"):
+        name = name[1:].strip()
+    # MeshCore stores "#name" in 32 bytes; leave room for the hash prefix.
+    while name and len(("#" + name).encode("utf-8")) > 32:
+        name = name[:-1]
+    return name
+
+
+def autochannel_mesh_name(stored: str) -> str:
+    """MeshCore autochannel form (#name) used for set_channel / matching."""
+    name = (stored or "").strip()
+    if not name:
+        return ""
+    if not name.startswith("#"):
+        name = "#" + name
+    encoded = name.encode("utf-8")[:32]
+    return encoded.decode("utf-8", "ignore")
 
 
 def load_settings(data_dir: Path | None = None) -> Settings:
@@ -221,6 +249,12 @@ def load_settings(data_dir: Path | None = None) -> Settings:
         5,
         600,
     )
+    active_grace = _require_int(
+        raw.get("active_grace_seconds", DEFAULTS["active_grace_seconds"]),
+        "active_grace_seconds",
+        0,
+        86_400,
+    )
     offer_timeout = _require_int(
         raw.get("offer_timeout_seconds", DEFAULTS["offer_timeout_seconds"]),
         "offer_timeout_seconds",
@@ -253,6 +287,13 @@ def load_settings(data_dir: Path | None = None) -> Settings:
         "broadcast_min_interval_seconds",
         0,
         3600,
+    )
+    # Legacy world_events_channel_index is ignored; name is the autochannel key.
+    channel_name = normalize_autochannel_name(
+        raw.get(
+            "world_events_channel_name",
+            DEFAULTS["world_events_channel_name"],
+        )
     )
     play_max = _require_str(
         raw.get("play_max_tier", DEFAULTS["play_max_tier"]), "play_max_tier"
@@ -301,6 +342,7 @@ def load_settings(data_dir: Path | None = None) -> Settings:
         play_max_tier=play_max,
         quiet_hold_seconds=quiet_hold,
         quiet_poll_seconds=quiet_poll,
+        active_grace_seconds=active_grace,
         single_player_enabled=_require_bool(
             raw.get("single_player_enabled", DEFAULTS["single_player_enabled"]),
             "single_player_enabled",
@@ -318,6 +360,14 @@ def load_settings(data_dir: Path | None = None) -> Settings:
             raw.get("world_events_enabled", DEFAULTS["world_events_enabled"]),
             "world_events_enabled",
         ),
+        world_events_channel_enabled=_require_bool(
+            raw.get(
+                "world_events_channel_enabled",
+                DEFAULTS["world_events_channel_enabled"],
+            ),
+            "world_events_channel_enabled",
+        ),
+        world_events_channel_name=channel_name,
         broadcast_min_interval_seconds=broadcast_min,
         log_level=level,
     )

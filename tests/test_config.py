@@ -24,11 +24,15 @@ def test_quiet_defaults(tmp_path: Path):
     assert s.play_max_tier == "normal"
     assert s.quiet_hold_seconds == 120
     assert s.quiet_poll_seconds == 30
+    assert s.active_grace_seconds == 1200
     assert s.single_player_enabled is True
     assert s.offer_timeout_seconds == 900
     assert s.queue_max == 20
     assert s.local_max_hops == 3
     assert s.inter_chunk_delay_ms == 800
+    assert s.world_events_enabled is True
+    assert s.world_events_channel_enabled is False
+    assert s.world_events_channel_name == ""
     assert not hasattr(s, "lobby_enabled")
     assert not hasattr(s, "quiet_max_utilization_percent")
     assert not hasattr(s, "zork_lobby_public_key")
@@ -56,3 +60,27 @@ def test_region_scope_strips_hash(tmp_path: Path):
     )
     s = load_settings(tmp_path)
     assert s.region_scope == "be"
+
+
+def test_autochannel_name_strips_hash(tmp_path: Path):
+    (tmp_path / "config.json").write_text(
+        json.dumps({"world_events_channel_name": "#zork"}),
+        encoding="utf-8",
+    )
+    s = load_settings(tmp_path)
+    assert s.world_events_channel_name == "zork"
+
+
+def test_legacy_channel_index_ignored(tmp_path: Path):
+    (tmp_path / "config.json").write_text(
+        json.dumps(
+            {
+                "world_events_channel_index": 3,
+                "world_events_channel_name": "dungeon",
+            }
+        ),
+        encoding="utf-8",
+    )
+    s = load_settings(tmp_path)
+    assert s.world_events_channel_name == "dungeon"
+    assert not hasattr(s, "world_events_channel_index")

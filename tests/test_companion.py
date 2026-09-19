@@ -34,6 +34,7 @@ def _settings(**kwargs) -> Settings:
         play_max_tier="normal",
         quiet_hold_seconds=120,
         quiet_poll_seconds=30,
+        active_grace_seconds=1200,
         single_player_enabled=True,
         offer_timeout_seconds=900,
         queue_max=20,
@@ -43,6 +44,8 @@ def _settings(**kwargs) -> Settings:
         daemon_idle_pause_seconds=300,
         daemon_min_interval_seconds=60,
         world_events_enabled=True,
+        world_events_channel_enabled=False,
+        world_events_channel_name="",
         broadcast_min_interval_seconds=30,
         log_level="INFO",
     )
@@ -106,6 +109,87 @@ def test_send_parts_all_ok():
         ok = await client.send_parts("aa" * 32, ["one", "two"])
         assert ok is True
         assert n["calls"] == 2
+
+    asyncio.run(_run())
+
+
+def test_send_channel_uses_chan_msg():
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        client.connected = True
+        seen = {}
+
+        async def get_channel(idx):
+            if idx == 2:
+                return SimpleNamespace(
+                    is_error=lambda: False,
+                    payload={"channel_name": "#zork", "channel_idx": 2},
+                )
+            return SimpleNamespace(
+                is_error=lambda: False, payload={"channel_name": "", "channel_idx": idx}
+            )
+
+        async def send_chan_msg(chan, text):
+            seen["chan"] = chan
+            seen["text"] = text
+            return SimpleNamespace(is_error=lambda: False)
+
+        client.meshcore.commands = SimpleNamespace(
+            get_channel=get_channel,
+            set_channel=AsyncMock(),
+            send_chan_msg=send_chan_msg,
+        )
+        ok = await client.send_channel("zork", "  Far below, a troll shrieks.  ")
+        assert ok is True
+        assert seen == {"chan": 2, "text": "Far below, a troll shrieks."}
+        client.meshcore.commands.set_channel.assert_not_called()
+
+    asyncio.run(_run())
+
+
+def test_send_channel_creates_autochannel_slot():
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        client.connected = True
+
+        async def get_channel(idx):
+            return SimpleNamespace(
+                is_error=lambda: False, payload={"channel_name": "", "channel_idx": idx}
+            )
+
+        set_channel = AsyncMock(return_value=SimpleNamespace(is_error=lambda: False))
+
+        async def send_chan_msg(chan, text):
+            return SimpleNamespace(is_error=lambda: False)
+
+        client.meshcore.commands = SimpleNamespace(
+            get_channel=get_channel,
+            set_channel=set_channel,
+            send_chan_msg=send_chan_msg,
+        )
+        ok = await client.send_channel("#dungeon", "hi")
+        assert ok is True
+        set_channel.assert_awaited_once()
+        args = set_channel.await_args.args
+        assert args[0] == 0
+        assert args[1] == "#dungeon"
+
+    asyncio.run(_run())
+
+
+def test_apply_advert_policy_never_auto_sends():
+    async def _run() -> None:
+        client = CompanionClient(
+            _settings(companion_advert_enabled=True, companion_advert_flood=True),
+            AsyncMock(),
+        )
+        client.meshcore = MagicMock()
+        client.connected = True
+        client.send_advert = AsyncMock(return_value=True)
+        await client._apply_advert_policy()
+        client.send_advert.assert_not_called()
 
     asyncio.run(_run())
 
