@@ -261,7 +261,8 @@ a:hover {
   --dm-text: #c8c8c8;
   --dm-text-bright: #e8e8e8;
   --dm-muted: #888;
-  --dm-player: #2a2a2a;
+  --dm-player: #1c2430;
+  --dm-player-border: #3a4a5c;
   --dm-companion: #1a1a1a;
   --dm-glow: rgba(180, 180, 180, 0.18);
 
@@ -353,7 +354,7 @@ a:hover {
 .bubble.player {
   align-self: flex-end;
   background: var(--dm-player);
-  border-color: var(--dm-border);
+  border-color: var(--dm-player-border);
   color: var(--dm-text-bright);
 }
 
