@@ -3,11 +3,18 @@
   if (!thread) return;
   const bubbles = thread.querySelectorAll(".bubble");
 
+  // Keep the newest message glued to the bottom of the handheld frame
+  // (older messages are pushed up, the way real mobile DMs work).
+  const pinBottom = () => {
+    thread.scrollTop = thread.scrollHeight;
+  };
+
   const reveal = (el) => {
     el.classList.add("visible");
-    // Layout updates after display:block — scroll once the bubble has height.
+    // Wait for display:block layout, then pin — no smooth scroll jump.
     requestAnimationFrame(() => {
-      thread.scrollTo({ top: thread.scrollHeight, behavior: "smooth" });
+      pinBottom();
+      requestAnimationFrame(pinBottom);
     });
   };
 
@@ -16,8 +23,7 @@
     const delay = Number(el.dataset.delay || 500);
     t += delay;
     if (el.classList.contains("visible") && delay === 0) {
-      // Opening "new game" is already painted; keep the pane pinned to the top.
-      thread.scrollTop = 0;
+      reveal(el);
       return;
     }
     window.setTimeout(() => reveal(el), t);

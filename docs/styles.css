@@ -320,15 +320,28 @@ a:hover {
 .dm-thread {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.55rem 0.7rem 0.85rem;
+  padding: 0;
   min-height: 0;
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Grows to fill unused height so the log sits on the bottom of the frame
+   (like a real mobile DM). Shrinks away once the log overflows. */
+.dm-spacer {
+  flex: 1 1 auto;
+  min-height: 0.75rem;
+}
+
+.dm-log {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+  padding: 0.35rem 0.7rem 0.85rem;
 }
 
 .bubble {
@@ -350,7 +363,7 @@ a:hover {
 @keyframes dm-bubble-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
