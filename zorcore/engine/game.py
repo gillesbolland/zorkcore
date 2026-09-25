@@ -257,8 +257,11 @@ class Game:
 
     def _compose_start(self, session: Session) -> StepResult:
         story, ui, emoji = self._describe_room_parts(session, force_full=True)
-        welcome = self.world.welcome
-        story = f"{welcome}\n\n{story}" if story else welcome
+        welcome = (self.world.welcome or "").strip()
+        # Classic packs set welcome == start-room description; don't double it
+        # or MeshCore splits into a near-duplicate 1/2… / .2/2 pair.
+        if welcome and not (story or "").startswith(welcome):
+            story = f"{welcome}\n\n{story}" if story else welcome
         text = "\n".join(p for p in (story, ui) if p)
         return StepResult(text=text, session=session, story=story, ui=ui, scene_emoji=emoji)
 

@@ -124,6 +124,21 @@ def format_multipart(
     if not body:
         return []
 
+    # Prefer one unlabeled part when body (+ optional head) fits the budget.
+    # Do not shrink by _LABEL_RESERVE until a real split is required.
+    single_heads: list[str] = []
+    if timer_prefix and scene_emoji:
+        single_heads.append(f"{timer_prefix} {scene_emoji} ")
+    if timer_prefix:
+        single_heads.append(f"{timer_prefix} ")
+        single_heads.append("[timer] ")
+    if scene_emoji:
+        single_heads.append(f"{scene_emoji} ")
+    single_heads.append("")
+    for head in single_heads:
+        if fits_utf8(head + body, max_bytes):
+            return [f"{head}{body}"]
+
     reserve = _LABEL_RESERVE
     budget = max(16, max_bytes - reserve)
 

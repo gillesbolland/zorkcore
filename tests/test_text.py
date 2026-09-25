@@ -124,6 +124,35 @@ def test_single_part_reply_carries_no_marker():
     assert not parts[0].endswith("/1")
 
 
+def test_near_budget_body_stays_single_part():
+    """Label reserve must not force a split when one unlabeled part fits."""
+    body = "x" * 140
+    parts = format_multipart(body, max_bytes=145, max_chunks=8)
+    assert len(parts) == 1
+    assert utf8_len(parts[0]) == 140
+    assert "1/" not in parts[0]
+
+
+def test_west_of_house_start_fits_one_radio_part():
+    from zorcore.content_loader import load_game_data
+    from zorcore.engine.game import Game
+
+    game = Game.from_game_data(load_game_data())
+    session = game.new_session("aabb")
+    parts = format_reply(
+        session.last_story,
+        "",
+        145,
+        8,
+        scene_emoji=game.world.rooms[session.room_id].emoji,
+    )
+    assert len(parts) == 1
+    assert "1/2" not in parts[0]
+    assert "You see: mailbox" in parts[0]
+    assert parts[0].startswith("🏡")
+    assert utf8_len(parts[0]) <= 145
+
+
 def test_multipart_reply_marks_every_part():
     story = "word " * 120
     parts = format_reply(story, "", 145, 8)

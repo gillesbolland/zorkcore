@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.3
+
+- New game no longer doubles the start-room description (was forcing a near-duplicate `1/2…` / `.2/2` split).
+- Multipart formatter uses a single unlabeled part when the text fits; label byte reserve only applies when a real split is needed.
+
 ## 0.9.2
 
 - Active idle timeout (`active_idle_seconds`, default 1 h) frees local and remote slots without wiping sessions.

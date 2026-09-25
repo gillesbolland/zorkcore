@@ -26,6 +26,8 @@ def test_new_opens_near_house():
     assert s.last_story
     assert s.last_ui
     assert s.room_id == "whous"
+    # Welcome matches room description — do not double it.
+    assert s.last_story.count("open field west of a big white house") == 1
 
 
 def test_new_game_restarts():
