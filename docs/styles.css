@@ -265,9 +265,15 @@ a:hover {
   --dm-companion: #1a1a1a;
   --dm-glow: rgba(180, 180, 180, 0.18);
 
-  margin: 0 0 1.75rem;
+  /* Handheld-sized chat frame — scroll inside, don't stretch the page. */
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 22.5rem);
+  max-width: 100%;
+  height: min(32rem, 72vh);
+  margin: 0 auto 1.75rem;
   border: 1px solid var(--dm-border);
-  border-radius: var(--radius);
+  border-radius: 1.15rem;
   background: var(--dm-bg);
   color: var(--dm-text);
   box-shadow:
@@ -282,6 +288,7 @@ a:hover {
   gap: 0.6rem;
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--dm-border-soft);
+  flex-shrink: 0;
 }
 
 .dm-avatar {
@@ -313,8 +320,14 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 0.2rem 0.7rem;
+  padding: 0.55rem 0.7rem 0.85rem;
   min-height: 0;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bubble {
@@ -413,6 +426,12 @@ a:hover {
 @media (max-width: 480px) {
   .banner {
     font-size: 5.5px;
+  }
+
+  .dm {
+    width: 100%;
+    height: min(28rem, 70vh);
+    border-radius: 1rem;
   }
 
   .bubble {
