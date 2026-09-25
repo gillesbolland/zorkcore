@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.4
+
+- Channel enter announce uses the player's last Chat Node advert nickname (or companion contact name), never a pubkey stub — public channels stay nickname-only.
+
 ## 0.9.3
 
 - New game no longer doubles the start-room description (was forcing a near-duplicate `1/2…` / `.2/2` split).

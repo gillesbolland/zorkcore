@@ -17,6 +17,7 @@ def _app(tmp_path: Path, **settings_kw) -> PluginApp:
     app = PluginApp(tmp_path)
     app.companion = MagicMock()
     app.companion.send_channel = AsyncMock(return_value=True)
+    app.companion.contact_display_name = MagicMock(return_value="")
     app._settle_before_tx = AsyncMock()
     return app
 
@@ -52,7 +53,7 @@ def test_announce_strips_leading_at(tmp_path: Path):
     asyncio.run(_run())
 
 
-def test_announce_falls_back_to_pubkey_prefix(tmp_path: Path):
+def test_announce_falls_back_to_advert_nickname(tmp_path: Path):
     async def _run() -> None:
         key = "abcd" + "00" * 30
         app = _app(
@@ -60,9 +61,26 @@ def test_announce_falls_back_to_pubkey_prefix(tmp_path: Path):
             world_events_channel_enabled=True,
             world_events_channel_name="zork",
         )
+        app.contact_sync.advert_names = {key: "MeshWizard"}
         await app._announce_player_enter("", key)
         app.companion.send_channel.assert_awaited_once_with(
-            "zork", f"@{key[:8]} has entered the dungeon."
+            "zork", "@MeshWizard has entered the dungeon."
+        )
+
+    asyncio.run(_run())
+
+
+def test_announce_never_puts_pubkey_on_channel(tmp_path: Path):
+    async def _run() -> None:
+        key = "abcd" + "00" * 30
+        app = _app(
+            tmp_path,
+            world_events_channel_enabled=True,
+            world_events_channel_name="zork",
+        )
+        await app._announce_player_enter(key[:12], key)
+        app.companion.send_channel.assert_awaited_once_with(
+            "zork", "@someone has entered the dungeon."
         )
 
     asyncio.run(_run())

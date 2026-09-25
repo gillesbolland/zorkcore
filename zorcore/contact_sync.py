@@ -85,6 +85,11 @@ def contact_dict_for_pubkey(pubkey_hex: str, name: str = "") -> dict[str, Any]:
 
 def extract_chat_pubkeys_from_adverts(payload: Any, *, limit: int) -> list[str]:
     """Return up to `limit` freshest Chat Node pubkeys from an adverts API payload."""
+    return list(extract_chat_names_from_adverts(payload, limit=limit).keys())
+
+
+def extract_chat_names_from_adverts(payload: Any, *, limit: int) -> dict[str, str]:
+    """Freshest Chat Node pubkeys → advert node_name (may be empty)."""
     rows: list[Any] = []
     if isinstance(payload, dict):
         data = payload.get("data", payload)
@@ -112,17 +117,15 @@ def extract_chat_pubkeys_from_adverts(payload: Any, *, limit: int) -> list[str]:
             score = float(seen or 0)
         except (TypeError, ValueError):
             score = 0.0
-        name = str(row.get("node_name") or "")
+        name = str(row.get("node_name") or row.get("name") or "").strip()
         scored.append((score, key, name))
 
     scored.sort(key=lambda t: (-t[0], t[1]))
-    out: list[str] = []
-    seen_keys: set[str] = set()
-    for _, key, _ in scored:
-        if key in seen_keys:
+    out: dict[str, str] = {}
+    for _, key, name in scored:
+        if key in out:
             continue
-        seen_keys.add(key)
-        out.append(key)
+        out[key] = name
         if len(out) >= max(1, limit):
             break
     return out
@@ -136,6 +139,8 @@ class AdvertContactSync:
         self.last_error = ""
         self.adverts_seen = 0
         self.contacts_imported = 0
+        # pubkey → last advert node_name (channel-safe nicknames)
+        self.advert_names: dict[str, str] = {}
 
     def _get_json(self, path: str, query: dict[str, str]) -> Any:
         qs = urllib.parse.urlencode(query)
@@ -148,6 +153,10 @@ class AdvertContactSync:
         return json.loads(body) if body else {}
 
     def fetch_advert_chat_pubkeys(self) -> set[str]:
+        return set(self.fetch_advert_chat_names().keys())
+
+    def fetch_advert_chat_names(self) -> dict[str, str]:
+        """Return freshest Chat Node pubkeys mapped to advert nicknames."""
         hours = int(getattr(self.settings, "advert_sync_hours", 6) or 6)
         limit = int(getattr(self.settings, "advert_sync_limit", 20) or 20)
         try:
@@ -163,8 +172,16 @@ class AdvertContactSync:
             self.last_error = f"adverts_by_contact_type: {exc}"
             logger.warning("adverts poll failed: %s", exc)
             self.adverts_seen = 0
-            return set()
-        keys = set(extract_chat_pubkeys_from_adverts(payload, limit=limit))
-        self.adverts_seen = len(keys)
+            return {}
+        names = extract_chat_names_from_adverts(payload, limit=limit)
+        self.advert_names = {
+            k: v for k, v in names.items() if v and not _looks_like_hex_key(v)
+        }
+        self.adverts_seen = len(names)
         self.last_error = ""  # successful HTTP parse — empty mesh is OK
-        return keys
+        return names
+
+
+def _looks_like_hex_key(name: str) -> bool:
+    raw = (name or "").strip().lower()
+    return bool(raw) and all(c in "0123456789abcdef" for c in raw) and len(raw) >= 8

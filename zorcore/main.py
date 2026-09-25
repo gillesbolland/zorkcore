@@ -113,6 +113,9 @@ class PluginApp:
             name = str(cand or "").strip()
             if name and not self._looks_like_key(name):
                 return name
+        advert = (getattr(self.contact_sync, "advert_names", None) or {}).get(key) or ""
+        if advert and not self._looks_like_key(advert):
+            return advert
         if self.companion:
             contact = self.companion.contact_display_name(key)
             if contact and not self._looks_like_key(contact):
@@ -122,6 +125,13 @@ class PluginApp:
             if name:
                 return name
         return key[:8] if key else "—"
+
+    def _channel_player_name(self, pubkey: str, display_name: str = "") -> str:
+        """Nickname safe for public MeshCore channels — never a pubkey stub."""
+        name = self._player_label(pubkey, display_name)
+        if not name or self._looks_like_key(name):
+            return "someone"
+        return name
 
     def write_runtime(self) -> None:
         adventurer_key = self._adventurer_key()
@@ -461,9 +471,7 @@ class PluginApp:
         chan = (self.settings.world_events_channel_name or "").strip()
         if not chan:
             return
-        name = (display_name or "").strip()
-        if not name or re.fullmatch(r"[0-9a-f]{8,}", name, flags=re.I):
-            name = (normalize_pubkey(pubkey) or "")[:8] or "someone"
+        name = self._channel_player_name(pubkey, display_name)
         if name.startswith("@"):
             name = name[1:].strip() or "someone"
         suffix = " has entered the dungeon."
@@ -1113,9 +1121,9 @@ class PluginApp:
         known = await self.companion.list_contact_pubkeys()
         self.sessions.migrate_truncated_keys(known)
 
-        advert_keys = await asyncio.to_thread(self.contact_sync.fetch_advert_chat_pubkeys)
+        advert_names = await asyncio.to_thread(self.contact_sync.fetch_advert_chat_names)
         excluded = self._exclude_keys()
-        advert_keys = filter_player_keys(advert_keys, excluded)
+        advert_keys = filter_player_keys(set(advert_names.keys()), excluded)
         self.stats["adverts_seen"] = len(advert_keys)
         self.stats["contact_sync_error"] = self.contact_sync.last_error
         if self.companion:
@@ -1141,11 +1149,18 @@ class PluginApp:
         known = await self.companion.list_contact_pubkeys()
         to_add = keys_to_add(advert_keys, known)
         for key in to_add:
-            status = await self.companion.ensure_contact(key)
+            nick = (advert_names.get(key) or "").strip()
+            if self._looks_like_key(nick):
+                nick = ""
+            status = await self.companion.ensure_contact(key, nick)
             if status == "added":
                 self.stats["contacts_imported"] = int(self.stats.get("contacts_imported", 0)) + 1
                 self.contact_sync.contacts_imported = int(self.stats["contacts_imported"])
-                logger.info("Imported advert pubkey into companion contacts: %s…", key[:16])
+                logger.info(
+                    "Imported advert pubkey into companion contacts: %s… (%s)",
+                    key[:16],
+                    nick or "unnamed",
+                )
         self.write_runtime()
 
     async def run(self) -> None:

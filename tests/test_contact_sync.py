@@ -2,6 +2,7 @@
 
 from zorcore.contact_sync import (
     excluded_sync_keys,
+    extract_chat_names_from_adverts,
     extract_chat_pubkeys_from_adverts,
     filter_player_keys,
     keys_to_add,
@@ -44,6 +45,34 @@ def test_extract_chat_pubkeys_freshest_limit():
     }
     keys = extract_chat_pubkeys_from_adverts(payload, limit=2)
     assert keys == ["bb" * 32, "cc" * 32]
+
+
+def test_extract_chat_names_keeps_freshest_nickname():
+    payload = {
+        "data": [
+            {
+                "pubkey": "aa" * 32,
+                "last_seen": 100,
+                "contact_type": "Chat Node",
+                "node_name": "OldName",
+            },
+            {
+                "pubkey": "aa" * 32,
+                "last_seen": 300,
+                "contact_type": "Chat Node",
+                "node_name": "FreshNick",
+            },
+            {
+                "pubkey": "bb" * 32,
+                "last_seen": 200,
+                "contact_type": "Chat Node",
+                "node_name": "Other",
+            },
+        ]
+    }
+    names = extract_chat_names_from_adverts(payload, limit=10)
+    assert names["aa" * 32] == "FreshNick"
+    assert names["bb" * 32] == "Other"
 
 
 def test_extract_dedupes_by_freshest():

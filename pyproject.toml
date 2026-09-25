@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zorcore-plugin"
-version = "0.9.3"
+version = "0.9.4"
 
 description = "OpenHop Repeater plugin: MeshCore text adventure (ZorCore)"
 readme = "PLUGIN_README.md"

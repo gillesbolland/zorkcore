@@ -28,7 +28,7 @@ def _app(tmp_path: Path) -> PluginApp:
 def test_sync_skips_prune_on_api_error(tmp_path: Path):
     async def _run() -> None:
         app = _app(tmp_path)
-        app.contact_sync.fetch_advert_chat_pubkeys = MagicMock(return_value=set())
+        app.contact_sync.fetch_advert_chat_names = MagicMock(return_value={})
         app.contact_sync.last_error = "401 unauthorized"
         app._prune_stale_contacts = AsyncMock()
 
@@ -46,8 +46,8 @@ def test_sync_does_not_mass_remove_on_partial_advert_set(tmp_path: Path):
     async def _run() -> None:
         app = _app(tmp_path)
         # Freshest-N window only sees one of three known contacts.
-        app.contact_sync.fetch_advert_chat_pubkeys = MagicMock(
-            return_value={"aa" * 32}
+        app.contact_sync.fetch_advert_chat_names = MagicMock(
+            return_value={"aa" * 32: "Alice"}
         )
         app.contact_sync.last_error = ""
         app._prune_stale_contacts = AsyncMock()
@@ -66,14 +66,14 @@ def test_sync_imports_missing_advert_keys(tmp_path: Path):
     async def _run() -> None:
         app = _app(tmp_path)
         new_key = "dd" * 32
-        app.contact_sync.fetch_advert_chat_pubkeys = MagicMock(
-            return_value={"aa" * 32, new_key}
+        app.contact_sync.fetch_advert_chat_names = MagicMock(
+            return_value={"aa" * 32: "Alice", new_key: "Newbie"}
         )
         app.contact_sync.last_error = ""
 
         await app._sync_advert_contacts_once()
 
-        app.companion.ensure_contact.assert_awaited_once_with(new_key)
+        app.companion.ensure_contact.assert_awaited_once_with(new_key, "Newbie")
         assert app.stats["contacts_imported"] == 1
 
     asyncio.run(_run())
