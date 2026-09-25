@@ -50,7 +50,7 @@ class Session:
     last_command: str = ""
     last_it: str = ""
     last_them: list[str] = field(default_factory=list)
-    brief_mode: bool | None = None  # None = default revisit brief; True force brief; False force full
+    brief_mode: bool | None = False  # False/None = verbose; True = brief titles only
     opted_out: bool = False
 
     def to_dict(self) -> dict[str, Any]:
@@ -104,7 +104,11 @@ class Session:
             last_command=str(data.get("last_command", "")),
             last_it=str(data.get("last_it", "")),
             last_them=list(data.get("last_them", [])),
-            brief_mode=data.get("brief_mode", None),
+            brief_mode=(
+                False
+                if data.get("brief_mode", False) is None
+                else bool(data.get("brief_mode", False))
+            ),
             opted_out=bool(data.get("opted_out", False)),
         )
 

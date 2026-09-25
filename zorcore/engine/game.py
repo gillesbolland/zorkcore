@@ -248,6 +248,7 @@ class Game:
             containers=containers,
             content_id=self.content_id,
             content_version=self.content_version,
+            brief_mode=False,
         )
         result = self._compose_start(session)
         session.last_output = result.text
@@ -300,13 +301,8 @@ class Game:
         room = self.world.rooms[session.room_id]
         if room.dark and not self.has_light(session):
             return self.dark.message, "", room.emoji
-        visited_count = session.visited.count(session.room_id)
-        if session.brief_mode is True:
-            use_brief = not force_full
-        elif session.brief_mode is False:
-            use_brief = False
-        else:
-            use_brief = (not force_full) and visited_count > 1
+        # Verbose by default: only brief when the player explicitly asked for it.
+        use_brief = (session.brief_mode is True) and (not force_full)
         story_lines = [room.brief if use_brief else room.description]
         objs = session.room_objects.get(session.room_id, [])
         visible = []

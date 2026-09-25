@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "zorcore",
   "name": "ZorCore",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "MeshCore text adventure: original 1977 Zork prose and map, shared live between nearby players, with wandering NPCs and tier-gated radio play",
   "runtime": {
     "type": "python",

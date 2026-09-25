@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.5
+
+- Verbose room descriptions by default (full text on every move); `brief` still available.
+- Channel world-events also announce deaths (`🪦Name has been gobbled by a lurking grue in the attic!` / generic died line); nicknames only.
+
 ## 0.9.4
 
 - Channel enter announce uses the player's last Chat Node advert nickname (or companion contact name), never a pubkey stub — public channels stay nickname-only.

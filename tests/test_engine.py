@@ -40,6 +40,33 @@ def test_new_game_restarts():
     assert r.milestone == "start"
     assert "leaflet" not in r.session.inventory and "adver" not in r.session.inventory
     assert r.session.room_id == "whous"
+    assert r.story and "open field west of a big white house" in r.story
+    assert r.session.brief_mode is False
+
+
+def test_verbose_by_default_on_revisit():
+    game = _game()
+    s = game.new_session("aabb")
+    s = game.step(s, "north").session
+    assert s.room_id == "nhous"
+    # Leave and return to west of house.
+    s = game.step(s, "west").session
+    assert s.room_id == "whous"
+    assert "open field west of a big white house" in (s.last_story or s.last_output)
+    assert "West of House." != (s.last_story or "").strip()
+
+
+def test_brief_command_shortens_revisit():
+    game = _game()
+    s = game.new_session("aabb")
+    s = game.step(s, "brief").session
+    assert s.brief_mode is True
+    s = game.step(s, "north").session
+    s = game.step(s, "west").session
+    assert s.room_id == "whous"
+    story = (s.last_story or s.last_output or "").strip()
+    assert story.startswith("West of House")
+    assert "open field" not in story
 
 
 def test_start_aliases_restart():

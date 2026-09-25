@@ -487,6 +487,47 @@ class PluginApp:
         if ok:
             self.stats["messages_out"] = int(self.stats.get("messages_out", 0)) + 1
 
+    def _death_channel_line(self, session, death_story: str = "") -> str:
+        """Public-channel death line — nickname only, never a pubkey stub."""
+        name = self._channel_player_name(
+            session.sender_key, getattr(session, "display_name", "") or ""
+        )
+        if name.startswith("@"):
+            name = name[1:].strip() or "someone"
+        room = self.world.rooms.get(session.room_id)
+        room_label = (room.name if room else session.room_id or "the dungeon").strip()
+        # Prefer "in the attic" over "in the Attic."
+        room_phrase = room_label.rstrip(".")
+        if room_phrase and not room_phrase.lower().startswith("the "):
+            room_phrase = room_phrase[:1].lower() + room_phrase[1:]
+            room_loc = f"in the {room_phrase}"
+        else:
+            room_loc = f"in {room_phrase}" if room_phrase else "in the dungeon"
+        story = (death_story or "").strip()
+        grue_msg = (getattr(self.game.dark, "timer_message", "") or "").strip()
+        if grue_msg and story == grue_msg:
+            body = f"{name} has been gobbled by a lurking grue {room_loc}!"
+        else:
+            body = f"{name} has died {room_loc}!"
+        return f"🪦{body}"
+
+    async def _announce_player_death(self, session, death_story: str = "") -> None:
+        """One-shot MeshCore channel line when a player dies (if channel enabled)."""
+        if not self.companion or not self.settings.world_events_channel_enabled:
+            return
+        chan = (self.settings.world_events_channel_name or "").strip()
+        if not chan:
+            return
+        text = self._death_channel_line(session, death_story)
+        max_b = int(self.settings.max_chunk_bytes or 145)
+        encoded = text.encode("utf-8")
+        if len(encoded) > max_b:
+            text = encoded[:max_b].decode("utf-8", "ignore")
+        await self._settle_before_tx()
+        ok = await self.companion.send_channel(chan, text)
+        if ok:
+            self.stats["messages_out"] = int(self.stats.get("messages_out", 0)) + 1
+
     async def _emit_world_events(
         self,
         broadcasts: list[str],
@@ -776,6 +817,7 @@ class PluginApp:
         if due is not None and due.milestone == "death":
             self.sessions.save(due.session)
             await self._reply_result(sender_key, due)
+            await self._announce_player_death(due.session, due.story or due.text)
             if raw not in self.start_phrases and raw not in self.resend_phrases and raw != "help":
                 return
             session = due.session
@@ -788,6 +830,10 @@ class PluginApp:
         if result.milestone == "start":
             await self._announce_player_enter(
                 result.session.display_name or display_name, sender_key
+            )
+        elif result.milestone == "death":
+            await self._announce_player_death(
+                result.session, result.story or result.text
             )
         await self._drain_game_outbound(actor_key=sender_key)
         if self.settings.daemons_enabled and not result.opt_out:
