@@ -166,7 +166,5 @@ class AdvertContactSync:
             return set()
         keys = set(extract_chat_pubkeys_from_adverts(payload, limit=limit))
         self.adverts_seen = len(keys)
-        self.last_error = "" if keys else self.last_error
-        if keys:
-            self.last_error = ""
+        self.last_error = ""  # successful HTTP parse — empty mesh is OK
         return keys

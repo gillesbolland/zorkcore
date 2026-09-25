@@ -63,7 +63,7 @@ def test_keys_to_add_skips_known():
 
 
 def test_prune_keep_logic_session_holders():
-    """Session holders survive even when absent from advert set."""
+    """Keep-set math for unused _prune_stale_contacts (admin/future use)."""
     advert = {"aa" * 32}
     sessions = {"bb" * 32}
     known = {"aa" * 32, "bb" * 32, "cc" * 32}

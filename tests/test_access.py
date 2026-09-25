@@ -332,3 +332,48 @@ def test_grace_does_not_admit_new_remote_when_busy(tmp_path: Path):
     )
     assert d.allow_play is False
     assert not ctrl.is_active(a)
+
+
+def test_sticky_local_survives_flood_path(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    a = "44" * 32
+    assert _eval(ctrl, a, path_len=1, max_local_players=2).allow_play is True
+    assert a in ctrl.local_players
+    # Path flaps to flood — still local via sticky list.
+    assert ctrl.is_local(a, path_len=-1, local_max_hops=3) is True
+    assert _eval(ctrl, a, is_quiet=False, path_len=-1, max_local_players=2).allow_play
+
+
+def test_idle_expire_frees_local_slot(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    alice, bob = "aa" * 32, "bb" * 32
+    assert _eval(ctrl, alice, path_len=1, max_local_players=2).allow_play
+    assert _eval(ctrl, bob, path_len=1, max_local_players=2).allow_play
+    # Make both idle.
+    for slot in ctrl.actives.values():
+        slot.last_active_at = time.time() - 4000
+    freed = ctrl.expire_idle_actives(3600)
+    assert set(freed) == {alice, bob}
+    assert not ctrl.actives
+    carol = "cc" * 32
+    assert _eval(ctrl, carol, path_len=1, max_local_players=2).allow_play
+
+
+def test_max_local_players_allows_eight(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    keys = [f"{i:02x}" * 32 for i in range(8)]
+    for k in keys:
+        assert _eval(ctrl, k, path_len=1, max_local_players=8).allow_play
+    assert len(ctrl.actives) == 8
+    ninth = "99" * 32
+    assert _eval(ctrl, ninth, path_len=1, max_local_players=8).allow_play is False
+
+
+def test_forget_local_removes_sticky(tmp_path: Path):
+    ctrl = AccessController(tmp_path / "access.json")
+    a = "55" * 32
+    _eval(ctrl, a, path_len=2, max_local_players=2)
+    assert a in ctrl.local_players
+    ctrl.forget_local(a)
+    assert a not in ctrl.local_players
+    assert ctrl.is_local(a, path_len=-1) is False

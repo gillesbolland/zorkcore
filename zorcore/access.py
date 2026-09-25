@@ -67,6 +67,7 @@ class ActiveSlot:
     pubkey: str
     display_name: str = ""
     since: float = field(default_factory=time.time)
+    last_active_at: float = field(default_factory=time.time)
     paused: bool = False
     busy_attempt_episode: int = 0
     busy_notified_episode: int = 0
@@ -101,6 +102,9 @@ def _slot_from_dict(act: dict[str, Any], closed_episode: int) -> ActiveSlot:
         pubkey=normalize_pubkey(act["pubkey"]),
         display_name=str(act.get("display_name") or ""),
         since=float(act.get("since") or time.time()),
+        last_active_at=float(
+            act.get("last_active_at") or act.get("since") or time.time()
+        ),
         paused=bool(act.get("paused")),
         busy_attempt_episode=int(act.get("busy_attempt_episode") or busy_ep or 0),
         busy_notified_episode=busy_ep,
@@ -117,6 +121,7 @@ class AccessController:
         self.actives: dict[str, ActiveSlot] = {}
         self.queue: list[QueueEntry] = []
         self.bans: dict[str, dict[str, Any]] = {}
+        self.local_players: dict[str, dict[str, Any]] = {}
         self.offer_pubkey: str = ""
         self.offer_expires_at: float = 0.0
         self.airtime: dict[str, dict[str, Any]] = {}
@@ -190,6 +195,9 @@ class AccessController:
                 pubkey=normalize_pubkey(act["pubkey"]),
                 display_name=str(act.get("display_name") or ""),
                 since=float(act.get("since") or time.time()),
+                last_active_at=float(
+                    act.get("last_active_at") or act.get("since") or time.time()
+                ),
                 paused=bool(act.get("paused")),
                 busy_attempt_episode=int(act.get("busy_attempt_episode") or busy_ep or 0),
                 busy_notified_episode=busy_ep,
@@ -237,6 +245,19 @@ class AccessController:
         self.airtime = {
             normalize_pubkey(k): dict(v) for k, v in air.items() if isinstance(v, dict)
         }
+        sticky = raw.get("local_players") or {}
+        self.local_players = {}
+        if isinstance(sticky, dict):
+            for k, v in sticky.items():
+                key = normalize_pubkey(k)
+                if len(key) != 64:
+                    continue
+                row = dict(v) if isinstance(v, dict) else {}
+                self.local_players[key] = {
+                    "display_name": str(row.get("display_name") or ""),
+                    "first_seen_at": float(row.get("first_seen_at") or time.time()),
+                    "last_local_path_len": int(row.get("last_local_path_len", 0) or 0),
+                }
 
     def save(self) -> None:
         data = {
@@ -244,6 +265,7 @@ class AccessController:
             "actives": [asdict(s) for s in self.actives.values()],
             "queue": [asdict(q) for q in self.queue],
             "bans": self.bans,
+            "local_players": self.local_players,
             "offers": {self.offer_pubkey: self.offer_expires_at} if self.offer_pubkey else {},
             "airtime": self.airtime,
             "closed_episode": self.closed_episode,
@@ -463,13 +485,70 @@ class AccessController:
     def is_local(
         self, pubkey: str, *, path_len: int | None = None, local_max_hops: int = DEFAULT_LOCAL_MAX_HOPS
     ) -> bool:
-        n = self.path_len_of(pubkey) if path_len is None else path_len
+        key = normalize_pubkey(pubkey)
+        if key in self.local_players:
+            return True
+        n = self.path_len_of(key) if path_len is None else path_len
         return is_local_path(n, local_max_hops)
+
+    def note_sticky_local(
+        self,
+        pubkey: str,
+        *,
+        path_len: int,
+        display_name: str = "",
+        local_max_hops: int = DEFAULT_LOCAL_MAX_HOPS,
+    ) -> None:
+        """Remember a player who reached us on a local path."""
+        if not is_local_path(path_len, local_max_hops):
+            return
+        key = normalize_pubkey(pubkey)
+        if len(key) != 64:
+            return
+        prev = self.local_players.get(key) or {}
+        self.local_players[key] = {
+            "display_name": (display_name or str(prev.get("display_name") or "")).strip(),
+            "first_seen_at": float(prev.get("first_seen_at") or time.time()),
+            "last_local_path_len": int(path_len),
+        }
+        self.save()
+
+    def forget_local(self, pubkey: str) -> None:
+        self.local_players.pop(normalize_pubkey(pubkey), None)
+        self.save()
+
+    def touch_active(self, pubkey: str) -> None:
+        slot = self.actives.get(normalize_pubkey(pubkey))
+        if slot is None:
+            return
+        slot.last_active_at = time.time()
+        self.save()
+
+    def expire_idle_actives(self, idle_seconds: int) -> list[str]:
+        """Clear actives idle longer than idle_seconds. Returns freed pubkeys."""
+        grace = max(0, int(idle_seconds or 0))
+        if grace <= 0:
+            return []
+        now = time.time()
+        freed: list[str] = []
+        for key, slot in list(self.actives.items()):
+            last = float(slot.last_active_at or slot.since or 0)
+            if last and (now - last) > grace:
+                self.actives.pop(key, None)
+                freed.append(key)
+        if freed:
+            self.save()
+        return freed
 
     def record_command(self, pubkey: str, display_name: str = "") -> None:
         key = normalize_pubkey(pubkey)
         self._touch_name(key, display_name)
         self.airtime[key]["commands"] = int(self.airtime[key].get("commands") or 0) + 1
+        slot = self.actives.get(key)
+        if slot is not None:
+            slot.last_active_at = time.time()
+            if display_name:
+                slot.display_name = display_name
         self.save()
 
     def record_outbound(self, pubkey: str, byte_len: int, parts: int = 1) -> None:
@@ -579,10 +658,12 @@ class AccessController:
         key = normalize_pubkey(pubkey)
         self.drop_queue(key)
         self.clear_offer()
+        now = time.time()
         self.actives[key] = ActiveSlot(
             pubkey=key,
             display_name=display_name or key[:8],
-            since=time.time(),
+            since=now,
+            last_active_at=now,
             paused=False,
         )
         self.save()
@@ -624,6 +705,7 @@ class AccessController:
         local_exception: bool,
         is_local: bool = False,
         max_local_players: int = 1,
+        local_max_hops: int = DEFAULT_LOCAL_MAX_HOPS,
     ) -> AccessDecision:
         if not single_player:
             return AccessDecision(allow_play=True, local_exception=local_exception)
@@ -642,7 +724,7 @@ class AccessController:
         # Nearby players share the dungeon up to max_local_players; their
         # traffic does not cross the mesh, so the radio ceiling still holds.
         if is_local and max_local_players > 1:
-            if len(self.local_active_keys()) < max_local_players:
+            if len(self.local_active_keys(local_max_hops=local_max_hops)) < max_local_players:
                 self.claim(key, display_name)
                 return AccessDecision(
                     allow_play=True, claimed=True, local_exception=local_exception
@@ -725,6 +807,13 @@ class AccessController:
             return AccessDecision(allow_play=True)
 
         local = self.is_local(key, path_len=path_len, local_max_hops=local_max_hops)
+        if path_len is not None and is_local_path(path_len, local_max_hops):
+            self.note_sticky_local(
+                key,
+                path_len=int(path_len),
+                display_name=display_name,
+                local_max_hops=local_max_hops,
+            )
         grace = max(0, int(active_grace_seconds or 0))
         recent = False
         if (
@@ -750,6 +839,7 @@ class AccessController:
             local_exception=local_exception,
             is_local=local,
             max_local_players=max_local_players,
+            local_max_hops=local_max_hops,
         )
 
     def expire_offer_if_needed(
@@ -840,7 +930,8 @@ class AccessController:
                 **base,
                 "path_len": path_len,
                 "stable": bool(row.get("stable")),
-                "local": is_local_path(path_len),
+                "local": self.is_local(pubkey, path_len=path_len),
+                "sticky_local": pubkey in self.local_players,
             }
 
         active = None
@@ -853,6 +944,16 @@ class AccessController:
             "queue": [enrich(q.pubkey, asdict(q)) for q in self.queue],
             "bans": [
                 {"pubkey": k, "pubkey_short": k[:16], **v} for k, v in self.bans.items()
+            ],
+            "local_players": [
+                {
+                    "pubkey": k,
+                    "pubkey_short": k[:16],
+                    "display_name": v.get("display_name") or k[:8],
+                    "first_seen_at": v.get("first_seen_at") or 0,
+                    "last_local_path_len": int(v.get("last_local_path_len") or 0),
+                }
+                for k, v in self.local_players.items()
             ],
             "offer": {
                 "pubkey": self.offer_pubkey,
@@ -874,7 +975,8 @@ class AccessController:
                     "last_seen": v.get("last_seen") or 0,
                     "path_len": int(v.get("path_len", -1) or -1),
                     "stable": bool(v.get("stable")),
-                    "local": is_local_path(int(v.get("path_len", -1) or -1)),
+                    "local": self.is_local(k, path_len=int(v.get("path_len", -1) or -1)),
+                    "sticky_local": k in self.local_players,
                     "ack_ok": int(v.get("ack_ok") or 0),
                     "ack_fail": int(v.get("ack_fail") or 0),
                 }

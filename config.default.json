@@ -29,6 +29,7 @@
   "queue_max": 20,
   "local_max_hops": 3,
   "max_local_players": 2,
+  "active_idle_seconds": 3600,
   "daemons_enabled": true,
   "daemon_idle_pause_seconds": 300,
   "daemon_min_interval_seconds": 60,

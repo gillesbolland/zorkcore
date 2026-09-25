@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import signal
 import time
 from pathlib import Path
@@ -83,6 +84,7 @@ class PluginApp:
             "contacts_imported": 0,
             "adverts_seen": 0,
             "contact_sync_error": "",
+            "unresolved_senders": 0,
         }
         self._refresh_config_mtime()
 
@@ -172,6 +174,11 @@ class PluginApp:
             "contacts_imported": self.stats.get("contacts_imported", 0),
             "adverts_seen": adverts_seen,
             "contact_sync_error": self.stats.get("contact_sync_error", ""),
+            "unresolved_senders": int(
+                self.stats.get("unresolved_senders")
+                or getattr(self.companion, "_unresolved_senders", 0)
+                or 0
+            ),
             "stats": self.stats,
             "safety": {
                 "safety_enabled": self.settings.safety_enabled,
@@ -185,6 +192,7 @@ class PluginApp:
                 "queue_max": self.settings.queue_max,
                 "local_max_hops": self.settings.local_max_hops,
                 "max_local_players": self.settings.max_local_players,
+                "active_idle_seconds": self.settings.active_idle_seconds,
                 "daemons_enabled": self.settings.daemons_enabled,
                 "daemon_idle_pause_seconds": self.settings.daemon_idle_pause_seconds,
                 "world_events_enabled": self.settings.world_events_enabled,
@@ -340,6 +348,8 @@ class PluginApp:
                     self.access.clear_queue()
                 elif op == "reset_npcs":
                     self.world_state.reset()
+                elif op == "forget_local" and pubkey:
+                    self.access.forget_local(pubkey)
                 elif op == "send_advert":
                     # Queued for the async config-watch loop — flood flag preserved.
                     self._pending_adverts.append(bool(action.get("flood")))
@@ -443,6 +453,31 @@ class PluginApp:
         if self.quiet.is_quiet:
             return True
         return self.access.is_local(key, local_max_hops=self.settings.local_max_hops)
+
+    async def _announce_player_enter(self, display_name: str, pubkey: str = "") -> None:
+        """One-shot MeshCore channel line when a player starts (if channel enabled)."""
+        if not self.companion or not self.settings.world_events_channel_enabled:
+            return
+        chan = (self.settings.world_events_channel_name or "").strip()
+        if not chan:
+            return
+        name = (display_name or "").strip()
+        if not name or re.fullmatch(r"[0-9a-f]{8,}", name, flags=re.I):
+            name = (normalize_pubkey(pubkey) or "")[:8] or "someone"
+        if name.startswith("@"):
+            name = name[1:].strip() or "someone"
+        suffix = " has entered the dungeon."
+        max_b = int(self.settings.max_chunk_bytes or 145)
+        # Truncate display name so "@name" + suffix fits one radio message.
+        budget = max(1, max_b - 1 - utf8_len(suffix))
+        encoded = name.encode("utf-8")
+        if len(encoded) > budget:
+            name = encoded[:budget].decode("utf-8", "ignore")
+        text = f"@{name}{suffix}"
+        await self._settle_before_tx()
+        ok = await self.companion.send_channel(chan, text)
+        if ok:
+            self.stats["messages_out"] = int(self.stats.get("messages_out", 0)) + 1
 
     async def _emit_world_events(
         self,
@@ -714,6 +749,7 @@ class PluginApp:
                         scene_emoji=self.world.rooms[session.room_id].emoji,
                     ),
                 )
+                await self._announce_player_enter(display_name, sender_key)
                 return
             help_text = self.game.short_help()
             if self.companion:
@@ -741,6 +777,10 @@ class PluginApp:
         if result.opt_out:
             self.access.clear_active(sender_key)
         await self._reply_result(sender_key, result)
+        if result.milestone == "start":
+            await self._announce_player_enter(
+                result.session.display_name or display_name, sender_key
+            )
         await self._drain_game_outbound(actor_key=sender_key)
         if self.settings.daemons_enabled and not result.opt_out:
             await self._tick_player_daemons(result.session)
@@ -803,6 +843,12 @@ class PluginApp:
                 timeout = self.settings.offer_timeout_seconds
                 hops = self.settings.local_max_hops
                 self.access.note_mesh_state(quiet_now)
+
+                # Free slots for players who stopped commanding (local + remote).
+                for idle_key in self.access.expire_idle_actives(
+                    self.settings.active_idle_seconds
+                ):
+                    logger.info("Freed idle active slot %s…", idle_key[:16])
 
                 for pubkey, msg in self.access.expire_offer_if_needed(
                     timeout, mesh_open=quiet_now, local_max_hops=hops
@@ -1041,6 +1087,8 @@ class PluginApp:
         keep = {normalize_pubkey(k) for k in advert_keys if len(normalize_pubkey(k)) == 64}
         keep |= self._session_holder_keys()
         keep |= self._exclude_keys()
+        keep |= {normalize_pubkey(k) for k in self.access.actives}
+        keep |= {normalize_pubkey(k) for k in self.access.local_players}
         known = await self.companion.list_contact_pubkeys()
         removed = 0
         for key in sorted(known):
@@ -1070,6 +1118,9 @@ class PluginApp:
         advert_keys = filter_player_keys(advert_keys, excluded)
         self.stats["adverts_seen"] = len(advert_keys)
         self.stats["contact_sync_error"] = self.contact_sync.last_error
+        if self.companion:
+            n = int(getattr(self.companion, "_unresolved_senders", 0) or 0)
+            self.stats["unresolved_senders"] = n
         if self.companion._table_full:
             self.stats["contact_sync_error"] = (
                 (self.stats["contact_sync_error"] + "; " if self.stats["contact_sync_error"] else "")
@@ -1077,9 +1128,13 @@ class PluginApp:
             )
         if self.contact_sync.last_error:
             logger.warning("contact sync: %s", self.contact_sync.last_error)
+            # Never prune when the advert API failed — empty set would wipe contacts.
+            self.write_runtime()
+            return
 
-        await self._prune_stale_contacts(advert_keys)
-
+        # Import-only: do not prune contacts absent from the freshest-N advert
+        # window. A limited advert fetch previously wiped hundreds of contacts
+        # and then re-pruned overheard nodes every sync cycle.
         if not advert_keys:
             self.write_runtime()
             return

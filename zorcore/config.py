@@ -48,6 +48,7 @@ DEFAULTS: dict[str, Any] = {
     "queue_max": 20,
     "local_max_hops": 3,
     "max_local_players": 2,
+    "active_idle_seconds": 3600,
     "daemons_enabled": True,
     "daemon_idle_pause_seconds": 300,
     "daemon_min_interval_seconds": 60,
@@ -91,6 +92,7 @@ class Settings:
     queue_max: int
     local_max_hops: int
     max_local_players: int
+    active_idle_seconds: int
     daemons_enabled: bool
     daemon_idle_pause_seconds: int
     daemon_min_interval_seconds: int
@@ -268,7 +270,13 @@ def load_settings(data_dir: Path | None = None) -> Settings:
         raw.get("local_max_hops", DEFAULTS["local_max_hops"]), "local_max_hops", 0, 64
     )
     max_local = _require_int(
-        raw.get("max_local_players", DEFAULTS["max_local_players"]), "max_local_players", 1, 4
+        raw.get("max_local_players", DEFAULTS["max_local_players"]), "max_local_players", 1, 16
+    )
+    active_idle = _require_int(
+        raw.get("active_idle_seconds", DEFAULTS["active_idle_seconds"]),
+        "active_idle_seconds",
+        300,
+        604_800,
     )
     daemon_idle = _require_int(
         raw.get("daemon_idle_pause_seconds", DEFAULTS["daemon_idle_pause_seconds"]),
@@ -351,6 +359,7 @@ def load_settings(data_dir: Path | None = None) -> Settings:
         queue_max=queue_max,
         local_max_hops=local_hops,
         max_local_players=max_local,
+        active_idle_seconds=active_idle,
         daemons_enabled=_require_bool(
             raw.get("daemons_enabled", DEFAULTS["daemons_enabled"]), "daemons_enabled"
         ),

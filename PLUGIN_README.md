@@ -1,6 +1,6 @@
 # ZorCore — OpenHop Repeater plugin
 
-In-process OpenHop plugin that runs a MeshCore text adventure: the full 1977 Zork dungeon baked into [`zorcore/content/`](zorcore/content/). Players DM the silent companion (name from content meta, always ending in 🕹️). Recent **Chat Node** adverts from OpenHop drive companion→player contact import.
+In-process OpenHop plugin that runs a MeshCore text adventure: the full 1977 Zork dungeon baked into [`zorcore/content/`](zorcore/content/). Players DM the silent companion (name from content meta, always ending in 🕹️). Recent **Chat Node** adverts from OpenHop drive **import-only** companion contact import (missing keys are added; contacts are never mass-pruned when absent from the freshest-N advert window). Runtime exposes `adverts_seen`, `contacts_imported`, `contact_sync_error`, and `unresolved_senders` when DMs arrive before a contact exists.
 
 Plugin id: `zorcore` · distribution: `zorcore-plugin` · console script: `zorcore`
 
@@ -60,24 +60,26 @@ Play is gated by **OpenHop Adaptive Rate Limiting** advert tiers (`quiet` → `c
 
 - Setting `play_max_tier` (`quiet` | `normal` | `busy`, default **normal**) — play when the ARL `current_tier` is at or below that max.
 - Must stay within max for `quiet_hold_seconds` (default 120) before opening; exceeding max closes immediately for **new** remote play.
-- **Active grace** — `active_grace_seconds` (default **1200** / 20 min): remotes that already hold an active slot and commanded within this window keep playing through busy mesh flaps (no demotion; commands still run). Stale or brand-new remotes stay blocked until quiet returns. Locals (path ≤ `local_max_hops`) keep the existing busy-local fast-pass.
-- **Busy-local exception:** when the mesh is above `play_max_tier`, players with companion path ≤ `local_max_hops` (default **3**) may still play; flood/unknown paths and deeper hops stay blocked. Queue offers prefer **stable** locals (known path, no recent ACK fail / path reset).
-- With `single_player_enabled`, one active player; others join a FIFO queue and get a DM when their turn opens (`offer_timeout_seconds`, default 900 / 15 minutes).
+- **Active grace** — `active_grace_seconds` (default **1200** / 20 min): remotes that already hold an active slot and commanded within this window keep playing through busy mesh flaps (no demotion; commands still run). Stale or brand-new remotes stay blocked until quiet returns. Locals (path ≤ `local_max_hops`, or on the sticky local list) keep the existing busy-local fast-pass.
+- **Busy-local exception:** when the mesh is above `play_max_tier`, players with companion path ≤ `local_max_hops` (default **3**) may still play; flood/unknown paths stay local if previously sticky. Queue offers prefer **stable** locals (known path, no recent ACK fail / path reset).
+- **Sticky locals** — a short live path adds the pubkey to `access.json` `local_players`; sticky ∪ path decides local for concurrency and busy-local. No auto-expiry; webadmin Access can Forget an entry.
+- **Active idle timeout** — `active_idle_seconds` (default **3600** / 1 h; range 300–604800) frees active slots for local and remote players who stop commanding (session/checkpoint kept, same as quit). Distinct from `active_grace_seconds` and `daemon_idle_pause_seconds`.
+- With `single_player_enabled`, remotes take turns through a FIFO queue (`offer_timeout_seconds`, default 900 / 15 minutes); locals share up to `max_local_players`.
 - Approximate airtime: sum of UTF-8 bytes on successful outbound parts (webadmin shows bytes / parts / `bytes÷50` units).
 - TX pacing defaults favour the repeater: `reply_settle_ms` **3500**, `inter_chunk_delay_ms` **800**.
 - State persists in `$OPENHOP_PLUGIN_DATA/access.json`. Master switch: `safety_enabled` (false = legacy multi-session; ban list still applies if `bans_enabled`).
-- Webadmin can promote/drop/ban/reset/clear and reset the dungeon via `admin_actions` on settings save with `restart: false`.
+- Webadmin can promote/drop/ban/reset/clear, forget sticky locals, and reset the dungeon via `admin_actions` on settings save with `restart: false`.
 - Legacy keys `quiet_max_utilization_percent` / `quiet_require_advert_tier` are ignored. The plugin does **not** auto-enable ARL on the Repeater.
 
 ## Shared living dungeon
 
 The dungeon is **one world**, not one per player. The troll, cyclops and thief have a single position, a single life, and a single stash, held in `$OPENHOP_PLUGIN_DATA/npcs.json` and owned by the plugin. Two friends playing at the same time meet the same thief and can warn each other by voice.
 
-- **Concurrent local play** — `max_local_players` (default **2**, range 1–4) nearby players (path ≤ `local_max_hops`) share the dungeon at once. Deeper and flood-path players still take turns through the FIFO queue, because their traffic crosses the whole mesh.
+- **Concurrent local play** — `max_local_players` (default **2**, range **1–16**) sticky/path-local players share the dungeon at once. Deeper and never-sticky flood-path players still take turns through the FIFO queue, because their traffic crosses the whole mesh.
 - **NPC daemons** — the thief wanders, steals treasure (never ordinary gear) and hoards it; the troll swings; the cyclops gets hungry. `scope: "world"` daemons act on shared state, `scope: "player"` daemons act on one session. Minimum spacing is `daemon_min_interval_seconds` (default 60).
 - **Idle pause** — with nobody playing for `daemon_idle_pause_seconds` (default **300**), the dungeon clock freezes rather than running for an empty room. When a player DMs again the pause is measured and every daemon deadline is shifted by the same amount, so returning does not trigger a burst of backlogged events.
 - **Respawn** — a slain troll or cyclops returns after `respawn_seconds` (30 min). The thief returns only once his stash is empty, so his loot is always recoverable.
-- **World events** — a kill broadcasts one short message to the other players currently in the dungeon ("Far below, a troll shrieks once, and the caverns swallow the sound."). Broadcasts are one message, never chunked, rate-limited by `broadcast_min_interval_seconds` (default 30), skipped for paused or queued players, and disabled entirely with `world_events_enabled: false`. Optionally mirror the same line to a MeshCore autochannel with `world_events_channel_enabled` (default **false**) and `world_events_channel_name` (e.g. `zork` → `#zork`); channel publish uses airtime and stays opt-in. Legacy `world_events_channel_index` is ignored.
+- **World events** — a kill broadcasts one short message to the other players currently in the dungeon ("Far below, a troll shrieks once, and the caverns swallow the sound."). Broadcasts are one message, never chunked, rate-limited by `broadcast_min_interval_seconds` (default 30), skipped for paused or queued players, and disabled entirely with `world_events_enabled: false`. Optionally mirror kills to a MeshCore autochannel with `world_events_channel_enabled` (default **false**) and `world_events_channel_name` (e.g. `zork` → `#zork`). With the channel flag alone (DM fan-out not required), a new game also publishes `@Name has entered the dungeon.` (pubkey prefix if the name is empty). Channel publish uses airtime and stays opt-in. Legacy `world_events_channel_index` is ignored.
 - The webadmin **Dungeon** panel shows each NPC's room, life, stash size and respawn countdown, plus a **Reset dungeon** button.
 
 ## Adventure voice
@@ -135,6 +137,7 @@ The companion radio name comes from `meta.json` (joystick emoji enforced). Chang
   "queue_max": 20,
   "local_max_hops": 3,
   "max_local_players": 2,
+  "active_idle_seconds": 3600,
   "daemons_enabled": true,
   "daemon_idle_pause_seconds": 300,
   "daemon_min_interval_seconds": 60,

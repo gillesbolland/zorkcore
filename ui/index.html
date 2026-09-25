@@ -73,6 +73,18 @@
           <button type="button" id="btn-clear-queue">Clear queue</button>
         </div>
         <p class="mono small" id="queue-msg"></p>
+        <h3 class="field-label" style="margin-top:1rem">Sticky locals</h3>
+        <p class="field-help">
+          Players once seen on a local path keep local privileges even if the path
+          later flaps. Forget removes them from the list only.
+        </p>
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Pubkey</th><th>Hops when seen</th><th></th></tr>
+          </thead>
+          <tbody id="sticky-locals-body"></tbody>
+        </table>
+        <p class="mono small" id="contact-sync-hint"></p>
       </section>
     </div>
 
@@ -156,9 +168,9 @@
           <summary>Queue and locals</summary>
           <div class="accordion-body">
             <p class="field-help">
-              Remotes take turns through a FIFO queue. Locals (path ≤
-              <code>local_max_hops</code>, default 3) can share the dungeon under
-              the busy-local exception.
+              Remotes take turns through a FIFO queue. Locals (path ≤ hops, or on
+              the sticky local list) can share the dungeon under the busy-local
+              exception. Idle actives free their slot after the idle timeout.
             </p>
             <div class="setting">
               <label class="check"
@@ -201,12 +213,33 @@
                 <input type="number" id="queue_max" min="1" max="200" />
               </label>
               <label class="field">
+                <span>Local max hops</span>
+                <span class="field-help"
+                  >Companion path length at or below this counts as local (and is
+                  remembered on the sticky list). Default 3; range 0–64.</span
+                >
+                <input type="number" id="local_max_hops" min="0" max="64" />
+              </label>
+              <label class="field">
                 <span>Concurrent local players</span>
                 <span class="field-help"
-                  >Max nearby players (≤3 hops) sharing the dungeon at once.
-                  Default 2; range 1–4.</span
+                  >Max local players sharing the dungeon at once. Default 2;
+                  range 1–16.</span
                 >
-                <input type="number" id="max_local_players" min="1" max="4" />
+                <input type="number" id="max_local_players" min="1" max="16" />
+              </label>
+              <label class="field">
+                <span>Active idle timeout (seconds)</span>
+                <span class="field-help"
+                  >Free an active slot when the player has not commanded for this
+                  long (session kept). Default 3600 (1 h); range 300–604800.</span
+                >
+                <input
+                  type="number"
+                  id="active_idle_seconds"
+                  min="300"
+                  max="604800"
+                />
               </label>
             </div>
           </div>
@@ -244,8 +277,10 @@
                 publish to MeshCore channel</label
               >
               <p class="field-help">
-                Mirror the same short world-event line to a MeshCore autochannel.
-                Uses airtime — off by default.
+                Mirror the same short world-event line to a MeshCore autochannel,
+                and announce when a player starts a new game
+                (<code>@Name has entered the dungeon.</code>). Uses airtime —
+                off by default.
               </p>
             </div>
             <div class="form-grid">

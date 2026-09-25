@@ -435,6 +435,9 @@ function safetyFrom(runtime, config) {
       s.offer_timeout_seconds ?? config.offer_timeout_seconds ?? 900,
     queue_max: s.queue_max ?? config.queue_max ?? 20,
     max_local_players: s.max_local_players ?? config.max_local_players ?? 2,
+    local_max_hops: s.local_max_hops ?? config.local_max_hops ?? 3,
+    active_idle_seconds:
+      s.active_idle_seconds ?? config.active_idle_seconds ?? 3600,
     daemons_enabled: s.daemons_enabled ?? config.daemons_enabled ?? true,
     daemon_idle_pause_seconds:
       s.daemon_idle_pause_seconds ?? config.daemon_idle_pause_seconds ?? 300,
@@ -484,6 +487,8 @@ function fillSafetyForm(runtime, config) {
     "offer_timeout_seconds",
     "queue_max",
     "max_local_players",
+    "local_max_hops",
+    "active_idle_seconds",
     "daemon_idle_pause_seconds",
     "reply_settle_ms",
     "inter_chunk_delay_ms",
@@ -650,6 +655,35 @@ function renderAccess(runtime) {
           )
           .join("")
       : `<tr><td colspan="4">No bans</td></tr>`;
+  }
+
+  const sticky = access.local_players || [];
+  const sbody = document.getElementById("sticky-locals-body");
+  if (sbody) {
+    sbody.innerHTML = sticky.length
+      ? sticky
+          .map(
+            (r) => `<tr>
+              <td>${r.display_name || shortKey(r.pubkey)}</td>
+              <td class="mono small">${shortKey(r.pubkey)}</td>
+              <td>${r.last_local_path_len != null ? r.last_local_path_len : "—"}</td>
+              <td><button type="button" data-op="forget_local" data-pubkey="${r.pubkey}">Forget</button></td>
+            </tr>`
+          )
+          .join("")
+      : `<tr><td colspan="4">No sticky locals yet</td></tr>`;
+  }
+
+  const syncHint = document.getElementById("contact-sync-hint");
+  if (syncHint) {
+    const err = runtime.contact_sync_error || runtime.stats?.contact_sync_error || "";
+    const seen = runtime.adverts_seen ?? runtime.stats?.adverts_seen ?? 0;
+    const imported = runtime.contacts_imported ?? runtime.stats?.contacts_imported ?? 0;
+    const unresolved =
+      runtime.unresolved_senders ?? runtime.stats?.unresolved_senders ?? 0;
+    syncHint.textContent = err
+      ? `Contact sync: ${err}`
+      : `Contact sync ok · Chat Node adverts ${seen} · imported ${imported} · unresolved DMs ${unresolved}`;
   }
 
   renderLeaderboard(runtime);
@@ -943,6 +977,10 @@ async function saveSafetySettings() {
   cfg.queue_max = Number(document.getElementById("queue_max").value);
   cfg.max_local_players = Number(
     document.getElementById("max_local_players").value
+  );
+  cfg.local_max_hops = Number(document.getElementById("local_max_hops").value);
+  cfg.active_idle_seconds = Number(
+    document.getElementById("active_idle_seconds").value
   );
   cfg.daemons_enabled = document.getElementById("daemons_enabled").checked;
   cfg.world_events_enabled = document.getElementById(

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "zorcore",
   "name": "ZorCore",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "MeshCore text adventure: original 1977 Zork prose and map, shared live between nearby players, with wandering NPCs and tier-gated radio play",
   "runtime": {
     "type": "python",
@@ -44,6 +44,7 @@
       "queue_max": 20,
       "local_max_hops": 3,
       "max_local_players": 2,
+      "active_idle_seconds": 3600,
       "daemons_enabled": true,
       "daemon_idle_pause_seconds": 300,
       "daemon_min_interval_seconds": 60,

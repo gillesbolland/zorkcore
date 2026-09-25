@@ -3,6 +3,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from zorcore.config import load_settings
 
 
@@ -29,6 +31,8 @@ def test_quiet_defaults(tmp_path: Path):
     assert s.offer_timeout_seconds == 900
     assert s.queue_max == 20
     assert s.local_max_hops == 3
+    assert s.max_local_players == 2
+    assert s.active_idle_seconds == 3600
     assert s.inter_chunk_delay_ms == 800
     assert s.world_events_enabled is True
     assert s.world_events_channel_enabled is False
@@ -84,3 +88,30 @@ def test_legacy_channel_index_ignored(tmp_path: Path):
     s = load_settings(tmp_path)
     assert s.world_events_channel_name == "dungeon"
     assert not hasattr(s, "world_events_channel_index")
+
+
+def test_max_local_players_allows_eight(tmp_path: Path):
+    (tmp_path / "config.json").write_text(
+        json.dumps({"max_local_players": 8}),
+        encoding="utf-8",
+    )
+    s = load_settings(tmp_path)
+    assert s.max_local_players == 8
+
+
+def test_max_local_players_rejects_above_sixteen(tmp_path: Path):
+    (tmp_path / "config.json").write_text(
+        json.dumps({"max_local_players": 17}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="max_local_players"):
+        load_settings(tmp_path)
+
+
+def test_active_idle_seconds_rejects_below_minimum(tmp_path: Path):
+    (tmp_path / "config.json").write_text(
+        json.dumps({"active_idle_seconds": 60}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="active_idle_seconds"):
+        load_settings(tmp_path)

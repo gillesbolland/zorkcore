@@ -221,7 +221,11 @@ class CompanionClient:
                         await cmds.set_flood_scope(scope)
                     logger.info("Companion region_scope=%s", scope)
                 else:
-                    await cmds.set_default_flood_scope(None)
+                    # Some meshcore builds reject None; empty string clears scope.
+                    try:
+                        await cmds.set_default_flood_scope("")
+                    except TypeError:
+                        await cmds.set_default_flood_scope()
                     logger.info("Companion region_scope cleared (unscoped default)")
             elif scope:
                 logger.warning("meshcore client has no set_default_flood_scope; cannot set %s", scope)
@@ -290,6 +294,8 @@ class CompanionClient:
                 "Unresolved sender pubkey (raw=%s…); skipping until contact sync",
                 str(raw_key)[:16],
             )
+            # Caller PluginApp may increment via stats callback; keep a soft counter on client.
+            self._unresolved_senders = int(getattr(self, "_unresolved_senders", 0) or 0) + 1
             return
         name = str(payload.get("sender_name") or payload.get("name") or "")
         text_s = str(text)
