@@ -43,17 +43,28 @@
           </div>
         </div>
         <div class="dm-thread" id="dm-thread">
-          <div class="bubble player" data-delay="400"><span class="who">You</span>new game</div>
-          <div class="bubble companion" data-delay="900"><span class="who">Zork🕹️</span>🏡 You are in an open field west of a big white house, with a boarded front door. <span class="mark">1/2…</span></div>
-          <div class="bubble companion" data-delay="700"><span class="who">Zork🕹️</span>There is a small mailbox here. <span class="mark">.2/2</span></div>
-          <div class="bubble tip" data-delay="550"><span class="who">tip</span>Exits: north, south, west.</div>
-          <div class="bubble player" data-delay="800"><span class="who">You</span>open mailbox</div>
-          <div class="bubble companion" data-delay="650"><span class="who">Zork🕹️</span>Opened: mailbox.
-Inside: leaflet.</div>
-          <div class="bubble player" data-delay="700"><span class="who">You</span>take leaflet</div>
-          <div class="bubble companion" data-delay="550"><span class="who">Zork🕹️</span>leaflet: Taken.</div>
-          <div class="bubble player" data-delay="900"><span class="who">You</span>?</div>
-          <div class="bubble companion" data-delay="600"><span class="who">Zork🕹️ · resend</span>leaflet: Taken.</div>
+          <div class="bubble player visible" data-delay="0"><span class="who">You</span>new game</div>
+          <div class="bubble companion" data-delay="1400"><span class="who">Zork🕹️</span>🏡 You are in an open field west of a big white house, with a boarded front door.
+You see: mailbox.</div>
+          <div class="bubble tip" data-delay="700"><span class="who">tip</span>Exits: north, south, west.</div>
+          <div class="bubble player" data-delay="800"><span class="who">You</span>n</div>
+          <div class="bubble companion" data-delay="1400"><span class="who">Zork🕹️</span>🏡 You are facing the north side of a white house. There is no door here, and all the windows are barred.</div>
+          <div class="bubble tip" data-delay="700"><span class="who">tip</span>Exits: east, north, west.</div>
+          <div class="bubble player" data-delay="800"><span class="who">You</span>e</div>
+          <div class="bubble companion" data-delay="1400"><span class="who">Zork🕹️</span>🏡 You are behind the white house. In one corner of the house there is a small window which is slightly ajar.</div>
+          <div class="bubble tip" data-delay="700"><span class="who">tip</span>Exits: east, north, south.</div>
+          <div class="bubble player" data-delay="800"><span class="who">You</span>open window</div>
+          <div class="bubble companion" data-delay="1000"><span class="who">Zork🕹️</span>🏡 The window opens far enough to climb through.</div>
+          <div class="bubble player" data-delay="800"><span class="who">You</span>w</div>
+          <div class="bubble companion" data-delay="1500"><span class="who">Zork🕹️</span>🏡 You are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. <span class="mark">1/3…</span></div>
+          <div class="bubble companion" data-delay="1300"><span class="who">Zork🕹️</span>A passage leads to the west and a dark staircase can be seen leading upward. To the east is a small window which is slightly ajar. <span class="mark">2/3…</span></div>
+          <div class="bubble companion" data-delay="1300"><span class="who">Zork🕹️</span>You see: sandwich bag, glass bottle. <span class="mark">.3/3</span></div>
+          <div class="bubble tip" data-delay="800"><span class="who">tip</span>[+10 points]
+Exits: east, out, up, west.</div>
+          <div class="bubble player" data-delay="900"><span class="who">You</span>u</div>
+          <div class="bubble companion" data-delay="1600"><span class="who">Zork🕹️</span>🏡 It is pitch black. You are likely to be eaten by a grue.</div>
+          <div class="bubble tip" data-delay="1200"><span class="who">tip</span>⏱️ Something stirs in the dark… ~45s.</div>
+          <div class="bubble companion" data-delay="2000"><span class="who">Zork🕹️ · game over</span>🏡 Oh no! A lurking grue gobbles you up.</div>
         </div>
       </section>
 
@@ -203,7 +214,10 @@ Inside: leaflet.</div>
               </div>
               <div>
                 <dt><code>brief</code> / <code>verbose</code></dt>
-                <dd>Description verbosity</dd>
+                <dd>
+                  Verbose by default (full room text on every move);
+                  <code>brief</code> shortens revisits
+                </dd>
               </div>
               <div>
                 <dt><code>version</code></dt>
@@ -222,9 +236,9 @@ Inside: leaflet.</div>
         <h2>Radio tips</h2>
         <ul>
           <li>
-            Long story replies arrive as multipart DMs:
-            <code>1/3…</code> means more is coming; <code>.3/3</code> means the
-            story is complete.
+            Short replies arrive as a single unlabeled DM. Only long story
+            replies are split into multipart DMs: <code>1/3…</code> means more is
+            coming; <code>.3/3</code> means the story is complete.
           </li>
           <li>
             <strong>Exits</strong> (and other status tips) are a separate unlabeled
@@ -246,8 +260,10 @@ Inside: leaflet.</div>
         </p>
         <ul>
           <li>
-            Play is <strong>DM-only</strong> to <strong>Zork🕹️</strong> — no game
-            spam on public channels.
+            Gameplay is by <strong>DM</strong> to <strong>Zork🕹️</strong> — by
+            default nothing hits public channels. Operators may optionally mirror
+            short world events (a player entering, deaths, kills) to a named
+            channel; that mirror is <strong>off by default</strong>.
           </li>
           <li>
             Remote play opens only when OpenHop

@@ -42,7 +42,7 @@ Plugin id: `zorcore` · distribution: `zorcore-plugin` · console script: `zorco
 | **Classic dungeon** | Full Zork / *Dungeon* map and puzzles as JSON — not a Z-machine |
 | **Original prose** | LOOK / examine / readables kept; long text split across MeshCore messages |
 | **Multipart clarity** | Story parts marked `1/3…` / `.3/3`; Exits tip sent separately |
-| **Companion DMs** | Play by DM to **Zork🕹️** — no game spam on public channels |
+| **Companion DMs** | Play by DM to **Zork🕹️**; public channels stay quiet by default (operator can opt in to short world-event lines) |
 | **Shared world** | One living dungeon: same thief, troll, cyclops for concurrent locals |
 | **Queue + fast-pass** | FIFO for remote players; path ≤ `local_max_hops` gets busy-local access |
 | **Radio-friendly verbs** | `take all`, EXCEPT, AND lists, `it`/`them`, `look under` |
@@ -56,7 +56,7 @@ ZorCore ships that **full dungeon** (rooms, objects, treasures, exits) as JSON u
 
 ## Adapted for MeshCore radio
 
-On a phone mesh you cannot dump a screenful of text in one shot, and you should not spam a public channel with game traffic.
+On a phone mesh you cannot dump a screenful of text in one shot, and you should not spam a public channel with game traffic. Gameplay stays in DMs; an operator can optionally mirror short world-event lines (a player entering, deaths, kills) to a named channel, which is off by default.
 
 - Players **DM** the companion (**Zork🕹️**). Setup and QR live under `/plugins/zorcore/` on the Repeater.
 - The **wording of the original LOOK / examine / readable text is kept**. Long replies are **not rewritten shorter for airtime**; they are **split into successive MeshCore messages** (`max_chunk_bytes`, up to `max_chunks`).
@@ -71,7 +71,7 @@ On a phone mesh you cannot dump a screenful of text in one shot, and you should 
 Everyone who is allowed to play shares **one** living world (not a private copy per player):
 
 - The thief, troll, and cyclops have a single position, life, and (for the thief) stash in plugin data.
-- Nearby friends can explore at the same time and meet the same NPCs; a kill can broadcast a short world-event line to other active players.
+- Nearby friends can explore at the same time and meet the same NPCs; a kill can broadcast a short world-event line to other active players. Operators can also opt in to mirroring these events (a player entering, deaths, kills) to a named MeshCore channel — off by default; see [`PLUGIN_README.md`](PLUGIN_README.md).
 - When nobody is playing, dungeon daemons pause so an empty cave does not “run ahead.”
 
 ## Queue and local fast-pass
@@ -131,7 +131,7 @@ Bans and operator promote/drop tools remain available in the plugin webadmin.
 | `save` | Explicit checkpoint → `Saved.` |
 | `restore` | Load checkpoint (or `No saved game.`) |
 | `quit` / `q` / `bye` | Leave the play slot (checkpoint kept) |
-| `brief` / `verbose` | Description verbosity |
+| `brief` / `verbose` | Description verbosity (verbose by default; `brief` shortens revisits) |
 | `version` | Plugin / content versions |
 
 Most classic dungeon verbs are understood; unimplemented ones get a short stub reply instead of “I don't understand.”

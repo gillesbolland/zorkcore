@@ -150,7 +150,7 @@ The companion radio name comes from `meta.json` (joystick emoji enforced). Chang
 }
 ```
 
-Half-duplex radios cannot RX and TX at once. After each player command the plugin waits **`reply_settle_ms`** (default 2s) before sending the reply so the phone can finish retries. Identical normalized commands from the same sender within **`command_dedupe_seconds`** (default 20s) are dropped so retry storms do not re-run the game. On connect the companion enables MeshCore **`multi_acks=1`** (double ACK on receive) for more reliable player DM delivery confirmation.
+Half-duplex radios cannot RX and TX at once. After each player command the plugin waits **`reply_settle_ms`** (default 3500 ms / 3.5s) before sending the reply so the phone can finish retries. Identical normalized commands from the same sender within **`command_dedupe_seconds`** (default 20s) are dropped so retry storms do not re-run the game. On connect the companion enables MeshCore **`multi_acks=1`** (double ACK on receive) for more reliable player DM delivery confirmation.
 
 ## Build and inspect the wheel
 
