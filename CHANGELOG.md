@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.6
+
+- Companion contact sync no longer gets stuck when `add_contact` times out with `no_event_received` (GitHub #1). All companion radio commands (`add_contact`, `remove_contact`, `get_contacts`) are now serialized with DM sends so their OK/ERROR events can't be stolen on a busy mesh.
+- Per-key add cooldown plus a short circuit breaker: after repeated radio timeouts the sync loop pauses (`RADIO_PAUSED` in runtime stats) instead of hammering an unresponsive companion every 20s; a successful add/remove/DM or a reconnect clears it.
+- Contact imports are capped per sync tick so one cycle can't monopolize the single companion radio.
+
 ## 0.9.5
 
 - Verbose room descriptions by default (full text on every move); `brief` still available.

@@ -18,6 +18,17 @@ logger = logging.getLogger(__name__)
 MessageHandler = Callable[[str, str, str], Awaitable[None]]
 # sender_key, text, display_name
 
+# Contact sync hardening (GitHub #1). The companion `add_contact` command can
+# time out with {'reason': 'no_event_received'} (meshcore waits ~15s for an
+# OK/ERROR that never arrives) when the radio stops answering. Left unchecked,
+# the 20s sync loop re-tries the same pubkey forever and its radio commands
+# race message traffic on the single TCP companion, so DMs flake and Zork looks
+# dead until a restart. Back off per key and trip a short circuit breaker.
+ADD_CONTACT_COOLDOWN_SECONDS = 600.0
+RADIO_FAILURE_THRESHOLD = 3
+RADIO_PAUSE_SECONDS = 300.0
+RADIO_TIMEOUT_REASONS = ("no_event_received", "timeout")
+
 
 
 @dataclass
@@ -73,6 +84,42 @@ class CompanionClient:
         self._cmd_dupes = DuplicateCache(float(settings.command_dedupe_seconds))
         self._lock = asyncio.Lock()
         self._table_full = False
+        # Per-key add-contact cooldown + consecutive radio-timeout breaker (#1).
+        self._add_cooldown: dict[str, float] = {}
+        self._radio_timeout_streak = 0
+        self._radio_paused_until = 0.0
+
+    @property
+    def radio_paused(self) -> bool:
+        """True while the companion radio is in circuit-breaker cooldown."""
+        return time.time() < self._radio_paused_until
+
+    def _is_radio_timeout(self, payload: Any) -> bool:
+        """Detect meshcore 'no_event_received'/'timeout' error payloads."""
+        reason = ""
+        if isinstance(payload, dict):
+            reason = str(payload.get("reason") or payload)
+        else:
+            reason = str(payload)
+        return any(r in reason for r in RADIO_TIMEOUT_REASONS)
+
+    def _note_radio_ok(self) -> None:
+        """Any successful radio command clears the timeout streak / breaker."""
+        self._radio_timeout_streak = 0
+        self._radio_paused_until = 0.0
+
+    def _note_radio_timeout(self, now: float | None = None) -> None:
+        """Record a radio timeout; trip the breaker after repeated failures."""
+        now = now if now is not None else time.time()
+        self._radio_timeout_streak += 1
+        if self._radio_timeout_streak >= RADIO_FAILURE_THRESHOLD:
+            self._radio_paused_until = now + RADIO_PAUSE_SECONDS
+            logger.warning(
+                "Companion radio unresponsive (%s consecutive timeouts) — "
+                "pausing contact sync for %.0fs",
+                self._radio_timeout_streak,
+                RADIO_PAUSE_SECONDS,
+            )
 
     async def connect(self) -> None:
         from meshcore import EventType, MeshCore
@@ -83,6 +130,9 @@ class CompanionClient:
             auto_reconnect=True,
         )
         self.connected = True
+        # Fresh companion link: clear any stale cooldown / breaker state (#1).
+        self._add_cooldown.clear()
+        self._note_radio_ok()
         await self._refresh_self_info()
         try:
             if hasattr(self.meshcore, "ensure_contacts"):
@@ -400,6 +450,8 @@ class CompanionClient:
                 if "TABLE_FULL" in str(payload):
                     self._table_full = True
                 return False
+            # A DM that got its ACK proves the radio is answering again (#1).
+            self._note_radio_ok()
             return True
         except Exception:
             logger.exception("send_dm failed")
@@ -489,7 +541,10 @@ class CompanionClient:
         if not self.meshcore:
             return {}
         try:
-            result = await self.meshcore.commands.get_contacts()
+            # Serialize with DMs/adds so this radio query never interleaves
+            # with a send_msg and steals its OK/ERROR event (#1).
+            async with self._lock:
+                result = await self.meshcore.commands.get_contacts()
             payload = getattr(result, "payload", None)
             out: dict[str, dict] = {}
             if isinstance(payload, dict):
@@ -565,22 +620,40 @@ class CompanionClient:
         key = normalize_pubkey(pubkey_hex)
         if len(key) != 64 or not self.meshcore:
             return "failed"
+        now = time.time()
+        if now < self._radio_paused_until:
+            logger.debug("Skipping add_contact %s… — companion radio paused", key[:16])
+            return "failed"
+        cooled = self._add_cooldown.get(key)
+        if cooled is not None and now - cooled < ADD_CONTACT_COOLDOWN_SECONDS:
+            logger.debug("Skipping add_contact %s… — in failure cooldown", key[:16])
+            return "failed"
         known = await self.list_contact_pubkeys()
         if key in known:
+            self._add_cooldown.pop(key, None)
             return "exists"
         if self._table_full:
             logger.warning("Skipping add_contact %s… — contact table full", key[:16])
             return "failed"
         contact = contact_dict_for_pubkey(key, display_name)
         try:
-            result = await self.meshcore.commands.add_contact(contact)
+            # Serialize the add with DMs so its OK/ERROR event is not stolen (#1).
+            async with self._lock:
+                result = await self.meshcore.commands.add_contact(contact)
             if getattr(result, "is_error", lambda: False)():
                 payload = getattr(result, "payload", result)
                 logger.warning("add_contact failed for %s: %s", key[:16], payload)
                 if "TABLE_FULL" in str(payload):
                     self._table_full = True
+                elif self._is_radio_timeout(payload):
+                    # Cool this key down and count toward the breaker so we stop
+                    # hammering an unresponsive companion every sync cycle.
+                    self._add_cooldown[key] = now
+                    self._note_radio_timeout(now)
                 return "failed"
             self._table_full = False
+            self._add_cooldown.pop(key, None)
+            self._note_radio_ok()
             logger.info("Added contact %s (%s)", key[:16], display_name or "player")
             return "added"
         except Exception:
@@ -593,18 +666,24 @@ class CompanionClient:
             return False
         cmds = self.meshcore.commands
         try:
-            if hasattr(cmds, "remove_contact"):
-                result = await cmds.remove_contact(key)
-            elif hasattr(cmds, "delete_contact"):
-                result = await cmds.delete_contact(key)
-            else:
-                logger.warning("No remove_contact command on meshcore client")
-                return False
+            # Serialize with DMs/adds so the OK/ERROR event is not stolen (#1).
+            async with self._lock:
+                if hasattr(cmds, "remove_contact"):
+                    result = await cmds.remove_contact(key)
+                elif hasattr(cmds, "delete_contact"):
+                    result = await cmds.delete_contact(key)
+                else:
+                    logger.warning("No remove_contact command on meshcore client")
+                    return False
             if getattr(result, "is_error", lambda: False)():
-                logger.warning("remove_contact failed for %s: %s", key[:16], getattr(result, "payload", result))
+                payload = getattr(result, "payload", result)
+                logger.warning("remove_contact failed for %s: %s", key[:16], payload)
+                if self._is_radio_timeout(payload):
+                    self._note_radio_timeout()
                 return False
             logger.info("Removed contact %s…", key[:16])
             self._table_full = False
+            self._note_radio_ok()
             return True
         except Exception:
             logger.exception("remove_contact error for %s", key[:16])

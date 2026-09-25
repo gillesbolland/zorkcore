@@ -1,10 +1,14 @@
 """Companion client: pubkey resolve + ACK-gated multipart send."""
 
 import asyncio
+import time
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-from zorcore.companion_client import CompanionClient
+from zorcore.companion_client import (
+    RADIO_FAILURE_THRESHOLD,
+    CompanionClient,
+)
 from zorcore.config import Settings
 
 
@@ -223,5 +227,93 @@ def test_content_dedupe_collapses_retry_storm():
         assert handler.await_count == 1
         await fire(4, text="look")
         assert handler.await_count == 2
+
+    asyncio.run(_run())
+
+
+def test_ensure_contact_cooldown_after_no_event():
+    """A no_event_received timeout cools the key so sync stops re-hammering it."""
+
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        client.list_contact_pubkeys = AsyncMock(return_value=set())
+        calls = {"n": 0}
+
+        async def add_contact(contact):
+            calls["n"] += 1
+            return SimpleNamespace(
+                is_error=lambda: True,
+                payload={"reason": "no_event_received"},
+            )
+
+        client.meshcore.commands = SimpleNamespace(add_contact=add_contact)
+        key = "ab" * 32
+
+        assert await client.ensure_contact(key) == "failed"
+        assert calls["n"] == 1
+        assert key in client._add_cooldown
+        assert client._radio_timeout_streak == 1
+
+        # Second attempt within cooldown must not touch the radio again.
+        assert await client.ensure_contact(key) == "failed"
+        assert calls["n"] == 1
+
+    asyncio.run(_run())
+
+
+def test_radio_breaker_trips_after_repeated_timeouts():
+    """Consecutive timeouts pause the radio so a stuck companion is left alone."""
+
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        client.list_contact_pubkeys = AsyncMock(return_value=set())
+
+        async def add_contact(contact):
+            return SimpleNamespace(
+                is_error=lambda: True,
+                payload={"reason": "no_event_received"},
+            )
+
+        client.meshcore.commands = SimpleNamespace(add_contact=add_contact)
+
+        assert not client.radio_paused
+        for i in range(RADIO_FAILURE_THRESHOLD):
+            key = f"{i:02x}" + "c" * 62
+            assert await client.ensure_contact(key) == "failed"
+        assert client.radio_paused
+
+        # While paused, a brand-new key is skipped without touching the radio.
+        called = {"n": 0}
+
+        async def add_contact2(contact):
+            called["n"] += 1
+            return SimpleNamespace(is_error=lambda: False)
+
+        client.meshcore.commands = SimpleNamespace(add_contact=add_contact2)
+        assert await client.ensure_contact("ff" * 32) == "failed"
+        assert called["n"] == 0
+
+    asyncio.run(_run())
+
+
+def test_successful_dm_clears_radio_breaker():
+    """A DM that gets its ACK proves the radio recovered and clears the breaker."""
+
+    async def _run() -> None:
+        client = CompanionClient(_settings(), AsyncMock())
+        client.meshcore = MagicMock()
+        client._radio_timeout_streak = RADIO_FAILURE_THRESHOLD
+        client._radio_paused_until = time.time() + 999
+        assert client.radio_paused
+
+        async def send_msg(dst, text):
+            return SimpleNamespace(is_error=lambda: False)
+
+        client.meshcore.commands = SimpleNamespace(send_msg=send_msg)
+        assert await client.send_parts("aa" * 32, ["hello"]) is True
+        assert not client.radio_paused
+        assert client._radio_timeout_streak == 0
 
     asyncio.run(_run())

@@ -4,7 +4,7 @@ import asyncio
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
-from zorcore.main import PluginApp
+from zorcore.main import MAX_ADDS_PER_SYNC, PluginApp
 
 
 def _app(tmp_path: Path) -> PluginApp:
@@ -13,6 +13,7 @@ def _app(tmp_path: Path) -> PluginApp:
     app.companion.connected = True
     app.companion.self_public_key = "11" * 32
     app.companion._table_full = False
+    app.companion.radio_paused = False
     app.companion._unresolved_senders = 0
     app.companion.list_contact_pubkeys = AsyncMock(
         return_value={"aa" * 32, "bb" * 32, "cc" * 32}
@@ -75,5 +76,38 @@ def test_sync_imports_missing_advert_keys(tmp_path: Path):
 
         app.companion.ensure_contact.assert_awaited_once_with(new_key, "Newbie")
         assert app.stats["contacts_imported"] == 1
+
+    asyncio.run(_run())
+
+
+def test_sync_caps_adds_per_tick(tmp_path: Path):
+    async def _run() -> None:
+        app = _app(tmp_path)
+        # Far more new advert keys than the per-tick cap allows.
+        many = {f"{i:02x}" + "e" * 62: f"n{i}" for i in range(MAX_ADDS_PER_SYNC + 4)}
+        app.contact_sync.fetch_advert_chat_names = MagicMock(return_value=many)
+        app.contact_sync.last_error = ""
+
+        await app._sync_advert_contacts_once()
+
+        assert app.companion.ensure_contact.await_count == MAX_ADDS_PER_SYNC
+        assert app.stats["contacts_imported"] == MAX_ADDS_PER_SYNC
+
+    asyncio.run(_run())
+
+
+def test_sync_skips_when_radio_paused(tmp_path: Path):
+    async def _run() -> None:
+        app = _app(tmp_path)
+        app.companion.radio_paused = True
+        app.contact_sync.fetch_advert_chat_names = MagicMock(
+            return_value={"dd" * 32: "Newbie"}
+        )
+        app.contact_sync.last_error = ""
+
+        await app._sync_advert_contacts_once()
+
+        app.companion.ensure_contact.assert_not_awaited()
+        assert "RADIO_PAUSED" in app.stats["contact_sync_error"]
 
     asyncio.run(_run())

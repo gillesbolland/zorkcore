@@ -44,6 +44,9 @@ logger = logging.getLogger(__name__)
 CONTACT_SYNC_INTERVAL_SECONDS = 20.0
 COMPANION_RECONNECT_SECONDS = 15.0
 CONFIG_WATCH_SECONDS = 2.0
+# Cap contact imports per sync tick so one cycle cannot monopolize the single
+# companion radio for minutes on a busy mesh (GitHub #1).
+MAX_ADDS_PER_SYNC = 5
 
 
 class PluginApp:
@@ -1192,14 +1195,27 @@ class PluginApp:
         if not advert_keys:
             self.write_runtime()
             return
+        # If the companion radio is unresponsive, do not hammer it with adds —
+        # the circuit breaker inside CompanionClient will clear on recovery (#1).
+        if getattr(self.companion, "radio_paused", False):
+            self.stats["contact_sync_error"] = (
+                (self.stats["contact_sync_error"] + "; " if self.stats["contact_sync_error"] else "")
+                + "RADIO_PAUSED"
+            )
+            self.write_runtime()
+            return
         known = await self.companion.list_contact_pubkeys()
         to_add = keys_to_add(advert_keys, known)
+        added_this_tick = 0
         for key in to_add:
+            if added_this_tick >= MAX_ADDS_PER_SYNC:
+                break
             nick = (advert_names.get(key) or "").strip()
             if self._looks_like_key(nick):
                 nick = ""
             status = await self.companion.ensure_contact(key, nick)
             if status == "added":
+                added_this_tick += 1
                 self.stats["contacts_imported"] = int(self.stats.get("contacts_imported", 0)) + 1
                 self.contact_sync.contacts_imported = int(self.stats["contacts_imported"])
                 logger.info(
